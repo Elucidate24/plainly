@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, memo, useCallback } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import { createClient } from "@supabase/supabase-js";
 
 const APP_NAME = "Plainly";
