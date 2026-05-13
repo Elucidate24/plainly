@@ -137,9 +137,9 @@ function Landing({ onSignUp, onLogin, onSample }) {
           </div>
         ))}
         <div style={{ background: "#FFF7ED", border: "1px solid #FED7AA", borderRadius: "12px", padding: "16px", marginBottom: "24px" }}>
-          <div style={{ fontWeight: "600", fontSize: "14px", color: "#92400E", marginBottom: "6px" }}>Try it free</div>
-          <p style={{ fontSize: "13px", color: "#78350F", margin: "0 0 12px", lineHeight: "1.5" }}>Get 1 free analysis without an account. Create a free account for 1 analysis per month.</p>
-          <button onClick={onSample} style={{ ...btnStyle("primary", false), background: "#92400E", padding: "10px", fontSize: "14px" }}>Try free analysis</button>
+          <div style={{ fontWeight: "600", fontSize: "14px", color: "#92400E", marginBottom: "6px" }}>See it in action</div>
+          <p style={{ fontSize: "13px", color: "#78350F", margin: "0 0 12px", lineHeight: "1.5" }}>Analyse one sample contract to see exactly how Plainly works. An account is required to analyse your own documents.</p>
+          <button onClick={onSample} style={{ ...btnStyle("primary", false), background: "#92400E", padding: "10px", fontSize: "14px" }}>View sample analysis</button>
         </div>
         <button onClick={onSignUp} style={{ ...btnStyle("primary", false), marginBottom: "10px" }}>Get started free</button>
         <button onClick={onLogin} style={{ ...btnStyle("secondary", false), marginBottom: "20px" }}>Sign in</button>
