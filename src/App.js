@@ -555,7 +555,7 @@ export default function App() {
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [booting, setBooting] = useState(true);
   const [onboarding, setOnboarding] = useState(false);
-
+  const [sampleMode, setSampleMode] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
