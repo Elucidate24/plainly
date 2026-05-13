@@ -297,8 +297,8 @@ function Analyse({ user, userMeta, prefill, onDone, onUpgrade }) {
 
   const analyse = async () => {
     if (!text.trim()) return setError("Please add a document first.");
-    if (!user) { onUpgrade(); return; }
-    if (!userMeta?.is_pro && (userMeta?.usage_count || 0) >= FREE_LIMIT) { onUpgrade(); return; }
+    if (!user && !prefill) { onUpgrade(); return; }
+    if (user && !userMeta?.is_pro && (userMeta?.usage_count || 0) >= FREE_LIMIT) { onUpgrade(); return; }
     setError("");
     setLoading(true);
     try {
@@ -311,9 +311,11 @@ function Analyse({ user, userMeta, prefill, onDone, onUpgrade }) {
       setStepMsg("Generating plain English summary...");
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Analysis failed.");
-      try {
-        await supabase.from("profiles").update({ usage_count: (userMeta?.usage_count || 0) + 1 }).eq("id", user.id);
-      } catch (err) {}
+      if (user) {
+        try {
+          await supabase.from("profiles").update({ usage_count: (userMeta?.usage_count || 0) + 1 }).eq("id", user.id);
+        } catch (err) {}
+      }
       onDone(data.result);
     } catch (e) {
       setError(e.message || "Analysis failed. Please try again.");
@@ -450,7 +452,9 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp }) {
 
 function Upgrade({ userEmail, onClose }) {
   const productId = process.env.REACT_APP_LEMONSQUEEZY_PRODUCT_ID;
-  const checkoutUrl = `https://store.lemonsqueezy.com/checkout/buy/${productId}?checkout[email]=${encodeURIComponent(userEmail || "")}`;
+  const checkoutUrl = productId
+    ? `https://store.lemonsqueezy.com/checkout/buy/${productId}?checkout[email]=${encodeURIComponent(userEmail || "")}`
+    : "https://app.lemonsqueezy.com";
   return (
     <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.65)", display: "flex", alignItems: "flex-end", justifyContent: "center", zIndex: 200 }}>
       <div style={{ background: C.bg, borderRadius: "20px 20px 0 0", padding: "24px 20px 44px", width: "100%", maxWidth: "720px" }}>
