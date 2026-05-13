@@ -278,7 +278,7 @@ function Analyse({ user, userMeta, prefill, onDone, onUpgrade }) {
     if (ext === "docx") {
       setStep("Reading document...");
       try {
-        const { default: mammoth } = await import("https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js");
+       const mammoth = await import("https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js").then(m => m.default || m);
         const result = await mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() });
         change(result.value);
       } catch { setError("Could not read this DOCX. Please paste the text instead."); setFileName(""); }
