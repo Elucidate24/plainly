@@ -12,7 +12,7 @@ const SAMPLE_DOCUMENT = `FREELANCE SERVICES AGREEMENT\n\nThis Agreement is enter
 const ONBOARDING = [
   { title: "Welcome to Plainly", body: "Paste any legal document and get a plain English breakdown in seconds.", icon: "👋" },
   { title: "We flag the risks", body: "Red flags highlighted automatically before you sign anything.", icon: "🚩" },
-  { title: "2 free analyses to start", body: "No credit card needed. Upgrade to Pro for unlimited access.", icon: "🎉" },
+  { title: "1 free analysis to start", body: "No credit card needed. Upgrade to Pro for unlimited access.", icon: "🎉" },
 ];
 
 const supabase = createClient(
@@ -139,7 +139,7 @@ function Landing({ onSignUp, onLogin, onSample }) {
         ))}
         <div style={{ background: "#FFF7ED", border: "1px solid #FED7AA", borderRadius: "12px", padding: "16px", marginBottom: "24px" }}>
           <div style={{ fontWeight: "600", fontSize: "14px", color: "#92400E", marginBottom: "6px" }}>Try it free</div>
-          <p style={{ fontSize: "13px", color: "#78350F", margin: "0 0 12px", lineHeight: "1.5" }}>Get 1 free analysis without an account. Create a free account for 2 analyses per month.</p>
+          <p style={{ fontSize: "13px", color: "#78350F", margin: "0 0 12px", lineHeight: "1.5" }}>Get 1 free analysis without an account. Create a free account for 1 analysis per month.</p>
           <button onClick={onSample} style={{ ...btnStyle("primary", false), background: "#92400E", padding: "10px", fontSize: "14px" }}>Try free analysis</button>
         </div>
         <button onClick={onSignUp} style={{ ...btnStyle("primary", false), marginBottom: "10px" }}>Get started free</button>
@@ -149,14 +149,14 @@ function Landing({ onSignUp, onLogin, onSample }) {
             <div style={{ flex: 1, padding: "16px", borderRight: `0.5px solid ${C.border}` }}>
               <div style={{ fontWeight: "700", fontSize: "15px", color: C.text, marginBottom: "4px" }}>Free</div>
               <div style={{ fontSize: "22px", fontWeight: "700", color: C.text, marginBottom: "8px" }}>€0</div>
-              {["2 analyses per month", "Basic history"].map((f, i) => (
+              {["1 analysis per month", "Last analysis saved"].map((f, i) => (
                 <div key={i} style={{ fontSize: "12px", color: C.sub, marginBottom: "4px" }}>✓ {f}</div>
               ))}
             </div>
             <div style={{ flex: 1, padding: "16px", background: C.header }}>
               <div style={{ fontWeight: "700", fontSize: "15px", color: C.accent, marginBottom: "4px" }}>Pro</div>
               <div style={{ fontSize: "22px", fontWeight: "700", color: "#fff", marginBottom: "8px" }}>${PRO_PRICE}<span style={{ fontSize: "12px", fontWeight: "400", color: "#9CA3AF" }}>/mo</span></div>
-              {["Unlimited analyses", "Full history", "Priority processing"].map((f, i) => (
+              {["Unlimited analyses", "Full history saved", "Cancel anytime"].map((f, i) => (
                 <div key={i} style={{ fontSize: "12px", color: "#D1FAE5", marginBottom: "4px" }}>✓ {f}</div>
               ))}
             </div>
@@ -452,7 +452,7 @@ function Upgrade({ userEmail, onClose }) {
           <div style={{ fontSize: "13px", color: "#9CA3AF", marginBottom: "4px" }}>Pro Plan</div>
           <div style={{ fontSize: "40px", fontWeight: "700", color: "#fff" }}>${PRO_PRICE}<span style={{ fontSize: "16px", fontWeight: "400", color: "#9CA3AF" }}>/month</span></div>
           <div style={{ marginTop: "14px", display: "flex", flexDirection: "column", gap: "6px" }}>
-            {["Unlimited analyses", "Full history", "Priority processing", "Cancel anytime"].map((f, i) => (
+            {["Unlimited analyses", "Full history saved", "Cancel anytime"].map((f, i) => (
               <div key={i} style={{ fontSize: "13px", color: "#D1FAE5" }}>✓ {f}</div>
             ))}
           </div>
