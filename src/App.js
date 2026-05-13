@@ -214,7 +214,7 @@ function Auth({ mode, onSuccess, onSwitch, onBack }) {
 
   return (
     <div style={{ padding: "32px 20px" }}>
-      <button onClick={onBack} style={{ background: "none", border: "none", color: C.accent, fontSize: "14px", cursor: "pointer", marginBottom: "20px", padding: 0 }}>Back</button>
+      <button onClick={onBack} style={{ background: "none", border: "none", color: C.accent, fontSize: "14px", cursor: "pointer", marginBottom: "20px", padding: 0 }}>← Back to home</button>
       <h2 style={{ fontSize: "26px", fontWeight: "700", color: C.text, marginBottom: "4px" }}>
         {forgot ? "Reset password" : isSignUp ? "Create account" : "Welcome back"}
       </h2>
