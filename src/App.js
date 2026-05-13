@@ -276,13 +276,9 @@ function Analyse({ user, userMeta, prefill, onDone, onUpgrade }) {
       setStep(""); return;
     }
     if (ext === "docx") {
-      setStep("Reading document...");
-      try {
-       const mammoth = await import("https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js").then(m => m.default || m);
-        const result = await mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() });
-        change(result.value);
-      } catch { setError("Could not read this DOCX. Please paste the text instead."); setFileName(""); }
-      setStep(""); return;
+      setError("DOCX upload coming soon. Please paste the text instead.");
+      setFileName("");
+      return;
     }
     setError("Please upload a PDF, DOCX, or TXT file."); setFileName("");
   };
