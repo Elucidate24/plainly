@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, memo } from "react";
+import { useState, useEffect, useRef, memo, useCallback } from "react";
 import { createClient } from "@supabase/supabase-js";
 
 const APP_NAME = "Plainly";
@@ -19,6 +19,16 @@ const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL || "",
   process.env.REACT_APP_SUPABASE_ANON_KEY || ""
 );
+
+function useDesktop() {
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
+  useEffect(() => {
+    const handler = () => setIsDesktop(window.innerWidth >= 768);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+  return isDesktop;
+}
 
 const scoreColor = (s) => s >= 7 ? "#4A7A5A" : s >= 4 ? "#C4973D" : "#C0504A";
 const sevColor = (s) => s === "high" ? "#C0504A" : s === "medium" ? "#C4973D" : "#2563EB";
@@ -431,7 +441,7 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp }) {
         <div style={{ fontSize: "12px", fontWeight: "600", color: recColor, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "6px" }}>Recommendation</div>
         <p style={{ fontSize: "15px", color: C.text, margin: 0, fontWeight: "500" }}>{data.recommendation}</p>
       </div>
-      <button onClick={copy} style={{ ...btnStyle("secondary", false), marginBottom: "8px", fontSize: "14px", padding: "12px" }}>Copy summary</button>
+      <button onClick={copy} style={{ ...btnStyle("secondary", false), marginBottom: "8px", fontSize: "14px", padding: "12px" }}>📋 Copy summary</button>
       <button onClick={onNew} style={{ ...btnStyle("primary", false), marginBottom: "12px" }}>Analyse another document</button>
       <p style={{ fontSize: "11px", color: C.sub, textAlign: "center", lineHeight: "1.5" }}>{DISCLAIMER}</p>
     </div>
@@ -443,7 +453,7 @@ function Upgrade({ userEmail, onClose }) {
   const checkoutUrl = `https://store.lemonsqueezy.com/checkout/buy/${productId}?checkout[email]=${encodeURIComponent(userEmail || "")}`;
   return (
     <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.65)", display: "flex", alignItems: "flex-end", justifyContent: "center", zIndex: 200 }}>
-      <div style={{ background: C.bg, borderRadius: "20px 20px 0 0", padding: "24px 20px 44px", width: "100%", maxWidth: "420px" }}>
+      <div style={{ background: C.bg, borderRadius: "20px 20px 0 0", padding: "24px 20px 44px", width: "100%", maxWidth: "720px" }}>
         <div style={{ width: "36px", height: "4px", background: C.border, borderRadius: "2px", margin: "0 auto 20px" }} />
         <div style={{ textAlign: "center", marginBottom: "20px" }}>
           <div style={{ fontSize: "36px", marginBottom: "10px" }}>🔓</div>
@@ -518,8 +528,8 @@ function Settings({ user, userMeta, onSignOut, onUpgrade }) {
       <button onClick={onSignOut} style={{ ...btnStyle("secondary", false), marginBottom: "8px" }}>Sign out</button>
       <button onClick={deleteAccount} style={{ ...btnStyle("secondary", false), color: C.danger, borderColor: "#E8C0BE", marginBottom: "20px", fontSize: "14px" }}>Delete my account</button>
       <div style={{ display: "flex", justifyContent: "center", gap: "20px" }}>
-        <a href="/privacy" style={{ fontSize: "12px", color: C.sub, textDecoration: "none" }}>Privacy policy</a>
-        <a href="/terms" style={{ fontSize: "12px", color: C.sub, textDecoration: "none" }}>Terms of service</a>
+        <a href="/privacy.html" style={{ fontSize: "12px", color: C.sub, textDecoration: "none" }}>Privacy policy</a>
+        <a href="/terms.html" style={{ fontSize: "12px", color: C.sub, textDecoration: "none" }}>Terms of service</a>
       </div>
     </div>
   );
@@ -563,6 +573,7 @@ export default function App() {
   };
 
   const isAuthed = !!session;
+  const isDesktop = useDesktop();
   const showNav = isAuthed && screen === "app" && !onboarding;
 
   const renderBody = () => {
@@ -592,8 +603,8 @@ export default function App() {
   };
 
   if (booting) return (
-    <div style={{ minHeight: "100vh", background: "#F0EDE8", display: "flex", justifyContent: "center", fontFamily: "sans-serif" }}>
-      <div style={{ width: "100%", maxWidth: "420px", minHeight: "100vh", background: C.bg }}>
+    <div style={{ minHeight: "100vh", background: "#F0EDE8", display: "flex", justifyContent: "center", fontFamily: "Georgia, serif" }}>
+      <div style={{ width: "100%", maxWidth: isDesktop ? "1100px" : "480px", minHeight: "100vh", background: C.bg }}>
         <div style={{ background: C.header, padding: "14px 20px 12px" }}><h1 style={{ color: "#fff", fontSize: "20px", fontWeight: "700", margin: 0 }}>{APP_NAME}</h1></div>
         <Spinner label="Loading..." />
       </div>
@@ -601,29 +612,62 @@ export default function App() {
   );
 
   return (
-    <div style={{ minHeight: "100vh", background: "#F0EDE8", display: "flex", justifyContent: "center", fontFamily: "sans-serif" }}>
-      <div style={{ width: "100%", maxWidth: "420px", minHeight: "100vh", background: C.bg, display: "flex", flexDirection: "column", position: "relative" }}>
-        {!onboarding && (
-          <div style={{ background: C.header, padding: "14px 20px 12px", flexShrink: 0 }}>
-            <h1 style={{ color: "#fff", fontSize: "20px", fontWeight: "700", margin: "0 0 2px" }}>{APP_NAME}</h1>
+    <div style={{ minHeight: "100vh", background: "#F0EDE8", fontFamily: "Georgia, serif" }}>
+      {!onboarding && (
+        <div style={{ background: C.header, padding: isDesktop ? "16px 40px" : "14px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div>
+            <h1 style={{ color: "#fff", fontSize: isDesktop ? "22px" : "20px", fontWeight: "700", margin: "0 0 2px" }}>{APP_NAME}</h1>
             <p style={{ color: C.accent, fontSize: "12px", margin: 0, fontWeight: "500" }}>{APP_TAGLINE}</p>
           </div>
-        )}
-        <div style={{ flex: 1, overflowY: "auto", padding: "20px", paddingBottom: showNav ? "88px" : "20px" }}>
-          {renderBody()}
+          {showNav && isDesktop && (
+            <div style={{ display: "flex", gap: "8px" }}>
+              {[{ key: "analyse", label: "Analyse", icon: "📄" }, { key: "settings", label: "Settings", icon: "⚙️" }].map(({ key, label, icon }) => (
+                <button key={key} onClick={() => { setTab(key); setResult(null); }}
+                  style={{ background: tab === key ? C.accent : "transparent", color: tab === key ? "#fff" : "#9CA3AF", border: tab === key ? "none" : "0.5px solid #555", borderRadius: "8px", padding: "8px 16px", fontSize: "13px", fontWeight: "600", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}>
+                  <span>{icon}</span>{label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
-        {showNav && (
-          <nav style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: "420px", background: C.bg, borderTop: `0.5px solid ${C.border}`, display: "flex", zIndex: 100 }}>
-            {[{ key: "analyse", label: "Analyse", icon: "📄" }, { key: "settings", label: "Settings", icon: "⚙️" }].map(({ key, label, icon }) => (
-              <button key={key} onClick={() => { setTab(key); setResult(null); }}
-                style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "3px", padding: "10px 0 14px", cursor: "pointer", border: "none", background: "transparent", color: tab === key ? C.accent : "#8A8585", fontSize: "11px", fontWeight: tab === key ? "600" : "400" }}>
-                <span style={{ fontSize: "20px" }}>{icon}</span>{label}
-              </button>
-            ))}
-          </nav>
+      )}
+
+      <div style={{ maxWidth: isDesktop ? "1100px" : "480px", margin: "0 auto", padding: isDesktop ? "40px" : "0", minHeight: "calc(100vh - 60px)" }}>
+        {onboarding ? (
+          <div style={{ background: C.bg, borderRadius: isDesktop ? "16px" : 0, padding: isDesktop ? "40px" : "20px" }}>
+            <Onboarding onFinish={() => setOnboarding(false)} />
+          </div>
+        ) : isDesktop && screen === "app" && isAuthed ? (
+          <div style={{ display: "grid", gridTemplateColumns: result ? "1fr 1fr" : "600px", gap: "32px", alignItems: "start", justifyContent: "center" }}>
+            <div style={{ background: C.bg, borderRadius: "16px", padding: "32px", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+              {tab === "analyse" && !result && <Analyse user={session.user} userMeta={userMeta} prefill={null} onDone={(d) => { setResult(d); loadMeta(session.user.id); }} onUpgrade={() => setShowUpgrade(true)} />}
+              {tab === "analyse" && result && <Analyse user={session.user} userMeta={userMeta} prefill={null} onDone={(d) => { setResult(d); loadMeta(session.user.id); }} onUpgrade={() => setShowUpgrade(true)} />}
+              {tab === "settings" && <Settings user={session.user} userMeta={userMeta} onSignOut={signOut} onUpgrade={() => setShowUpgrade(true)} />}
+            </div>
+            {result && tab === "analyse" && (
+              <div style={{ background: C.bg, borderRadius: "16px", padding: "32px", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+                <Results data={result} onNew={() => setResult(null)} />
+              </div>
+            )}
+          </div>
+        ) : (
+          <div style={{ background: screen === "landing" || screen === "sample" ? "transparent" : C.bg, borderRadius: isDesktop ? "16px" : 0, boxShadow: screen !== "landing" && isDesktop ? "0 1px 4px rgba(0,0,0,0.06)" : "none", paddingBottom: showNav && !isDesktop ? "88px" : 0, overflow: "hidden" }}>
+            {renderBody()}
+          </div>
         )}
-        {showUpgrade && <Upgrade userEmail={session?.user?.email} onClose={() => setShowUpgrade(false)} />}
       </div>
+
+      {showNav && !isDesktop && (
+        <nav style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: C.bg, borderTop: `0.5px solid ${C.border}`, display: "flex", zIndex: 100 }}>
+          {[{ key: "analyse", label: "Analyse", icon: "📄" }, { key: "settings", label: "Settings", icon: "⚙️" }].map(({ key, label, icon }) => (
+            <button key={key} onClick={() => { setTab(key); setResult(null); }}
+              style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "3px", padding: "10px 0 14px", cursor: "pointer", border: "none", background: "transparent", color: tab === key ? C.accent : "#8A8585", fontSize: "11px", fontWeight: tab === key ? "600" : "400" }}>
+              <span style={{ fontSize: "20px" }}>{icon}</span>{label}
+            </button>
+          ))}
+        </nav>
+      )}
+      {showUpgrade && <Upgrade userEmail={session?.user?.email} onClose={() => setShowUpgrade(false)} />}
     </div>
   );
 }
