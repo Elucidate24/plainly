@@ -12,7 +12,7 @@ const SAMPLE_DOCUMENT = `FREELANCE SERVICES AGREEMENT\n\nThis Agreement is enter
 const ONBOARDING = [
   { title: "Welcome to Plainly", body: "Paste any legal document and get a plain English breakdown in seconds.", icon: "👋" },
   { title: "We flag the risks", body: "Red flags highlighted automatically before you sign anything.", icon: "🚩" },
-  { title: "1 free analysis to start", body: "No credit card needed. Upgrade to Pro for unlimited access.", icon: "🎉" },
+  { title: "Your privacy is protected", body: "We never store your documents. Everything disappears when you close the app.", icon: "🔒" },
 ];
 
 const supabase = createClient(
@@ -22,7 +22,6 @@ const supabase = createClient(
 
 const scoreColor = (s) => s >= 7 ? "#16A34A" : s >= 4 ? "#F59E0B" : "#DC2626";
 const sevColor = (s) => s === "high" ? "#DC2626" : s === "medium" ? "#F59E0B" : "#2563EB";
-const fmtDate = (iso) => new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 
 const C = {
   bg: "#FFFFFF", header: "#0A0A0A", accent: "#F97316",
@@ -127,7 +126,7 @@ function Landing({ onSignUp, onLogin, onSample }) {
         {[
           { icon: "🔍", title: "Plain English summary", desc: "Legal jargon translated instantly" },
           { icon: "🚩", title: "Red flag detection", desc: "Risky clauses highlighted automatically" },
-          { icon: "⚖️", title: "Trust score out of 10", desc: "Know if it is safe to sign" },
+          { icon: "🔒", title: "Complete privacy", desc: "We never store your documents. Ever." },
         ].map((f, i) => (
           <div key={i} style={{ display: "flex", gap: "14px", marginBottom: "18px" }}>
             <div style={{ fontSize: "22px", flexShrink: 0 }}>{f.icon}</div>
@@ -143,26 +142,26 @@ function Landing({ onSignUp, onLogin, onSample }) {
           <button onClick={onSample} style={{ ...btnStyle("primary", false), background: "#92400E", padding: "10px", fontSize: "14px" }}>Try free analysis</button>
         </div>
         <button onClick={onSignUp} style={{ ...btnStyle("primary", false), marginBottom: "10px" }}>Get started free</button>
-        <button onClick={onLogin} style={btnStyle("secondary", false)}>Sign in</button>
-        <div style={{ marginTop: "24px", border: `0.5px solid ${C.border}`, borderRadius: "12px", overflow: "hidden" }}>
+        <button onClick={onLogin} style={{ ...btnStyle("secondary", false), marginBottom: "20px" }}>Sign in</button>
+        <div style={{ border: `0.5px solid ${C.border}`, borderRadius: "12px", overflow: "hidden", marginBottom: "20px" }}>
           <div style={{ display: "flex" }}>
             <div style={{ flex: 1, padding: "16px", borderRight: `0.5px solid ${C.border}` }}>
               <div style={{ fontWeight: "700", fontSize: "15px", color: C.text, marginBottom: "4px" }}>Free</div>
               <div style={{ fontSize: "22px", fontWeight: "700", color: C.text, marginBottom: "8px" }}>€0</div>
-              {["1 analysis per month", "Last analysis saved"].map((f, i) => (
+              {["1 analysis per month", "No document storage"].map((f, i) => (
                 <div key={i} style={{ fontSize: "12px", color: C.sub, marginBottom: "4px" }}>✓ {f}</div>
               ))}
             </div>
             <div style={{ flex: 1, padding: "16px", background: C.header }}>
               <div style={{ fontWeight: "700", fontSize: "15px", color: C.accent, marginBottom: "4px" }}>Pro</div>
               <div style={{ fontSize: "22px", fontWeight: "700", color: "#fff", marginBottom: "8px" }}>${PRO_PRICE}<span style={{ fontSize: "12px", fontWeight: "400", color: "#9CA3AF" }}>/mo</span></div>
-              {["Unlimited analyses", "Full history saved", "Cancel anytime"].map((f, i) => (
+              {["Unlimited analyses", "No document storage", "Cancel anytime"].map((f, i) => (
                 <div key={i} style={{ fontSize: "12px", color: "#D1FAE5", marginBottom: "4px" }}>✓ {f}</div>
               ))}
             </div>
           </div>
         </div>
-        <p style={{ fontSize: "11px", color: C.sub, textAlign: "center", marginTop: "16px", lineHeight: "1.5" }}>{DISCLAIMER}</p>
+        <p style={{ fontSize: "11px", color: C.sub, textAlign: "center", lineHeight: "1.5" }}>{DISCLAIMER}</p>
       </div>
     </div>
   );
@@ -303,7 +302,6 @@ function Analyse({ user, userMeta, prefill, onDone, onUpgrade }) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Analysis failed.");
       try {
-        await supabase.from("analyses").insert({ user_id: user.id, document_type: data.result.document_type, trust_score: data.result.trust_score, result: data.result, created_at: new Date().toISOString() });
         await supabase.from("profiles").update({ usage_count: (userMeta?.usage_count || 0) + 1 }).eq("id", user.id);
       } catch (err) {}
       onDone(data.result);
@@ -322,11 +320,15 @@ function Analyse({ user, userMeta, prefill, onDone, onUpgrade }) {
   return (
     <div>
       {user && !userMeta?.is_pro && (
-        <div style={{ background: C.light, border: `0.5px solid ${C.border}`, borderRadius: "8px", padding: "10px 14px", marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ background: C.light, border: `0.5px solid ${C.border}`, borderRadius: "8px", padding: "10px 14px", marginBottom: "12px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <span style={{ fontSize: "13px", color: C.sub }}>{usage}/{FREE_LIMIT} free analyses used this month</span>
           <span style={{ fontSize: "12px", color: C.accent, fontWeight: "600" }}>Free plan</span>
         </div>
       )}
+      <div style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: "8px", padding: "10px 14px", marginBottom: "14px", display: "flex", gap: "8px", alignItems: "center" }}>
+        <span style={{ fontSize: "16px" }}>🔒</span>
+        <span style={{ fontSize: "13px", color: "#166534" }}>Your document is never stored. It is analysed and immediately forgotten.</span>
+      </div>
       <div style={{ marginBottom: "14px" }}>
         <textarea value={text} onChange={e => change(e.target.value)}
           placeholder="Paste your contract, rental agreement, employment terms, or any legal document here..."
@@ -359,7 +361,7 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp }) {
       {isGuest && (
         <div style={{ background: C.header, borderRadius: "12px", padding: "16px", marginBottom: "16px", textAlign: "center" }}>
           <p style={{ color: "#fff", fontSize: "14px", margin: "0 0 4px", fontWeight: "600" }}>You have used your 1 free analysis</p>
-          <p style={{ color: "#9CA3AF", fontSize: "13px", margin: "0 0 10px" }}>Create a free account for 2 analyses per month.</p>
+          <p style={{ color: "#9CA3AF", fontSize: "13px", margin: "0 0 10px" }}>Create a free account for 1 analysis per month.</p>
           <button onClick={onSignUp} style={{ ...btnStyle("primary", false), padding: "10px", fontSize: "14px" }}>Sign up free</button>
         </div>
       )}
@@ -446,13 +448,13 @@ function Upgrade({ userEmail, onClose }) {
         <div style={{ textAlign: "center", marginBottom: "20px" }}>
           <div style={{ fontSize: "36px", marginBottom: "10px" }}>🔓</div>
           <h2 style={{ fontSize: "22px", fontWeight: "700", margin: "0 0 8px", color: C.text }}>Upgrade to Pro</h2>
-          <p style={{ fontSize: "15px", color: C.sub, margin: 0 }}>Unlimited analyses every month.</p>
+          <p style={{ fontSize: "15px", color: C.sub, margin: 0 }}>Unlimited analyses. Complete privacy. Cancel anytime.</p>
         </div>
         <div style={{ background: C.header, borderRadius: "12px", padding: "20px", marginBottom: "16px", textAlign: "center" }}>
           <div style={{ fontSize: "13px", color: "#9CA3AF", marginBottom: "4px" }}>Pro Plan</div>
           <div style={{ fontSize: "40px", fontWeight: "700", color: "#fff" }}>${PRO_PRICE}<span style={{ fontSize: "16px", fontWeight: "400", color: "#9CA3AF" }}>/month</span></div>
           <div style={{ marginTop: "14px", display: "flex", flexDirection: "column", gap: "6px" }}>
-            {["Unlimited analyses", "Full history saved", "Cancel anytime"].map((f, i) => (
+            {["Unlimited analyses", "Documents never stored", "Cancel anytime"].map((f, i) => (
               <div key={i} style={{ fontSize: "13px", color: "#D1FAE5" }}>✓ {f}</div>
             ))}
           </div>
@@ -462,59 +464,6 @@ function Upgrade({ userEmail, onClose }) {
         </a>
         <button onClick={onClose} style={btnStyle("secondary", false)}>Continue on free plan</button>
       </div>
-    </div>
-  );
-}
-
-function History({ user, userMeta, onView }) {
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    (async () => {
-      try {
-        let q = supabase.from("analyses").select("*").eq("user_id", user.id).order("created_at", { ascending: false });
-        if (!userMeta?.is_pro) q = q.limit(3);
-        const { data, error: e } = await q;
-        if (e) throw e;
-        setItems(data || []);
-      } catch (err) { setError("Could not load history."); }
-      finally { setLoading(false); }
-    })();
-  }, [user.id, userMeta]);
-
-  const del = async (id) => {
-    await supabase.from("analyses").delete().eq("id", id);
-    setItems(h => h.filter(i => i.id !== id));
-  };
-
-  if (loading) return <Spinner label="Loading history..." />;
-  if (error) return <ErrBox message={error} />;
-  if (!items.length) return (
-    <div style={{ textAlign: "center", padding: "60px 20px" }}>
-      <div style={{ fontSize: "40px", marginBottom: "16px" }}>📄</div>
-      <h3 style={{ fontSize: "18px", fontWeight: "600", color: C.text, marginBottom: "8px" }}>No analyses yet</h3>
-      <p style={{ fontSize: "14px", color: C.sub }}>Documents you analyse will appear here.</p>
-    </div>
-  );
-
-  return (
-    <div>
-      {!userMeta?.is_pro && <div style={{ background: "#FFF7ED", border: "1px solid #FED7AA", borderRadius: "8px", padding: "10px 14px", fontSize: "13px", color: "#92400E", marginBottom: "16px" }}>Free plan shows your last 3 analyses.</div>}
-      {items.map(item => (
-        <div key={item.id} style={{ ...cardStyle, display: "flex", alignItems: "center", gap: "12px" }}>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontWeight: "600", fontSize: "14px", color: C.text, marginBottom: "2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.document_type || "Document"}</div>
-            <div style={{ fontSize: "12px", color: C.sub }}>{fmtDate(item.created_at)}</div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
-            <span style={{ background: scoreColor(item.trust_score) + "22", color: scoreColor(item.trust_score), fontWeight: "700", fontSize: "13px", padding: "3px 8px", borderRadius: "20px" }}>{item.trust_score}/10</span>
-            <button onClick={() => onView(item.result)} style={{ background: C.accent, color: "#fff", border: "none", borderRadius: "6px", padding: "6px 12px", fontSize: "13px", cursor: "pointer", fontWeight: "500" }}>View</button>
-            <button onClick={() => del(item.id)} style={{ background: "none", border: "none", color: "#9CA3AF", fontSize: "18px", cursor: "pointer", padding: "2px" }}>×</button>
-          </div>
-        </div>
-      ))}
     </div>
   );
 }
@@ -533,9 +482,8 @@ function Settings({ user, userMeta, onSignOut, onUpgrade }) {
   };
 
   const deleteAccount = async () => {
-    if (!window.confirm("This permanently deletes your account and all data. Are you sure?")) return;
+    if (!window.confirm("This permanently deletes your account. Are you sure?")) return;
     try {
-      await supabase.from("analyses").delete().eq("user_id", user.id);
       await supabase.from("profiles").delete().eq("id", user.id);
       await supabase.auth.signOut();
     } catch (err) { alert("Could not delete account. Please contact support."); }
@@ -558,8 +506,17 @@ function Settings({ user, userMeta, onSignOut, onUpgrade }) {
         </div>
         {userMeta?.is_pro && <button onClick={cancel} disabled={cancelling} style={{ background: "none", border: "none", color: C.danger, fontSize: "13px", cursor: "pointer", padding: 0 }}>{cancelling ? "Cancelling..." : "Cancel Pro subscription"}</button>}
       </div>
+      <div style={{ ...cardStyle, background: "#F0FDF4", border: "1px solid #BBF7D0" }}>
+        <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
+          <span style={{ fontSize: "20px" }}>🔒</span>
+          <div>
+            <div style={{ fontWeight: "600", fontSize: "14px", color: "#166534", marginBottom: "4px" }}>Your privacy is protected</div>
+            <div style={{ fontSize: "13px", color: "#166534", lineHeight: "1.5" }}>We never store your documents. Every analysis is processed and immediately forgotten. Only your usage count is saved.</div>
+          </div>
+        </div>
+      </div>
       <button onClick={onSignOut} style={{ ...btnStyle("secondary", false), marginBottom: "8px" }}>Sign out</button>
-      <button onClick={deleteAccount} style={{ ...btnStyle("secondary", false), color: C.danger, borderColor: "#FECACA", marginBottom: "20px", fontSize: "14px" }}>Delete my account and data</button>
+      <button onClick={deleteAccount} style={{ ...btnStyle("secondary", false), color: C.danger, borderColor: "#FECACA", marginBottom: "20px", fontSize: "14px" }}>Delete my account</button>
       <div style={{ display: "flex", justifyContent: "center", gap: "20px" }}>
         <a href="/privacy" style={{ fontSize: "12px", color: C.sub, textDecoration: "none" }}>Privacy policy</a>
         <a href="/terms" style={{ fontSize: "12px", color: C.sub, textDecoration: "none" }}>Terms of service</a>
@@ -575,7 +532,6 @@ export default function App() {
   const [authMode, setAuthMode] = useState("signup");
   const [tab, setTab] = useState("analyse");
   const [result, setResult] = useState(null);
-  const [histResult, setHistResult] = useState(null);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [booting, setBooting] = useState(true);
   const [onboarding, setOnboarding] = useState(false);
@@ -627,17 +583,10 @@ export default function App() {
       return <Analyse user={null} userMeta={null} prefill={SAMPLE_DOCUMENT} onDone={setResult} onUpgrade={() => { setAuthMode("signup"); setScreen("auth"); }} />;
     }
     if (!isAuthed) { setScreen("landing"); return null; }
-    if (histResult) return (
-      <div>
-        <button onClick={() => setHistResult(null)} style={{ background: "none", border: "none", color: C.accent, fontSize: "14px", cursor: "pointer", marginBottom: "16px", padding: 0 }}>Back to history</button>
-        <Results data={histResult} onNew={() => { setHistResult(null); setTab("analyse"); }} />
-      </div>
-    );
     if (tab === "analyse") {
       if (result) return <Results data={result} onNew={() => setResult(null)} />;
       return <Analyse user={session.user} userMeta={userMeta} prefill={null} onDone={(d) => { setResult(d); loadMeta(session.user.id); }} onUpgrade={() => setShowUpgrade(true)} />;
     }
-    if (tab === "history") return <History user={session.user} userMeta={userMeta} onView={setHistResult} />;
     if (tab === "settings") return <Settings user={session.user} userMeta={userMeta} onSignOut={signOut} onUpgrade={() => setShowUpgrade(true)} />;
     return null;
   };
@@ -665,8 +614,8 @@ export default function App() {
         </div>
         {showNav && (
           <nav style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: "420px", background: C.bg, borderTop: `0.5px solid ${C.border}`, display: "flex", zIndex: 100 }}>
-            {[{ key: "analyse", label: "Analyse", icon: "📄" }, { key: "history", label: "History", icon: "🕐" }, { key: "settings", label: "Settings", icon: "⚙️" }].map(({ key, label, icon }) => (
-              <button key={key} onClick={() => { setTab(key); setResult(null); setHistResult(null); }}
+            {[{ key: "analyse", label: "Analyse", icon: "📄" }, { key: "settings", label: "Settings", icon: "⚙️" }].map(({ key, label, icon }) => (
+              <button key={key} onClick={() => { setTab(key); setResult(null); }}
                 style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "3px", padding: "10px 0 14px", cursor: "pointer", border: "none", background: "transparent", color: tab === key ? C.accent : "#9CA3AF", fontSize: "11px", fontWeight: tab === key ? "600" : "400" }}>
                 <span style={{ fontSize: "20px" }}>{icon}</span>{label}
               </button>
