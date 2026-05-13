@@ -555,7 +555,7 @@ export default function App() {
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [booting, setBooting] = useState(true);
   const [onboarding, setOnboarding] = useState(false);
-  const [sampleMode, setSampleMode] = useState(false);
+
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -577,7 +577,7 @@ export default function App() {
     } catch { setUserMeta({ is_pro: false, usage_count: 0 }); }
   };
 
-  const signOut = async () => { await supabase.auth.signOut(); setSession(null); setUserMeta(null); setScreen("landing"); setResult(null); setTab("analyse"); setSampleMode(false); };
+  const signOut = async () => { await supabase.auth.signOut(); setSession(null); setUserMeta(null); setScreen("landing"); setResult(null); setTab("analyse"); };
 
   if (booting) return (
     <div style={{ minHeight: "100vh", background: "#F2F2EF", display: "flex", justifyContent: "center", fontFamily: "'DM Sans','Helvetica Neue',sans-serif" }}>
@@ -593,7 +593,7 @@ export default function App() {
 
   const renderBody = () => {
     if (onboarding) return <Onboarding onFinish={() => setOnboarding(false)} />;
-    if (screen === "landing") return <Landing onSignUp={() => { setAuthMode("signup"); setScreen("auth"); }} onLogin={() => { setAuthMode("login"); setScreen("auth"); }} onSample={() => { setSampleMode(true); setScreen("sample"); }} />;
+    if (screen === "landing") return <Landing onSignUp={() => { setAuthMode("signup"); setScreen("auth"); }} onLogin={() => { setAuthMode("login"); setScreen("auth"); }} onSample={() => { setScreen("sample"); }} />;
     if (screen === "auth") return <Auth mode={authMode} onSuccess={(isNew) => { if (isNew) setOnboarding(true); setScreen("app"); setTab("analyse"); }} onSwitch={() => setAuthMode(m => m === "signup" ? "login" : "signup")} onBack={() => setScreen("landing")} />;
     if (screen === "sample") {
       if (result) return <Results data={result} onNew={() => { setResult(null); setScreen("landing"); }} isGuest onSignUp={() => { setAuthMode("signup"); setScreen("auth"); }} />;
