@@ -306,7 +306,7 @@ function Analyse({ user, userMeta, prefill, onDone, onUpgrade }) {
       const res = await fetch("/api/analyse", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: text.trim(), userId: user.id })
+        body: JSON.stringify({ text: text.trim(), userId: user?.id || null })
       });
       setStepMsg("Generating plain English summary...");
       const data = await res.json();
