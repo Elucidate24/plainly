@@ -4,7 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 const APP_NAME = "Plainly";
 const APP_TAGLINE = "Understand anything you sign";
 const PRO_PRICE = "4.99";
-const FREE_LIMIT = 2;
+const FREE_LIMIT = 1;
 const DISCLAIMER = "Plainly provides information, not legal advice. Always consult a qualified lawyer for important decisions.";
 
 const SAMPLE_DOCUMENT = `FREELANCE SERVICES AGREEMENT\n\nThis Agreement is entered into between the Client and the Freelancer.\n\n1. SERVICES\nThe Freelancer agrees to provide graphic design services. The Client may request unlimited revisions until satisfied.\n\n2. PAYMENT\nThe Client agrees to pay within 60 days of invoice. Late payments will not incur any penalty. The Client may withhold payment if work does not meet their subjective satisfaction.\n\n3. INTELLECTUAL PROPERTY\nAll work created becomes the sole property of the Client upon creation, regardless of whether payment has been made.\n\n4. NON-COMPETE\nThe Freelancer agrees not to work with any business in the same industry for 2 years after termination, anywhere in the world.\n\n5. TERMINATION\nThe Client may terminate this Agreement at any time without notice and without obligation to pay for completed work.\n\n6. CONFIDENTIALITY\nThe Freelancer agrees to keep all Client information confidential indefinitely.`;
@@ -153,9 +153,9 @@ function Landing({ onSignUp, onLogin, onSample, onAbout }) {
             </div>
           </div>
         ))}
-        <div style={{ background: "#EEF4F0", border: "1px solid #C8DBC8", borderRadius: "12px", padding: "16px", marginBottom: "24px" }}>
-          <div style={{ fontWeight: "600", fontSize: "14px", color: "#3A5C48", marginBottom: "6px" }}>See it in action</div>
-          <p style={{ fontSize: "13px", color: "#2E4A3A", margin: "0 0 12px", lineHeight: "1.5" }}>Analyse one sample contract to see exactly how Plainly works. An account is required to analyse your own documents.</p>
+        <div style={{ background: "#EEF4F0", border: `1px solid #C8DBC8`, borderRadius: "12px", padding: "16px", marginBottom: "24px" }}>
+          <div style={{ fontWeight: "600", fontSize: "14px", color: "#3A5C48", marginBottom: "6px" }}>See a real example</div>
+          <p style={{ fontSize: "13px", color: "#2E4A3A", margin: "0 0 12px", lineHeight: "1.5" }}>See how Plainly analyses a freelance contract. No account needed for the demo.</p>
           <button onClick={onSample} style={{ ...btnStyle("primary", false), background: "#3A5C48", padding: "10px", fontSize: "14px" }}>View sample analysis</button>
         </div>
         <button onClick={onSignUp} style={{ ...btnStyle("primary", false), marginBottom: "10px" }}>Get started free</button>
@@ -173,7 +173,7 @@ function Landing({ onSignUp, onLogin, onSample, onAbout }) {
           <div style={{ display: "flex" }}>
             <div style={{ flex: 1, padding: "16px", borderRight: `0.5px solid ${C.border}` }}>
               <div style={{ fontWeight: "700", fontSize: "15px", color: C.text, marginBottom: "4px" }}>Free</div>
-              <div style={{ fontSize: "22px", fontWeight: "700", color: C.text, marginBottom: "8px" }}>€0</div>
+              <div style={{ fontSize: "22px", fontWeight: "700", color: C.text, marginBottom: "8px" }}>$0</div>
               {["1 analysis per month", "No document storage"].map((f, i) => (
                 <div key={i} style={{ fontSize: "12px", color: C.sub, marginBottom: "4px" }}>✓ {f}</div>
               ))}
@@ -300,7 +300,7 @@ function Analyse({ user, userMeta, prefill, onDone, onUpgrade }) {
       setStepMsg("Sending to AI analyst...");
       const res = await fetch("/api/analyse", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-plainly-secret": process.env.REACT_APP_API_SECRET || "" },
         body: JSON.stringify({ text: text.trim(), userId: user?.id || null })
       });
       setStepMsg("Generating plain English summary...");
@@ -634,8 +634,48 @@ export default function App() {
     />;
     if (screen === "about") return <About onBack={() => setScreen("landing")} />;
     if (screen === "sample") {
-      if (result) return <Results data={result} onNew={() => { setResult(null); setScreen("auth"); }} isGuest onSignUp={() => { setAuthMode("signup"); setScreen("auth"); }} />;
-      return <Analyse user={null} userMeta={null} prefill={SAMPLE_DOCUMENT} onDone={setResult} onUpgrade={() => { setAuthMode("signup"); setScreen("auth"); }} />;
+      const hasSeenSample = document.cookie.includes("plainly_sample=1");
+      if (hasSeenSample) {
+        return (
+          <div style={{ padding: "40px 20px", textAlign: "center" }}>
+            <div style={{ fontSize: "48px", marginBottom: "16px" }}>🔒</div>
+            <h2 style={{ fontSize: "22px", fontWeight: "700", color: C.text, marginBottom: "8px" }}>You have seen the demo</h2>
+            <p style={{ fontSize: "15px", color: C.sub, marginBottom: "24px", lineHeight: "1.5" }}>Create a free account to analyse your own documents.</p>
+            <button onClick={() => { setAuthMode("signup"); setScreen("auth"); }} style={{ ...btnStyle("primary", false), marginBottom: "10px" }}>Sign up free</button>
+            <button onClick={() => setScreen("landing")} style={btnStyle("secondary", false)}>Back</button>
+          </div>
+        );
+      }
+      document.cookie = "plainly_sample=1; max-age=2592000; path=/";
+      const DEMO = {
+        document_type: "Freelance Services Agreement",
+        trust_score: 3,
+        score_label: "This contract strongly favours the client and leaves you with almost no protection.",
+        score_reasoning: "The unlimited revisions clause, 60-day payment terms with no late penalty, and the right to terminate without paying for completed work create serious financial risk. The worldwide 2-year non-compete is unusually aggressive.",
+        summary: "This is a freelance agreement where the client holds almost all the power. They can request unlimited changes, withhold payment subjectively, terminate without notice, and prevent you from working in your industry for 2 years worldwide. Your work becomes their property before you are even paid.",
+        red_flags: [
+          { title: "Unlimited revisions with no cap", explanation: "The contract allows the client to request unlimited changes until satisfied. This means a project could drag on indefinitely while you receive no additional pay.", severity: "high" },
+          { title: "Client can withhold payment subjectively", explanation: "Payment can be withheld if the work does not meet subjective satisfaction. The client has complete discretion to refuse payment for any reason with little recourse for you.", severity: "high" },
+          { title: "No payment for completed work on termination", explanation: "The client can terminate at any time without paying for work already completed. You could spend weeks on a project and walk away with nothing.", severity: "high" },
+          { title: "Worldwide 2-year non-compete", explanation: "You cannot work with any business in the same industry for 2 years anywhere in the world. This is extremely broad for a freelance contract.", severity: "medium" },
+          { title: "IP transfers before payment", explanation: "Your work becomes the client's property the moment you create it, regardless of whether payment has been made.", severity: "medium" },
+        ],
+        key_points: [
+          "You must provide unlimited revisions at no extra cost with no protection against a client who is never satisfied.",
+          "The client can terminate at any time and legally owes you nothing for work already completed.",
+          "You cannot work in the same industry anywhere in the world for 2 years after this contract ends."
+        ],
+        legal_terms: [
+          { term: "Intellectual Property", plain_english: "The rights to your creative work. This contract transfers all rights to the client before you are even paid." },
+          { term: "Non-compete", plain_english: "An agreement not to work with competing businesses. This one covers the entire world for 2 years which is unusually broad." },
+        ],
+        missing_clauses: [
+          "Revision limit: a fair contract specifies a maximum number of revision rounds.",
+          "Kill fee: a fair contract compensates the freelancer for work completed if the client cancels.",
+        ],
+        recommendation: "Do not sign this contract as-is. Negotiate a revision cap, a kill fee, and removal of the worldwide non-compete before agreeing."
+      };
+      return <Results data={DEMO} onNew={() => setScreen("landing")} isGuest onSignUp={() => { setAuthMode("signup"); setScreen("auth"); }} />;
     }
     if (!isAuthed) { setScreen("landing"); return null; }
     if (tab === "analyse") {
