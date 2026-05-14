@@ -382,6 +382,17 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp }) {
         <div style={labelStyle}>What this document says</div>
         <p style={{ fontSize: "15px", color: C.text, lineHeight: "1.6", margin: 0 }}>{data.summary}</p>
       </div>
+
+      {data.deep_analysis && (
+        <div style={cardStyle}>
+          <div style={labelStyle}>Expert analysis</div>
+          {data.deep_analysis.split('\n').filter(p => p.trim()).map((paragraph, i) => (
+            <p key={i} style={{ fontSize: "15px", color: C.text, lineHeight: "1.8", margin: 0, marginBottom: i < data.deep_analysis.split('\n').filter(p => p.trim()).length - 1 ? "16px" : 0 }}>
+              {paragraph}
+            </p>
+          ))}
+        </div>
+      )}
       {sortedFlags.length > 0 && (
         <div style={{ marginBottom: "12px" }}>
           <div style={{ ...labelStyle, marginBottom: "8px" }}>Red flags ({sortedFlags.length})</div>
@@ -653,6 +664,7 @@ export default function App() {
         score_label: "This contract strongly favours the client and leaves you with almost no protection.",
         score_reasoning: "The unlimited revisions clause, 60-day payment terms with no late penalty, and the right to terminate without paying for completed work create serious financial risk. The worldwide 2-year non-compete is unusually aggressive.",
         summary: "This is a freelance agreement where the client holds almost all the power. They can request unlimited changes, withhold payment subjectively, terminate without notice, and prevent you from working in your industry for 2 years worldwide. Your work becomes their property before you are even paid.",
+        deep_analysis: "This contract was drafted by the client with no input from the freelancer. Every ambiguous clause resolves in the client favour. This is a deliberate pattern not an accident.\n\nThe combination of unlimited revisions and subjective payment withholding is particularly dangerous. Together they mean the client can demand changes indefinitely and then decide the work is not good enough to pay for. There is no mechanism that protects you from a client acting in bad faith.\n\nThe termination clause compounds this further. The client can walk away at any point without paying for completed work. Combined with the IP transfer clause which gives them ownership from the moment of creation, they could take your work and legally owe you nothing.\n\nThe non-compete is the clause that should concern you most long term. Two years worldwide in the same industry is not a standard freelance restriction. For a graphic design agreement it is disproportionate and could seriously limit your ability to earn a living after this single project ends.",
         red_flags: [
           { title: "Unlimited revisions with no cap", explanation: "The contract allows the client to request unlimited changes until satisfied. This means a project could drag on indefinitely while you receive no additional pay.", severity: "high" },
           { title: "Client can withhold payment subjectively", explanation: "Payment can be withheld if the work does not meet subjective satisfaction. The client has complete discretion to refuse payment for any reason with little recourse for you.", severity: "high" },
