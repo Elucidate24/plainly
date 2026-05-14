@@ -153,6 +153,11 @@ function Landing({ onSignUp, onLogin, onSample }) {
         </div>
         <button onClick={onSignUp} style={{ ...btnStyle("primary", false), marginBottom: "10px" }}>Get started free</button>
         <button onClick={onLogin} style={{ ...btnStyle("secondary", false), marginBottom: "20px" }}>Sign in</button>
+        <div style={{ background: C.light, borderRadius: "12px", padding: "16px", marginBottom: "20px" }}>
+          <div style={{ fontSize: "12px", fontWeight: "600", color: C.sub, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "12px" }}>What people say</div>
+          <div style={{ fontSize: "14px", color: C.text, lineHeight: "1.6", fontStyle: "italic", marginBottom: "8px" }}>"Finally understood what I was signing in my rental agreement. Found two clauses I would never have noticed."</div>
+          <div style={{ fontSize: "12px", color: C.sub }}>— Freelance designer, Amsterdam</div>
+        </div>
         <div style={{ border: `0.5px solid ${C.border}`, borderRadius: "12px", overflow: "hidden", marginBottom: "20px" }}>
           <div style={{ display: "flex" }}>
             <div style={{ flex: 1, padding: "16px", borderRight: `0.5px solid ${C.border}` }}>
@@ -192,7 +197,7 @@ function Auth({ mode, onSuccess, onSwitch, onBack }) {
     if (!email.trim()) return setError("Email is required.");
     if (!forgot && !password) return setError("Password is required.");
     if (isSignUp && password !== confirm) return setError("Passwords do not match.");
-    if (isSignUp && password.length < 6) return setError("Password must be at least 6 characters.");
+    if (isSignUp && password.length < 8) return setError("Password must be at least 8 characters.");
     setLoading(true);
     try {
       if (forgot) {
@@ -202,7 +207,8 @@ function Auth({ mode, onSuccess, onSwitch, onBack }) {
       } else if (isSignUp) {
         const { error: e } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: "https://plainly-opal.vercel.app" } });
         if (e) throw e;
-        onSuccess(true);
+        setForgotSent(true);
+        return;
       } else {
         const { error: e } = await supabase.auth.signInWithPassword({ email, password });
         if (e) throw e;
@@ -215,9 +221,16 @@ function Auth({ mode, onSuccess, onSwitch, onBack }) {
   if (forgotSent) return (
     <div style={{ padding: "40px 20px", textAlign: "center" }}>
       <div style={{ fontSize: "48px", marginBottom: "16px" }}>📧</div>
-      <h2 style={{ fontSize: "22px", fontWeight: "700", marginBottom: "8px" }}>Check your email</h2>
-      <p style={{ color: C.sub, marginBottom: "24px" }}>Reset link sent to {email}</p>
-      <button onClick={() => { setForgot(false); setForgotSent(false); }} style={btnStyle("secondary", false)}>Back to sign in</button>
+      <h2 style={{ fontSize: "22px", fontWeight: "700", marginBottom: "8px" }}>
+        {isSignUp ? "Confirm your email" : "Check your email"}
+      </h2>
+      <p style={{ color: C.sub, marginBottom: "8px" }}>
+        {isSignUp ? `We sent a confirmation link to ${email}` : `Reset link sent to ${email}`}
+      </p>
+      {isSignUp && <p style={{ color: C.sub, fontSize: "13px", marginBottom: "24px" }}>Click the link in the email to activate your account. Then come back here and sign in.</p>}
+      <button onClick={() => { setForgot(false); setForgotSent(false); }} style={btnStyle("secondary", false)}>
+        {isSignUp ? "Go to sign in" : "Back to sign in"}
+      </button>
     </div>
   );
 
@@ -233,7 +246,7 @@ function Auth({ mode, onSuccess, onSwitch, onBack }) {
       {error && <div style={errCss}>{error}</div>}
       {[
         { label: "Email", type: "email", val: email, set: setEmail, ph: "you@example.com" },
-        ...(!forgot ? [{ label: "Password", type: "password", val: password, set: setPassword, ph: "At least 6 characters" }] : []),
+        ...(!forgot ? [{ label: "Password", type: "password", val: password, set: setPassword, ph: "At least 8 characters" }] : []),
         ...(isSignUp && !forgot ? [{ label: "Confirm password", type: "password", val: confirm, set: setConfirm, ph: "Same password again" }] : []),
       ].map(({ label, type, val, set, ph }) => (
         <div key={label} style={{ marginBottom: "14px" }}>
@@ -254,7 +267,6 @@ function Auth({ mode, onSuccess, onSwitch, onBack }) {
 
 function Analyse({ user, userMeta, prefill, onDone, onUpgrade }) {
   const [text, setText] = useState(prefill || "");
-  const [fileName, setFileName] = useState(prefill ? "sample-contract.txt" : "");
   const [charCount, setCharCount] = useState(prefill ? prefill.length : 0);
   const [loading, setLoading] = useState(false);
   const [stepMsg, setStepMsg] = useState("");
@@ -265,34 +277,6 @@ function Analyse({ user, userMeta, prefill, onDone, onUpgrade }) {
     setText(val);
     clearTimeout(debounce.current);
     debounce.current = setTimeout(() => setCharCount(val.length), 100);
-  };
-
-  const handleFile = async (file) => {
-    setError("");
-    setFileName(file.name);
-    const ext = file.name.split(".").pop().toLowerCase();
-    if (ext === "txt") {
-      change(await file.text());
-      return;
-    }
-    if (ext === "pdf") {
-      setStepMsg("Reading PDF...");
-      try {
-        const ab = await file.arrayBuffer();
-        const base64 = btoa(String.fromCharCode(...new Uint8Array(ab)));
-        const res = await fetch("/api/extract-pdf", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ base64, fileName: file.name }) });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
-        change(data.text);
-      } catch (e) {
-        setError(e.message || "Could not read this PDF. Please paste the text instead.");
-        setFileName("");
-      }
-      setStepMsg("");
-      return;
-    }
-    setError("Please upload a PDF or TXT file, or paste the text directly.");
-    setFileName("");
   };
 
   const analyse = async () => {
@@ -346,15 +330,11 @@ function Analyse({ user, userMeta, prefill, onDone, onUpgrade }) {
           placeholder="Paste your contract, rental agreement, employment terms, or any legal document here..."
           style={{ ...inputCss, height: "200px", resize: "vertical", lineHeight: "1.6", fontSize: "14px" }} />
         <div style={{ display: "flex", justifyContent: "space-between", marginTop: "6px" }}>
-          <span style={{ fontSize: "12px", color: C.sub }}>{charCount.toLocaleString()} characters{fileName ? ` · ${fileName}` : ""}</span>
-          <label style={{ fontSize: "13px", color: C.accent, fontWeight: "600", cursor: "pointer" }}>
-            Upload file
-            <input type="file" accept=".pdf,.txt" style={{ display: "none" }} onChange={e => e.target.files[0] && handleFile(e.target.files[0])} />
-          </label>
+          <span style={{ fontSize: "12px", color: C.sub }}>{charCount.toLocaleString()} characters</span>
         </div>
       </div>
       {tooShort && <div style={{ background: "#F8F4E8", border: "1px solid #E8D898", borderRadius: "8px", padding: "10px 14px", fontSize: "13px", color: "#3A5C48", marginBottom: "12px" }}>This looks quite short. A real legal document is usually much longer.</div>}
-      {text.trim() && !loading && <button onClick={() => { setText(""); setFileName(""); setCharCount(0); setError(""); }} style={{ ...btnStyle("secondary", false), marginBottom: "10px", padding: "10px", fontSize: "14px" }}>Clear</button>}
+      {text.trim() && !loading && <button onClick={() => { setText(""); setCharCount(0); setError(""); }} style={{ ...btnStyle("secondary", false), marginBottom: "10px", padding: "10px", fontSize: "14px" }}>Clear</button>}
       {error && <ErrBox message={error} onRetry={canGo ? analyse : null} />}
       {loading ? <Spinner label={stepMsg} /> : <button onClick={analyse} disabled={!canGo} style={btnStyle("primary", !canGo)}>Analyse document</button>}
       <p style={{ fontSize: "11px", color: C.sub, textAlign: "center", marginTop: "16px", lineHeight: "1.5" }}>{DISCLAIMER}</p>
@@ -482,6 +462,47 @@ function Upgrade({ userEmail, onClose }) {
   );
 }
 
+function About({ onBack }) {
+  return (
+    <div style={{ padding: "20px" }}>
+      <button onClick={onBack} style={{ background: "none", border: "none", color: C.accent, fontSize: "14px", cursor: "pointer", marginBottom: "20px", padding: 0 }}>← Back</button>
+      <h2 style={{ fontSize: "28px", fontWeight: "700", color: C.text, marginBottom: "8px", lineHeight: "1.2" }}>Why Plainly exists.</h2>
+      <p style={{ fontSize: "15px", color: C.sub, marginBottom: "32px", lineHeight: "1.6" }}>Every day people sign contracts they do not understand. We built a tool to change that.</p>
+
+      <div style={{ background: "#EEF4F0", borderLeft: `4px solid ${C.accent}`, padding: "16px 20px", borderRadius: "0 8px 8px 0", marginBottom: "28px" }}>
+        <p style={{ fontSize: "16px", color: "#3A5C48", fontStyle: "italic", margin: 0 }}>Most people never read the full terms of a contract before signing. Not because they do not care. Because the language is deliberately difficult.</p>
+      </div>
+
+      <h3 style={{ fontSize: "18px", fontWeight: "700", color: C.text, marginBottom: "10px" }}>The problem</h3>
+      <p style={{ fontSize: "15px", color: C.sub, lineHeight: "1.7", marginBottom: "24px" }}>Employment contracts, rental agreements, freelance terms. These documents shape people's lives. Yet most people sign them with only a vague sense of what they contain. The result is people routinely agree to things that are unfair or not what they thought.</p>
+
+      <h3 style={{ fontSize: "18px", fontWeight: "700", color: C.text, marginBottom: "10px" }}>What we built</h3>
+      <p style={{ fontSize: "15px", color: C.sub, lineHeight: "1.7", marginBottom: "24px" }}>Plainly reads any document and explains it in plain English in seconds. Red flags highlighted. Legal jargon explained. A clear trust score. A direct recommendation. Clear, honest, and genuinely on your side.</p>
+
+      <h3 style={{ fontSize: "18px", fontWeight: "700", color: C.text, marginBottom: "16px" }}>What we believe</h3>
+      {[
+        { icon: "🔒", title: "Privacy is non-negotiable", desc: "We never store your documents. Every analysis is processed and immediately forgotten." },
+        { icon: "⚖️", title: "Honesty over reassurance", desc: "If a contract is bad, we say it is bad. We never soften findings." },
+        { icon: "🌍", title: "Access for everyone", desc: "Document clarity should not be expensive. Plainly gives everyone access to clear analysis." },
+        { icon: "💡", title: "Clarity over complexity", desc: "Every explanation is written so anyone can understand it. No jargon. No assumptions." },
+      ].map((v, i) => (
+        <div key={i} style={{ display: "flex", gap: "14px", marginBottom: "16px", background: C.light, borderRadius: "10px", padding: "16px" }}>
+          <div style={{ fontSize: "22px", flexShrink: 0 }}>{v.icon}</div>
+          <div>
+            <div style={{ fontWeight: "600", fontSize: "15px", color: C.text, marginBottom: "4px" }}>{v.title}</div>
+            <div style={{ fontSize: "13px", color: C.sub, lineHeight: "1.5" }}>{v.desc}</div>
+          </div>
+        </div>
+      ))}
+
+      <div style={{ background: C.header, borderRadius: "12px", padding: "24px", textAlign: "center", marginTop: "8px" }}>
+        <p style={{ color: "#fff", fontSize: "15px", margin: "0 0 4px", fontWeight: "600" }}>Questions or feedback?</p>
+        <a href="mailto:plainlyapp@gmail.com" style={{ color: C.accent, fontSize: "14px" }}>plainlyapp@gmail.com</a>
+      </div>
+    </div>
+  );
+}
+
 function Settings({ user, userMeta, onSignOut, onUpgrade }) {
   const [cancelling, setCancelling] = useState(false);
 
@@ -531,9 +552,11 @@ function Settings({ user, userMeta, onSignOut, onUpgrade }) {
       </div>
       <button onClick={onSignOut} style={{ ...btnStyle("secondary", false), marginBottom: "8px" }}>Sign out</button>
       <button onClick={deleteAccount} style={{ ...btnStyle("secondary", false), color: C.danger, borderColor: "#E8C0BE", marginBottom: "20px", fontSize: "14px" }}>Delete my account</button>
-      <div style={{ display: "flex", justifyContent: "center", gap: "20px" }}>
+      <div style={{ display: "flex", justifyContent: "center", gap: "20px", flexWrap: "wrap" }}>
+        <a href="/about.html" style={{ fontSize: "12px", color: C.sub, textDecoration: "none" }}>About</a>
         <a href="/privacy.html" style={{ fontSize: "12px", color: C.sub, textDecoration: "none" }}>Privacy policy</a>
         <a href="/terms.html" style={{ fontSize: "12px", color: C.sub, textDecoration: "none" }}>Terms of service</a>
+        <a href="mailto:plainlyapp@gmail.com" style={{ fontSize: "12px", color: C.sub, textDecoration: "none" }}>Contact</a>
       </div>
     </div>
   );
@@ -602,6 +625,7 @@ export default function App() {
       if (result) return <Results data={result} onNew={() => setResult(null)} />;
       return <Analyse user={session.user} userMeta={userMeta} prefill={null} onDone={(d) => { setResult(d); loadMeta(session.user.id); }} onUpgrade={() => setShowUpgrade(true)} />;
     }
+    if (tab === "about") return <About onBack={() => setTab("analyse")} />;
     if (tab === "settings") return <Settings user={session.user} userMeta={userMeta} onSignOut={signOut} onUpgrade={() => setShowUpgrade(true)} />;
     return null;
   };
@@ -625,7 +649,7 @@ export default function App() {
           </div>
           {showNav && isDesktop && (
             <div style={{ display: "flex", gap: "8px" }}>
-              {[{ key: "analyse", label: "Analyse", icon: "📄" }, { key: "settings", label: "Settings", icon: "⚙️" }].map(({ key, label, icon }) => (
+              {[{ key: "analyse", label: "Analyse", icon: "📄" }, { key: "about", label: "About", icon: "ℹ️" }, { key: "settings", label: "Settings", icon: "⚙️" }].map(({ key, label, icon }) => (
                 <button key={key} onClick={() => { setTab(key); setResult(null); }}
                   style={{ background: tab === key ? C.accent : "transparent", color: tab === key ? "#fff" : "#9CA3AF", border: tab === key ? "none" : "0.5px solid #555", borderRadius: "8px", padding: "8px 16px", fontSize: "13px", fontWeight: "600", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}>
                   <span>{icon}</span>{label}
@@ -646,6 +670,7 @@ export default function App() {
             <div style={{ background: C.bg, borderRadius: "16px", padding: "32px", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
               {tab === "analyse" && !result && <Analyse user={session.user} userMeta={userMeta} prefill={null} onDone={(d) => { setResult(d); loadMeta(session.user.id); }} onUpgrade={() => setShowUpgrade(true)} />}
               {tab === "analyse" && result && <Analyse user={session.user} userMeta={userMeta} prefill={null} onDone={(d) => { setResult(d); loadMeta(session.user.id); }} onUpgrade={() => setShowUpgrade(true)} />}
+              {tab === "about" && <About onBack={() => setTab("analyse")} />}
               {tab === "settings" && <Settings user={session.user} userMeta={userMeta} onSignOut={signOut} onUpgrade={() => setShowUpgrade(true)} />}
             </div>
             {result && tab === "analyse" && (
@@ -663,7 +688,7 @@ export default function App() {
 
       {showNav && !isDesktop && (
         <nav style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: C.bg, borderTop: `0.5px solid ${C.border}`, display: "flex", zIndex: 100 }}>
-          {[{ key: "analyse", label: "Analyse", icon: "📄" }, { key: "settings", label: "Settings", icon: "⚙️" }].map(({ key, label, icon }) => (
+          {[{ key: "analyse", label: "Analyse", icon: "📄" }, { key: "about", label: "About", icon: "ℹ️" }, { key: "settings", label: "Settings", icon: "⚙️" }].map(({ key, label, icon }) => (
             <button key={key} onClick={() => { setTab(key); setResult(null); }}
               style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "3px", padding: "10px 0 14px", cursor: "pointer", border: "none", background: "transparent", color: tab === key ? C.accent : "#8A8585", fontSize: "11px", fontWeight: tab === key ? "600" : "400" }}>
               <span style={{ fontSize: "20px" }}>{icon}</span>{label}
