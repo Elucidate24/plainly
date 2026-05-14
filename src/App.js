@@ -4,7 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 const APP_NAME = "Plainly";
 const APP_TAGLINE = "Understand anything you sign";
 const PRO_PRICE = "4.99";
-const FREE_LIMIT = 2;
+const FREE_LIMIT = 1;
 const DISCLAIMER = "Plainly provides information, not legal advice. Always consult a qualified lawyer for important decisions.";
 
 const SAMPLE_DOCUMENT = `FREELANCE SERVICES AGREEMENT\n\nThis Agreement is entered into between the Client and the Freelancer.\n\n1. SERVICES\nThe Freelancer agrees to provide graphic design services. The Client may request unlimited revisions until satisfied.\n\n2. PAYMENT\nThe Client agrees to pay within 60 days of invoice. Late payments will not incur any penalty. The Client may withhold payment if work does not meet their subjective satisfaction.\n\n3. INTELLECTUAL PROPERTY\nAll work created becomes the sole property of the Client upon creation, regardless of whether payment has been made.\n\n4. NON-COMPETE\nThe Freelancer agrees not to work with any business in the same industry for 2 years after termination, anywhere in the world.\n\n5. TERMINATION\nThe Client may terminate this Agreement at any time without notice and without obligation to pay for completed work.\n\n6. CONFIDENTIALITY\nThe Freelancer agrees to keep all Client information confidential indefinitely.`;
