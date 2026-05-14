@@ -31,6 +31,13 @@ function useDesktop() {
 }
 
 const scoreColor = (s) => s >= 7 ? "#4A7A5A" : s >= 4 ? "#C4973D" : "#C0504A";
+const scoreContext = (s) => {
+  if (s >= 9) return { label: "Excellent", desc: "This is a well balanced and fair contract. Safe to sign." };
+  if (s >= 7) return { label: "Good", desc: "Generally fair with a few things worth noting. Minor adjustments may help." };
+  if (s >= 5) return { label: "Average", desc: "A typical contract. Some clauses favour the other party but this is common. Review the red flags before signing." };
+  if (s >= 3) return { label: "Below average", desc: "This contract has notable issues that could affect you. Negotiate before signing." };
+  return { label: "High risk", desc: "This contract strongly favours the other party. Several clauses are unusual or potentially harmful." };
+};
 const sevColor = (s) => s === "high" ? "#C0504A" : s === "medium" ? "#C4973D" : "#2563EB";
 
 const C = {
@@ -364,6 +371,10 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp }) {
       <div style={{ ...cardStyle, textAlign: "center" }}>
         <div style={{ display: "inline-block", background: "#F0EDE8", borderRadius: "20px", padding: "4px 12px", fontSize: "12px", fontWeight: "600", color: C.sub, marginBottom: "12px" }}>{data.document_type}</div>
         <div style={{ display: "flex", justifyContent: "center", marginBottom: "12px" }}><ScoreRing score={data.trust_score} /></div>
+        <div style={{ display: "inline-block", background: scoreColor(data.trust_score) + "22", color: scoreColor(data.trust_score), borderRadius: "20px", padding: "4px 14px", fontSize: "13px", fontWeight: "700", marginBottom: "8px" }}>
+          {scoreContext(data.trust_score).label}
+        </div>
+        <p style={{ fontSize: "13px", color: C.sub, margin: "0 0 10px", lineHeight: "1.5" }}>{scoreContext(data.trust_score).desc}</p>
         <div style={{ fontWeight: "700", fontSize: "16px", color: C.text, marginBottom: "4px" }}>{data.score_label}</div>
         <div style={{ fontSize: "13px", color: C.sub, lineHeight: "1.5" }}>{data.score_reasoning}</div>
       </div>
