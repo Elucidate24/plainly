@@ -1,58 +1,93 @@
 // api/analyse.js
-// Vercel serverless function — calls Claude API server side
 // Environment variables needed:
 //   ANTHROPIC_API_KEY
+//   SUPABASE_URL
+//   SUPABASE_SERVICE_KEY
+//   API_SECRET (set this to any random string in Vercel)
 
-const SYSTEM_PROMPT = `You are a senior legal analyst with 20 years of experience advising individuals and small businesses on contracts and agreements. You have reviewed thousands of documents across employment, freelance, rental, software, and commercial law. You think like a lawyer but write like a trusted friend who genuinely wants to protect the person reading this.
+const { createClient } = require('@supabase/supabase-js');
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_KEY
+);
+
+const FREE_LIMIT = 1;
+
+const rateLimitMap = new Map();
+
+function isRateLimited(ip) {
+  const now = Date.now();
+  const windowMs = 60 * 60 * 1000;
+  const maxRequests = 10;
+  if (!rateLimitMap.has(ip)) { rateLimitMap.set(ip, { count: 1, resetAt: now + windowMs }); return false; }
+  const entry = rateLimitMap.get(ip);
+  if (now > entry.resetAt) { rateLimitMap.set(ip, { count: 1, resetAt: now + windowMs }); return false; }
+  if (entry.count >= maxRequests) return true;
+  entry.count++;
+  return false;
+}
+
+const SYSTEM_PROMPT = `You are a senior legal analyst with 20 years of experience advising individuals and small businesses on contracts and agreements. You think like a lawyer but write like a trusted friend who genuinely wants to protect the person reading this.
 
 Your job is to analyse the document provided and return a JSON object. You must return ONLY raw valid JSON. No markdown. No code blocks. No backticks. No explanation. No preamble. Just the JSON object starting with { and ending with }.
 
+CRITICAL JSON RULES:
+- Every string value must be properly escaped. No unescaped quotes inside strings.
+- No trailing commas anywhere in the JSON.
+- Keep individual string values under 300 characters to avoid truncation.
+- Maximum 5 red flags. Maximum 5 legal terms. Maximum 3 missing clauses.
+
 ANALYSIS PHILOSOPHY:
-- Go beyond surface reading. Understand what each clause actually means in practice, not just what it says on paper.
-- Think about what happens when things go wrong. Most contracts look fine until there is a dispute. Analyse for worst case scenarios.
-- Compare every clause against what is standard and fair for this document type. Flag deviations clearly.
-- Consider the power imbalance. Who wrote this contract? Who benefits from ambiguous language? Whose rights are being limited?
-- Never be reassuring for the sake of being reassuring. If something is bad, say it is bad and explain exactly why.
-- Do not just identify problems. Explain the real world consequence of each problem. What could actually happen to the person signing this?
+- Go beyond surface reading. Understand what each clause means in practice.
+- Think about what happens when things go wrong.
+- Compare clauses against what is standard for this document type.
+- Be honest about risk. Never soften bad clauses.
+- Explain real world consequences not just legal definitions.
 
-WRITING RULES:
-- Write explanations that are intelligent but clear. No jargon without explanation.
-- Every red flag explanation must answer three questions: What does this clause say? Why is it unusual or dangerous? What could actually happen because of it?
-- Score reasoning must be specific. Do not say "this contract has several issues." Say exactly what those issues are and why they affect the score.
-- Recommendations must be actionable. Do not just say "negotiate." Say what specifically to negotiate and why.
-- Key points must be the three things the reader absolutely cannot miss before signing.
-
-Return exactly this JSON structure with no extra fields:
+Return exactly this JSON structure:
 {
-  "document_type": "specific type of document e.g. Freelance Design Contract, Residential Rental Agreement, Employment Contract",
+  "document_type": "specific type e.g. Freelance Design Contract",
   "trust_score": integer from 1 to 10,
-  "score_label": "one clear sentence that captures the overall risk level and main reason for the score",
-  "score_reasoning": "two to three sentences explaining specifically what drove this score. Name the actual clauses or issues. Be direct.",
-  "summary": "three to four sentences explaining what this document actually is, who the parties are, what the key obligations are, and what the overall balance of power looks like between the parties",
-  "red_flags": [{ "title": "short clear title of the issue", "explanation": "three to five sentences: what the clause says, why it is unusual or unfair compared to standard practice, and what could realistically happen to the person signing because of it", "severity": "high or medium or low" }],
-  "key_points": ["three sentences, each one a critical thing the reader must understand before signing. These should be the things that would most surprise or concern a reasonable person."],
-  "legal_terms": [{ "term": "legal term as it appears in the document", "plain_english": "clear explanation of what this term actually means and why it matters in this context" }],
-  "missing_clauses": ["specific clause that is absent but should be present in a fair version of this document type, with one sentence explaining why its absence matters"],
-  "recommendation": "one clear sentence stating whether to sign as-is, negotiate specific points before signing, or refuse to sign, with the single most important reason why"
+  "score_label": "one sentence capturing overall risk and main reason",
+  "score_reasoning": "two sentences explaining what drove this score with specific clause references",
+  "summary": "two to three sentences on what this document is who the parties are and the power balance",
+  "red_flags": [{ "title": "short title", "explanation": "two to three sentences what it says why risky what could happen", "severity": "high or medium or low" }],
+  "key_points": ["critical point 1", "critical point 2", "critical point 3"],
+  "legal_terms": [{ "term": "term from document", "plain_english": "what it means and why it matters" }],
+  "missing_clauses": ["missing clause and why its absence matters"],
+  "recommendation": "one sentence sign as-is negotiate X before signing or do not sign because Y"
 }`;
 
-function parseJSON(raw) {
+function sanitiseJSON(raw) {
   let text = raw.trim();
   text = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '');
   text = text.replace(/^`|`$/g, '');
   const start = text.indexOf('{');
   const end = text.lastIndexOf('}');
-  if (start === -1 || end === -1) throw new Error('No JSON found in response');
-  return JSON.parse(text.slice(start, end + 1));
+  if (start === -1 || end === -1) throw new Error('No JSON object found in response');
+  text = text.slice(start, end + 1);
+  text = text.replace(/[\x00-\x1F\x7F]/g, (c) => {
+    if (c === '\n') return '\\n';
+    if (c === '\r') return '\\r';
+    if (c === '\t') return '\\t';
+    return '';
+  });
+  return JSON.parse(text);
 }
 
 function sanitise(text) {
   return text.replace(/<script[\s\S]*?<\/script>/gi, '').replace(/<[^>]+>/g, '');
 }
 
+function truncateDocument(text, maxChars = 12000) {
+  if (text.length <= maxChars) return text;
+  return text.slice(0, maxChars) + '\n\n[Document truncated for analysis.]';
+}
+
 async function callClaude(documentText, strict = false) {
   const systemPrompt = strict
-    ? SYSTEM_PROMPT + '\n\nCRITICAL: Return ONLY the raw JSON object. Start with { and end with }. Nothing else.'
+    ? SYSTEM_PROMPT + '\n\nCRITICAL: Return ONLY valid JSON starting with { and ending with }. Keep all string values short and properly escaped.'
     : SYSTEM_PROMPT;
 
   const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -64,9 +99,9 @@ async function callClaude(documentText, strict = false) {
     },
     body: JSON.stringify({
       model: 'claude-sonnet-4-5',
-      max_tokens: 2000,
+      max_tokens: 4000,
       system: systemPrompt,
-      messages: [{ role: 'user', content: `Analyse this document:\n\n${documentText}` }],
+      messages: [{ role: 'user', content: `Analyse this legal document:\n\n${documentText}` }],
     }),
   });
 
@@ -80,13 +115,22 @@ async function callClaude(documentText, strict = false) {
 }
 
 module.exports = async function handler(req, res) {
-  // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-plainly-secret');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+  const secret = req.headers['x-plainly-secret'];
+  if (process.env.API_SECRET && secret !== process.env.API_SECRET) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+
+  const ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket?.remoteAddress || 'unknown';
+  if (isRateLimited(ip)) {
+    return res.status(429).json({ error: 'Too many requests. Please try again in an hour.' });
+  }
 
   const { text, userId } = req.body;
 
@@ -98,17 +142,52 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: 'API not configured. Please contact support.' });
   }
 
+  if (userId) {
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('is_pro, usage_count')
+        .eq('id', userId)
+        .single();
+
+      if (profile && !profile.is_pro && (profile.usage_count || 0) >= FREE_LIMIT) {
+        return res.status(403).json({ error: 'Free limit reached. Please upgrade to Pro for unlimited analyses.', limitReached: true });
+      }
+    } catch (e) {}
+  }
+
   try {
-    const clean = sanitise(text.trim());
+    const clean = truncateDocument(sanitise(text.trim()));
     let raw = await callClaude(clean);
     let parsed;
 
     try {
-      parsed = parseJSON(raw);
-    } catch {
-      // Retry with stricter prompt
+      parsed = sanitiseJSON(raw);
+    } catch (firstErr) {
       raw = await callClaude(clean, true);
-      parsed = parseJSON(raw);
+      try {
+        parsed = sanitiseJSON(raw);
+      } catch (secondErr) {
+        throw new Error('Analysis could not be completed. Please try a shorter section of the document.');
+      }
+    }
+
+    if (!parsed.document_type || !parsed.trust_score || !parsed.summary) {
+      throw new Error('Analysis returned incomplete results. Please try again.');
+    }
+
+    if (userId) {
+      try {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('usage_count')
+          .eq('id', userId)
+          .single();
+        await supabase
+          .from('profiles')
+          .update({ usage_count: (profile?.usage_count || 0) + 1 })
+          .eq('id', userId);
+      } catch (e) {}
     }
 
     return res.status(200).json({ result: parsed });
