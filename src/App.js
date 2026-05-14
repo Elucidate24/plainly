@@ -123,7 +123,7 @@ function Onboarding({ onFinish }) {
   );
 }
 
-function Landing({ onSignUp, onLogin, onSample }) {
+function Landing({ onSignUp, onLogin, onSample, onAbout }) {
   return (
     <div>
       <div style={{ background: C.header, padding: "24px 20px 20px" }}>
@@ -152,7 +152,11 @@ function Landing({ onSignUp, onLogin, onSample }) {
           <button onClick={onSample} style={{ ...btnStyle("primary", false), background: "#3A5C48", padding: "10px", fontSize: "14px" }}>View sample analysis</button>
         </div>
         <button onClick={onSignUp} style={{ ...btnStyle("primary", false), marginBottom: "10px" }}>Get started free</button>
-        <button onClick={onLogin} style={{ ...btnStyle("secondary", false), marginBottom: "20px" }}>Sign in</button>
+        <button onClick={onLogin} style={{ ...btnStyle("secondary", false), marginBottom: "10px" }}>Sign in</button>
+        <div style={{ display: "flex", justifyContent: "center", gap: "24px", marginBottom: "20px" }}>
+          <button onClick={onAbout} style={{ background: "none", border: "none", color: C.accent, fontSize: "14px", cursor: "pointer", fontWeight: "500" }}>About</button>
+          <a href="mailto:plainlyteam@gmail.com" style={{ color: C.accent, fontSize: "14px", textDecoration: "none", fontWeight: "500" }}>Contact</a>
+        </div>
         <div style={{ background: C.light, borderRadius: "12px", padding: "16px", marginBottom: "20px" }}>
           <div style={{ fontSize: "12px", fontWeight: "600", color: C.sub, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "12px" }}>What people say</div>
           <div style={{ fontSize: "14px", color: C.text, lineHeight: "1.6", fontStyle: "italic", marginBottom: "8px" }}>"Finally understood what I was signing in my rental agreement. Found two clauses I would never have noticed."</div>
@@ -497,7 +501,7 @@ function About({ onBack }) {
 
       <div style={{ background: C.header, borderRadius: "12px", padding: "24px", textAlign: "center", marginTop: "8px" }}>
         <p style={{ color: "#fff", fontSize: "15px", margin: "0 0 4px", fontWeight: "600" }}>Questions or feedback?</p>
-        <a href="mailto:plainlyapp@gmail.com" style={{ color: C.accent, fontSize: "14px" }}>plainlyapp@gmail.com</a>
+        <a href="mailto:plainlyteam@gmail.com" style={{ color: C.accent, fontSize: "14px" }}>plainlyteam@gmail.com</a>
       </div>
     </div>
   );
@@ -556,7 +560,7 @@ function Settings({ user, userMeta, onSignOut, onUpgrade }) {
         <a href="/about.html" style={{ fontSize: "12px", color: C.sub, textDecoration: "none" }}>About</a>
         <a href="/privacy.html" style={{ fontSize: "12px", color: C.sub, textDecoration: "none" }}>Privacy policy</a>
         <a href="/terms.html" style={{ fontSize: "12px", color: C.sub, textDecoration: "none" }}>Terms of service</a>
-        <a href="mailto:plainlyapp@gmail.com" style={{ fontSize: "12px", color: C.sub, textDecoration: "none" }}>Contact</a>
+        <a href="mailto:plainlyteam@gmail.com" style={{ fontSize: "12px", color: C.sub, textDecoration: "none" }}>Contact</a>
       </div>
     </div>
   );
@@ -609,6 +613,7 @@ export default function App() {
       onSignUp={() => { setAuthMode("signup"); setScreen("auth"); }}
       onLogin={() => { setAuthMode("login"); setScreen("auth"); }}
       onSample={() => setScreen("sample")}
+      onAbout={() => setScreen("about")}
     />;
     if (screen === "auth") return <Auth
       mode={authMode}
@@ -616,6 +621,7 @@ export default function App() {
       onSwitch={() => setAuthMode(m => m === "signup" ? "login" : "signup")}
       onBack={() => setScreen("landing")}
     />;
+    if (screen === "about") return <About onBack={() => setScreen("landing")} />;
     if (screen === "sample") {
       if (result) return <Results data={result} onNew={() => { setResult(null); setScreen("auth"); }} isGuest onSignUp={() => { setAuthMode("signup"); setScreen("auth"); }} />;
       return <Analyse user={null} userMeta={null} prefill={SAMPLE_DOCUMENT} onDone={setResult} onUpgrade={() => { setAuthMode("signup"); setScreen("auth"); }} />;
