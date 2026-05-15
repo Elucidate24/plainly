@@ -403,6 +403,39 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp }) {
                 <span style={{ background: sevColor(flag.severity) + "22", color: sevColor(flag.severity), fontSize: "11px", fontWeight: "600", padding: "2px 8px", borderRadius: "20px", marginLeft: "8px" }}>{flag.severity}</span>
               </div>
               <p style={{ fontSize: "13px", color: C.sub, margin: 0, lineHeight: "1.5" }}>{flag.explanation}</p>
+              {flag.industry_comparison && (
+                <div style={{ marginTop: "12px" }}>
+                  <div style={{ fontSize: "10px", fontWeight: "600", color: C.sub, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "8px" }}>vs industry standard</div>
+                  <div style={{ display: "flex", gap: "4px", marginBottom: "8px" }}>
+                    {["standard", "more restrictive", "significantly more restrictive", "unusually aggressive"].map((level, i) => {
+                      const compLower = flag.industry_comparison?.toLowerCase() || "";
+                      const activeIndex = compLower.includes("unusually aggressive") || compLower.includes("rarely seen") ? 3 : compLower.includes("significantly") ? 2 : compLower.includes("more restrictive") || compLower.includes("stricter") || compLower.includes("broader") || compLower.includes("longer") || compLower.includes("higher") ? 1 : 0;
+                      const colors = ["#4A7A5A", "#C4973D", "#C07040", "#C0504A"];
+                      const isActive = i <= activeIndex;
+                      return (
+                        <div key={i} style={{ flex: 1, height: "4px", borderRadius: "2px", background: isActive ? colors[activeIndex] : C.border, transition: "background 0.2s" }} />
+                      );
+                    })}
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                    {[
+                      { label: "Standard", color: "#4A7A5A" },
+                      { label: "Restrictive", color: "#C4973D" },
+                      { label: "Very restrictive", color: "#C07040" },
+                      { label: "Aggressive", color: "#C0504A" },
+                    ].map(({ label, color }, i) => {
+                      const compLower = flag.industry_comparison?.toLowerCase() || "";
+                      const activeIndex = compLower.includes("unusually aggressive") || compLower.includes("rarely seen") ? 3 : compLower.includes("significantly") ? 2 : compLower.includes("more restrictive") || compLower.includes("stricter") || compLower.includes("broader") || compLower.includes("longer") || compLower.includes("higher") ? 1 : 0;
+                      return (
+                        <span key={i} style={{ fontSize: "9px", color: i === activeIndex ? color : C.muted, fontWeight: i === activeIndex ? "700" : "400", letterSpacing: "0.3px" }}>{label}</span>
+                      );
+                    })}
+                  </div>
+                  <div style={{ background: C.light, borderRadius: "6px", padding: "8px 12px" }}>
+                    <span style={{ fontSize: "12px", color: C.sub, lineHeight: "1.5", fontStyle: "italic" }}>{flag.industry_comparison}</span>
+                  </div>
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -666,7 +699,7 @@ export default function App() {
         summary: "This is a freelance agreement where the client holds almost all the power. They can request unlimited changes, withhold payment subjectively, terminate without notice, and prevent you from working in your industry for 2 years worldwide. Your work becomes their property before you are even paid.",
         deep_analysis: "This contract was drafted by the client with no input from the freelancer. Every ambiguous clause resolves in the client favour. This is a deliberate pattern not an accident.\n\nThe combination of unlimited revisions and subjective payment withholding is particularly dangerous. Together they mean the client can demand changes indefinitely and then decide the work is not good enough to pay for. There is no mechanism that protects you from a client acting in bad faith.\n\nThe termination clause compounds this further. The client can walk away at any point without paying for completed work. Combined with the IP transfer clause which gives them ownership from the moment of creation, they could take your work and legally owe you nothing.\n\nThe non-compete is the clause that should concern you most long term. Two years worldwide in the same industry is not a standard freelance restriction. For a graphic design agreement it is disproportionate and could seriously limit your ability to earn a living after this single project ends.",
         red_flags: [
-          { title: "Unlimited revisions with no cap", explanation: "The contract allows the client to request unlimited changes until satisfied. This means a project could drag on indefinitely while you receive no additional pay.", severity: "high" },
+          { title: "Unlimited revisions with no cap", explanation: "The contract allows the client to request unlimited changes until satisfied. This means a project could drag on indefinitely while you receive no additional pay.", severity: "high", industry_comparison: "This is unusually aggressive. Most fair freelance contracts cap revisions at 2 to 3 rounds. Unlimited revisions with no additional compensation is rarely seen in balanced agreements." },
           { title: "Client can withhold payment subjectively", explanation: "Payment can be withheld if the work does not meet subjective satisfaction. The client has complete discretion to refuse payment for any reason with little recourse for you.", severity: "high" },
           { title: "No payment for completed work on termination", explanation: "The client can terminate at any time without paying for work already completed. You could spend weeks on a project and walk away with nothing.", severity: "high" },
           { title: "Worldwide 2-year non-compete", explanation: "You cannot work with any business in the same industry for 2 years anywhere in the world. This is extremely broad for a freelance contract.", severity: "medium" },
