@@ -30,7 +30,7 @@ function useDesktop() {
   return isDesktop;
 }
 
-const scoreColor = (s) => s >= 7 ? "#4A7A5A" : s >= 4 ? "#C4973D" : "#C0504A";
+const scoreColor = (s) => s >= 7 ? "#C9A84C" : s >= 4 ? "#C4973D" : "#C0504A";
 const scoreContext = (s) => {
   if (s >= 9) return { label: "Excellent", desc: "This is a well balanced and fair contract. Safe to sign." };
   if (s >= 7) return { label: "Good", desc: "Generally fair with a few things worth noting. Minor adjustments may help." };
@@ -41,14 +41,25 @@ const scoreContext = (s) => {
 const sevColor = (s) => s === "high" ? "#C0504A" : s === "medium" ? "#C4973D" : "#2563EB";
 
 const C = {
-  bg: "#FAFAF8", header: "#2C2C2C", accent: "#5C8A6B",
-  success: "#4A7A5A", warning: "#C4973D", danger: "#C0504A",
-  text: "#2C2828", sub: "#6B6565", border: "#E8E4E0", light: "#F4F2EF"
+  bg: "#F8F6F2",
+  header: "#1E1E1E",
+  accent: "#C9A84C",
+  accentLight: "#F5EDD6",
+  accentDark: "#A07830",
+  success: "#4A7A5A",
+  warning: "#C4973D",
+  danger: "#C0504A",
+  text: "#1A1814",
+  sub: "#6B6458",
+  muted: "#A8A098",
+  border: "#E4DED4",
+  light: "#F0ECE4",
+  surface: "#FFFFFF",
 };
 
-const cardStyle = { background: C.bg, border: `0.5px solid ${C.border}`, borderRadius: "12px", padding: "16px", marginBottom: "12px" };
-const labelStyle = { fontSize: "11px", fontWeight: "600", color: C.sub, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "8px" };
-const inputCss = { width: "100%", padding: "12px", borderRadius: "8px", border: `1px solid ${C.border}`, fontSize: "15px", fontFamily: "inherit", color: C.text, background: C.bg, outline: "none", boxSizing: "border-box" };
+const cardStyle = { background: C.surface, border: `0.5px solid ${C.border}`, borderRadius: "12px", padding: "16px", marginBottom: "12px" };
+const labelStyle = { fontSize: "11px", fontWeight: "600", color: C.accent, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px" };
+const inputCss = { width: "100%", padding: "12px", borderRadius: "8px", border: `1px solid ${C.border}`, fontSize: "15px", fontFamily: "inherit", color: C.text, background: C.surface, outline: "none", boxSizing: "border-box" };
 const errCss = { background: "#FAF0EF", border: "1px solid #E8C0BE", borderRadius: "8px", padding: "12px 16px", color: C.danger, fontSize: "14px", marginBottom: "12px", lineHeight: "1.5" };
 
 function btnStyle(variant, disabled) {
@@ -59,7 +70,7 @@ function btnStyle(variant, disabled) {
     cursor: disabled ? "not-allowed" : "pointer",
     display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
     background: variant === "primary" ? C.accent : "transparent",
-    color: variant === "primary" ? "#fff" : C.text,
+    color: variant === "primary" ? "#1A1814" : C.text,
     opacity: disabled ? 0.5 : 1,
     textDecoration: "none"
   };
@@ -68,7 +79,7 @@ function btnStyle(variant, disabled) {
 function Spinner({ label }) {
   return (
     <div style={{ textAlign: "center", padding: "40px 20px" }}>
-      <div style={{ width: "36px", height: "36px", border: "3px solid #C8DBC8", borderTopColor: C.accent, borderRadius: "50%", animation: "spin 0.7s linear infinite", margin: "0 auto 16px" }} />
+      <div style={{ width: "36px", height: "36px", border: "3px solid #E8D4A0", borderTopColor: C.accent, borderRadius: "50%", animation: "spin 0.7s linear infinite", margin: "0 auto 16px" }} />
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       <p style={{ fontSize: "15px", color: C.sub, margin: "0 0 4px" }}>{label || "Analysing..."}</p>
       <p style={{ fontSize: "12px", color: "#8A8585", margin: 0 }}>Usually 10 to 15 seconds</p>
@@ -140,10 +151,12 @@ function Landing({ onSignUp, onLogin, onSample, onAbout }) {
       <div style={{ padding: "28px 20px" }}>
         <h2 style={{ fontSize: "26px", fontWeight: "700", color: C.text, lineHeight: "1.2", marginBottom: "12px" }}>Stop signing things you do not understand.</h2>
         <p style={{ fontSize: "15px", color: C.sub, lineHeight: "1.6", marginBottom: "28px" }}>Paste any legal document. Get a plain English breakdown with risk warnings in seconds.</p>
+
         {[
           { icon: "🔍", title: "Plain English summary", desc: "Legal jargon translated instantly" },
-          { icon: "🚩", title: "Red flag detection", desc: "Risky clauses highlighted automatically" },
-          { icon: "🔒", title: "Complete privacy", desc: "We never store your documents. Ever." },
+          { icon: "🚩", title: "Red flag detection", desc: "Risky clauses highlighted with worst case scenarios" },
+          { icon: "⚖️", title: "Industry comparison", desc: "See exactly how restrictive each clause is versus market standard" },
+          { icon: "🔒", title: "Complete privacy", desc: "Your documents are never stored. Analysed and immediately forgotten." },
         ].map((f, i) => (
           <div key={i} style={{ display: "flex", gap: "14px", marginBottom: "18px" }}>
             <div style={{ fontSize: "22px", flexShrink: 0 }}>{f.icon}</div>
@@ -153,28 +166,50 @@ function Landing({ onSignUp, onLogin, onSample, onAbout }) {
             </div>
           </div>
         ))}
-        <div style={{ background: "#EEF4F0", border: `1px solid #C8DBC8`, borderRadius: "12px", padding: "16px", marginBottom: "24px" }}>
-          <div style={{ fontWeight: "600", fontSize: "14px", color: "#3A5C48", marginBottom: "6px" }}>See a real example</div>
-          <p style={{ fontSize: "13px", color: "#2E4A3A", margin: "0 0 12px", lineHeight: "1.5" }}>See how Plainly analyses a freelance contract. No account needed for the demo.</p>
-          <button onClick={onSample} style={{ ...btnStyle("primary", false), background: "#3A5C48", padding: "10px", fontSize: "14px" }}>View sample analysis</button>
+
+        {/* Trust section */}
+        <div style={{ background: C.light, border: `1px solid ${C.border}`, borderRadius: "14px", padding: "20px", marginBottom: "24px" }}>
+          <div style={{ fontSize: "13px", fontWeight: "700", color: C.text, marginBottom: "16px" }}>What happens when you paste a document</div>
+          {[
+            { step: "1", icon: "📄", title: "You paste your document", desc: "The text goes directly to our analysis engine. It never touches a database." },
+            { step: "2", icon: "🤖", title: "AI analyses it in seconds", desc: "Our system reads every clause and generates your breakdown." },
+            { step: "3", icon: "🗑️", title: "Document is immediately forgotten", desc: "The moment your results appear, the document is gone. Permanently. We have no record it ever existed." },
+          ].map((s, i) => (
+            <div key={i} style={{ display: "flex", gap: "14px", marginBottom: i < 2 ? "16px" : 0, alignItems: "flex-start" }}>
+              <div style={{ width: "28px", height: "28px", borderRadius: "50%", background: C.accent, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: "700", flexShrink: 0 }}>{s.step}</div>
+              <div>
+                <div style={{ fontWeight: "600", fontSize: "14px", color: C.text, marginBottom: "2px" }}>{s.icon} {s.title}</div>
+                <div style={{ fontSize: "12px", color: C.sub, lineHeight: "1.5" }}>{s.desc}</div>
+              </div>
+            </div>
+          ))}
         </div>
+
+        <div style={{ background: "#F5EDD6", border: `1px solid #E8D4A0`, borderRadius: "12px", padding: "16px", marginBottom: "24px" }}>
+          <div style={{ fontWeight: "600", fontSize: "14px", color: "#8A6828", marginBottom: "6px" }}>See a real example</div>
+          <p style={{ fontSize: "13px", color: "#6A5020", margin: "0 0 12px", lineHeight: "1.5" }}>See how Plainly analyses a freelance contract. No account needed.</p>
+          <button onClick={onSample} style={{ ...btnStyle("primary", false), background: "#8A6828", padding: "10px", fontSize: "14px" }}>View sample analysis</button>
+        </div>
+
         <button onClick={onSignUp} style={{ ...btnStyle("primary", false), marginBottom: "10px" }}>Get started free</button>
         <button onClick={onLogin} style={{ ...btnStyle("secondary", false), marginBottom: "10px" }}>Sign in</button>
         <div style={{ display: "flex", justifyContent: "center", gap: "24px", marginBottom: "20px" }}>
           <button onClick={onAbout} style={{ background: "none", border: "none", color: C.accent, fontSize: "14px", cursor: "pointer", fontWeight: "500" }}>About</button>
           <a href="mailto:plainlyteam@gmail.com" style={{ color: C.accent, fontSize: "14px", textDecoration: "none", fontWeight: "500" }}>Contact</a>
         </div>
+
         <div style={{ background: C.light, borderRadius: "12px", padding: "16px", marginBottom: "20px" }}>
           <div style={{ fontSize: "12px", fontWeight: "600", color: C.sub, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "12px" }}>What people say</div>
           <div style={{ fontSize: "14px", color: C.text, lineHeight: "1.6", fontStyle: "italic", marginBottom: "8px" }}>"Finally understood what I was signing in my rental agreement. Found two clauses I would never have noticed."</div>
           <div style={{ fontSize: "12px", color: C.sub }}>— Freelance designer, Amsterdam</div>
         </div>
+
         <div style={{ border: `0.5px solid ${C.border}`, borderRadius: "12px", overflow: "hidden", marginBottom: "20px" }}>
           <div style={{ display: "flex" }}>
             <div style={{ flex: 1, padding: "16px", borderRight: `0.5px solid ${C.border}` }}>
               <div style={{ fontWeight: "700", fontSize: "15px", color: C.text, marginBottom: "4px" }}>Free</div>
               <div style={{ fontSize: "22px", fontWeight: "700", color: C.text, marginBottom: "8px" }}>$0</div>
-              {["1 analysis per month", "No document storage"].map((f, i) => (
+              {["1 analysis per month", "Full analysis every time", "No document storage"].map((f, i) => (
                 <div key={i} style={{ fontSize: "12px", color: C.sub, marginBottom: "4px" }}>✓ {f}</div>
               ))}
             </div>
@@ -182,7 +217,7 @@ function Landing({ onSignUp, onLogin, onSample, onAbout }) {
               <div style={{ fontWeight: "700", fontSize: "15px", color: C.accent, marginBottom: "4px" }}>Pro</div>
               <div style={{ fontSize: "22px", fontWeight: "700", color: "#fff", marginBottom: "8px" }}>${PRO_PRICE}<span style={{ fontSize: "12px", fontWeight: "400", color: "#8A8585" }}>/mo</span></div>
               {["Unlimited analyses", "No document storage", "Cancel anytime"].map((f, i) => (
-                <div key={i} style={{ fontSize: "12px", color: "#C8DBC8", marginBottom: "4px" }}>✓ {f}</div>
+                <div key={i} style={{ fontSize: "12px", color: "#E8D4A0", marginBottom: "4px" }}>✓ {f}</div>
               ))}
             </div>
           </div>
@@ -332,9 +367,9 @@ function Analyse({ user, userMeta, prefill, onDone, onUpgrade }) {
           <span style={{ fontSize: "12px", color: C.accent, fontWeight: "600" }}>Free plan</span>
         </div>
       )}
-      <div style={{ background: "#EEF4F0", border: "1px solid #B8D4C0", borderRadius: "8px", padding: "10px 14px", marginBottom: "14px", display: "flex", gap: "8px", alignItems: "center" }}>
+      <div style={{ background: "#F5EDD6", border: "1px solid #E8D4A0", borderRadius: "8px", padding: "10px 14px", marginBottom: "14px", display: "flex", gap: "8px", alignItems: "center" }}>
         <span style={{ fontSize: "16px" }}>🔒</span>
-        <span style={{ fontSize: "13px", color: "#3A5C48" }}>Your document is never stored. It is analysed and immediately forgotten.</span>
+        <span style={{ fontSize: "13px", color: "#8A6828" }}>Your document is never stored. It is analysed and immediately forgotten.</span>
       </div>
       <div style={{ marginBottom: "14px" }}>
         <textarea value={text} onChange={e => change(e.target.value)}
@@ -344,7 +379,7 @@ function Analyse({ user, userMeta, prefill, onDone, onUpgrade }) {
           <span style={{ fontSize: "12px", color: C.sub }}>{charCount.toLocaleString()} characters</span>
         </div>
       </div>
-      {tooShort && <div style={{ background: "#F8F4E8", border: "1px solid #E8D898", borderRadius: "8px", padding: "10px 14px", fontSize: "13px", color: "#3A5C48", marginBottom: "12px" }}>This looks quite short. A real legal document is usually much longer.</div>}
+      {tooShort && <div style={{ background: "#F8F4E8", border: "1px solid #E8D898", borderRadius: "8px", padding: "10px 14px", fontSize: "13px", color: "#8A6828", marginBottom: "12px" }}>This looks quite short. A real legal document is usually much longer.</div>}
       {text.trim() && !loading && <button onClick={() => { setText(""); setCharCount(0); setError(""); }} style={{ ...btnStyle("secondary", false), marginBottom: "10px", padding: "10px", fontSize: "14px" }}>Clear</button>}
       {error && <ErrBox message={error} onRetry={canGo ? analyse : null} />}
       {loading ? <Spinner label={stepMsg} /> : <button onClick={analyse} disabled={!canGo} style={btnStyle("primary", !canGo)}>Analyse document</button>}
@@ -369,7 +404,7 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp }) {
         </div>
       )}
       <div style={{ ...cardStyle, textAlign: "center" }}>
-        <div style={{ display: "inline-block", background: "#F0EDE8", borderRadius: "20px", padding: "4px 12px", fontSize: "12px", fontWeight: "600", color: C.sub, marginBottom: "12px" }}>{data.document_type}</div>
+        <div style={{ display: "inline-block", background: "#EDECE6", borderRadius: "20px", padding: "4px 12px", fontSize: "12px", fontWeight: "600", color: C.sub, marginBottom: "12px" }}>{data.document_type}</div>
         <div style={{ display: "flex", justifyContent: "center", marginBottom: "12px" }}><ScoreRing score={data.trust_score} /></div>
         <div style={{ display: "inline-block", background: scoreColor(data.trust_score) + "22", color: scoreColor(data.trust_score), borderRadius: "20px", padding: "4px 14px", fontSize: "13px", fontWeight: "700", marginBottom: "8px" }}>
           {scoreContext(data.trust_score).label}
@@ -410,14 +445,14 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp }) {
                     {["standard", "more restrictive", "significantly more restrictive", "unusually aggressive"].map((level, i) => {
                       const compLower = flag.industry_comparison?.toLowerCase() || "";
                       const activeIndex = compLower.includes("unusually aggressive") || compLower.includes("rarely seen") ? 3 : compLower.includes("significantly") ? 2 : compLower.includes("more restrictive") || compLower.includes("stricter") || compLower.includes("broader") || compLower.includes("longer") || compLower.includes("higher") ? 1 : 0;
-                      const colors = ["#4A7A5A", "#C4973D", "#C07040", "#C0504A"];
                       const isActive = i <= activeIndex;
+                      const colors = ["#4A7A5A", "#C4973D", "#C07040", "#C0504A"];
                       return (
                         <div key={i} style={{ flex: 1, height: "4px", borderRadius: "2px", background: isActive ? colors[activeIndex] : C.border, transition: "background 0.2s" }} />
                       );
                     })}
                   </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
                     {[
                       { label: "Standard", color: "#4A7A5A" },
                       { label: "Restrictive", color: "#C4973D" },
@@ -431,6 +466,25 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp }) {
                       );
                     })}
                   </div>
+                  {(() => {
+                    const compLower = flag.industry_comparison?.toLowerCase() || "";
+                    const activeIndex = compLower.includes("unusually aggressive") || compLower.includes("rarely seen") ? 3 : compLower.includes("significantly") ? 2 : compLower.includes("more restrictive") || compLower.includes("stricter") || compLower.includes("broader") || compLower.includes("longer") || compLower.includes("higher") ? 1 : 0;
+                    const meanings = [
+                      { color: "#4A7A5A", bg: "#F0F7F0", text: "Consistent with prevailing market terms for this contract type. No material deviation from established commercial practice. This clause presents no elevated risk to the signing party." },
+                      { color: "#C4973D", bg: "#FBF5E8", text: "Departs from standard market practice in a manner that shifts risk toward the signing party. While not uncommon in commercially negotiated agreements, this clause warrants specific attention and should be addressed before execution." },
+                      { color: "#C07040", bg: "#FBF0E8", text: "Materially exceeds what is commercially reasonable for this contract type. Indicative of a drafting party seeking disproportionate protection at the counterparty's expense. This clause should be subject to negotiation or amendment prior to signing." },
+                      { color: "#C0504A", bg: "#FBF0F0", text: "Significantly outside the bounds of acceptable commercial practice for this agreement type. Clauses of this nature are typically challenged or removed in arm's length negotiations between informed parties. Execution without amendment exposes the signing party to disproportionate risk." },
+                    ];
+                    const m = meanings[activeIndex];
+                    return (
+                      <div style={{ background: m.bg, borderRadius: "8px", padding: "10px 12px", marginBottom: "8px", borderLeft: `3px solid ${m.color}` }}>
+                        <span style={{ fontSize: "12px", color: m.color, fontWeight: "600", display: "block", marginBottom: "3px" }}>
+                          {["Standard", "Restrictive", "Very restrictive", "Aggressive"][activeIndex]}
+                        </span>
+                        <span style={{ fontSize: "12px", color: C.sub, lineHeight: "1.5" }}>{m.text}</span>
+                      </div>
+                    );
+                  })()}
                   <div style={{ background: C.light, borderRadius: "6px", padding: "8px 12px" }}>
                     <span style={{ fontSize: "12px", color: C.sub, lineHeight: "1.5", fontStyle: "italic" }}>{flag.industry_comparison}</span>
                   </div>
@@ -466,13 +520,13 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp }) {
           <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: expTerm !== null ? "10px" : 0 }}>
             {data.legal_terms.map((lt, i) => (
               <button key={i} onClick={() => setExpTerm(expTerm === i ? null : i)}
-                style={{ background: expTerm === i ? C.accent : "#F0EDE8", color: expTerm === i ? "#fff" : C.text, border: "none", borderRadius: "20px", padding: "5px 12px", fontSize: "13px", cursor: "pointer" }}>
+                style={{ background: expTerm === i ? C.accent : "#EDECE6", color: expTerm === i ? "#fff" : C.text, border: "none", borderRadius: "20px", padding: "5px 12px", fontSize: "13px", cursor: "pointer" }}>
                 {lt.term}
               </button>
             ))}
           </div>
           {expTerm !== null && data.legal_terms[expTerm] && (
-            <div style={{ background: "#EEF4F0", border: "1px solid #C8DBC8", borderRadius: "8px", padding: "12px", fontSize: "13px", color: C.text, lineHeight: "1.5" }}>
+            <div style={{ background: "#F5EDD6", border: "1px solid #E8D4A0", borderRadius: "8px", padding: "12px", fontSize: "13px", color: C.text, lineHeight: "1.5" }}>
               <strong>{data.legal_terms[expTerm].term}:</strong> {data.legal_terms[expTerm].plain_english}
             </div>
           )}
@@ -482,6 +536,12 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp }) {
         <div style={{ fontSize: "12px", fontWeight: "600", color: recColor, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "6px" }}>Recommendation</div>
         <p style={{ fontSize: "15px", color: C.text, margin: 0, fontWeight: "500" }}>{data.recommendation}</p>
       </div>
+      <button onClick={() => {
+        const text = `📋 Plainly Contract Analysis\n\n${data.document_type}\nTrust Score: ${data.trust_score}/10\n\n${data.score_label}\n\n${data.recommendation}\n\nAnalysed with Plainly — plainly-opal.vercel.app`;
+        navigator.clipboard.writeText(text).catch(() => {});
+      }} style={{ ...btnStyle("secondary", false), marginBottom: "8px", fontSize: "14px", padding: "12px" }}>
+        📤 Share this analysis
+      </button>
       <button onClick={copy} style={{ ...btnStyle("secondary", false), marginBottom: "8px", fontSize: "14px", padding: "12px" }}>📋 Copy summary</button>
       <button onClick={onNew} style={{ ...btnStyle("primary", false), marginBottom: "12px" }}>Analyse another document</button>
       <p style={{ fontSize: "11px", color: C.sub, textAlign: "center", lineHeight: "1.5" }}>{DISCLAIMER}</p>
@@ -508,14 +568,20 @@ function Upgrade({ userEmail, onClose }) {
           <div style={{ fontSize: "40px", fontWeight: "700", color: "#fff" }}>${PRO_PRICE}<span style={{ fontSize: "16px", fontWeight: "400", color: "#8A8585" }}>/month</span></div>
           <div style={{ marginTop: "14px", display: "flex", flexDirection: "column", gap: "6px" }}>
             {["Unlimited analyses", "Documents never stored", "Cancel anytime"].map((f, i) => (
-              <div key={i} style={{ fontSize: "13px", color: "#C8DBC8" }}>✓ {f}</div>
+              <div key={i} style={{ fontSize: "13px", color: "#E8D4A0" }}>✓ {f}</div>
             ))}
           </div>
         </div>
         <a href={checkoutUrl} target="_blank" rel="noreferrer" style={{ ...btnStyle("primary", false), marginBottom: "10px" }}>
-          Pay with card — ${PRO_PRICE}/month
+          Start Pro — ${PRO_PRICE}/month
         </a>
-        <button onClick={onClose} style={btnStyle("secondary", false)}>Continue on free plan</button>
+        <div style={{ textAlign: "center", marginBottom: "10px" }}>
+          <span style={{ fontSize: "12px", color: C.sub }}>or pay once, no subscription</span>
+        </div>
+        <a href={checkoutUrl} target="_blank" rel="noreferrer" style={{ ...btnStyle("secondary", false), marginBottom: "10px", fontSize: "14px" }}>
+          Single analysis — $1.99
+        </a>
+        <button onClick={onClose} style={{ ...btnStyle("secondary", false), fontSize: "13px", color: C.sub }}>Continue on free plan</button>
       </div>
     </div>
   );
@@ -528,8 +594,8 @@ function About({ onBack }) {
       <h2 style={{ fontSize: "28px", fontWeight: "700", color: C.text, marginBottom: "8px", lineHeight: "1.2" }}>Why Plainly exists.</h2>
       <p style={{ fontSize: "15px", color: C.sub, marginBottom: "32px", lineHeight: "1.6" }}>Every day people sign contracts they do not understand. We built a tool to change that.</p>
 
-      <div style={{ background: "#EEF4F0", borderLeft: `4px solid ${C.accent}`, padding: "16px 20px", borderRadius: "0 8px 8px 0", marginBottom: "28px" }}>
-        <p style={{ fontSize: "16px", color: "#3A5C48", fontStyle: "italic", margin: 0 }}>Most people never read the full terms of a contract before signing. Not because they do not care. Because the language is deliberately difficult.</p>
+      <div style={{ background: "#F5EDD6", borderLeft: `4px solid ${C.accent}`, padding: "16px 20px", borderRadius: "0 8px 8px 0", marginBottom: "28px" }}>
+        <p style={{ fontSize: "16px", color: "#8A6828", fontStyle: "italic", margin: 0 }}>Most people never read the full terms of a contract before signing. Not because they do not care. Because the language is deliberately difficult.</p>
       </div>
 
       <h3 style={{ fontSize: "18px", fontWeight: "700", color: C.text, marginBottom: "10px" }}>The problem</h3>
@@ -600,12 +666,12 @@ function Settings({ user, userMeta, onSignOut, onUpgrade }) {
         </div>
         {userMeta?.is_pro && <button onClick={cancel} disabled={cancelling} style={{ background: "none", border: "none", color: C.danger, fontSize: "13px", cursor: "pointer", padding: 0 }}>{cancelling ? "Cancelling..." : "Cancel Pro subscription"}</button>}
       </div>
-      <div style={{ ...cardStyle, background: "#EEF4F0", border: "1px solid #B8D4C0" }}>
+      <div style={{ ...cardStyle, background: "#F5EDD6", border: "1px solid #E8D4A0" }}>
         <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
           <span style={{ fontSize: "20px" }}>🔒</span>
           <div>
-            <div style={{ fontWeight: "600", fontSize: "14px", color: "#3A5C48", marginBottom: "4px" }}>Your privacy is protected</div>
-            <div style={{ fontSize: "13px", color: "#3A5C48", lineHeight: "1.5" }}>We never store your documents. Every analysis is processed and immediately forgotten. Only your usage count is saved.</div>
+            <div style={{ fontWeight: "600", fontSize: "14px", color: "#8A6828", marginBottom: "4px" }}>Your privacy is protected</div>
+            <div style={{ fontSize: "13px", color: "#8A6828", lineHeight: "1.5" }}>We never store your documents. Every analysis is processed and immediately forgotten. Only your usage count is saved.</div>
           </div>
         </div>
       </div>
@@ -720,7 +786,7 @@ export default function App() {
   };
 
   if (booting) return (
-    <div style={{ minHeight: "100vh", background: "#F0EDE8", display: "flex", justifyContent: "center", fontFamily: "Georgia, serif" }}>
+    <div style={{ minHeight: "100vh", background: "#EDECE6", display: "flex", justifyContent: "center", fontFamily: "Georgia, serif" }}>
       <div style={{ width: "100%", maxWidth: isDesktop ? "1100px" : "480px", minHeight: "100vh", background: C.bg }}>
         <div style={{ background: C.header, padding: "14px 20px 12px" }}><h1 style={{ color: "#fff", fontSize: "20px", fontWeight: "700", margin: 0 }}>{APP_NAME}</h1></div>
         <Spinner label="Loading..." />
@@ -729,63 +795,6 @@ export default function App() {
   );
 
   return (
-    <div style={{ minHeight: "100vh", background: "#F0EDE8", fontFamily: "Georgia, serif" }}>
+    <div style={{ minHeight: "100vh", background: "#EDECE6", fontFamily: "Georgia, serif" }}>
       {!onboarding && (
-        <div style={{ background: C.header, padding: isDesktop ? "16px 40px" : "14px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div>
-            <h1 style={{ color: "#fff", fontSize: isDesktop ? "22px" : "20px", fontWeight: "700", margin: "0 0 2px" }}>{APP_NAME}</h1>
-            <p style={{ color: C.accent, fontSize: "12px", margin: 0, fontWeight: "500" }}>{APP_TAGLINE}</p>
-          </div>
-          {showNav && isDesktop && (
-            <div style={{ display: "flex", gap: "8px" }}>
-              {[{ key: "analyse", label: "Analyse", icon: "📄" }, { key: "about", label: "About", icon: "ℹ️" }, { key: "settings", label: "Settings", icon: "⚙️" }].map(({ key, label, icon }) => (
-                <button key={key} onClick={() => { setTab(key); setResult(null); }}
-                  style={{ background: tab === key ? C.accent : "transparent", color: tab === key ? "#fff" : "#9CA3AF", border: tab === key ? "none" : "0.5px solid #555", borderRadius: "8px", padding: "8px 16px", fontSize: "13px", fontWeight: "600", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}>
-                  <span>{icon}</span>{label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      <div style={{ maxWidth: isDesktop ? "1100px" : "480px", margin: "0 auto", padding: isDesktop ? "40px" : "0", minHeight: "calc(100vh - 60px)" }}>
-        {onboarding ? (
-          <div style={{ background: C.bg, borderRadius: isDesktop ? "16px" : 0, padding: isDesktop ? "40px" : "20px" }}>
-            <Onboarding onFinish={() => setOnboarding(false)} />
-          </div>
-        ) : isDesktop && screen === "app" && isAuthed ? (
-          <div style={{ display: "grid", gridTemplateColumns: result ? "1fr 1fr" : "600px", gap: "32px", alignItems: "start", justifyContent: "center" }}>
-            <div style={{ background: C.bg, borderRadius: "16px", padding: "32px", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
-              {tab === "analyse" && !result && <Analyse user={session.user} userMeta={userMeta} prefill={null} onDone={(d) => { setResult(d); loadMeta(session.user.id); }} onUpgrade={() => setShowUpgrade(true)} />}
-              {tab === "analyse" && result && <Analyse user={session.user} userMeta={userMeta} prefill={null} onDone={(d) => { setResult(d); loadMeta(session.user.id); }} onUpgrade={() => setShowUpgrade(true)} />}
-              {tab === "about" && <About onBack={() => setTab("analyse")} />}
-              {tab === "settings" && <Settings user={session.user} userMeta={userMeta} onSignOut={signOut} onUpgrade={() => setShowUpgrade(true)} />}
-            </div>
-            {result && tab === "analyse" && (
-              <div style={{ background: C.bg, borderRadius: "16px", padding: "32px", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
-                <Results data={result} onNew={() => setResult(null)} />
-              </div>
-            )}
-          </div>
-        ) : (
-          <div style={{ background: screen === "landing" || screen === "sample" ? "transparent" : C.bg, borderRadius: isDesktop ? "16px" : 0, boxShadow: screen !== "landing" && isDesktop ? "0 1px 4px rgba(0,0,0,0.06)" : "none", paddingBottom: showNav && !isDesktop ? "88px" : 0, overflow: "hidden" }}>
-            {renderBody()}
-          </div>
-        )}
-      </div>
-
-      {showNav && !isDesktop && (
-        <nav style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: C.bg, borderTop: `0.5px solid ${C.border}`, display: "flex", zIndex: 100 }}>
-          {[{ key: "analyse", label: "Analyse", icon: "📄" }, { key: "about", label: "About", icon: "ℹ️" }, { key: "settings", label: "Settings", icon: "⚙️" }].map(({ key, label, icon }) => (
-            <button key={key} onClick={() => { setTab(key); setResult(null); }}
-              style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "3px", padding: "10px 0 14px", cursor: "pointer", border: "none", background: "transparent", color: tab === key ? C.accent : "#8A8585", fontSize: "11px", fontWeight: tab === key ? "600" : "400" }}>
-              <span style={{ fontSize: "20px" }}>{icon}</span>{label}
-            </button>
-          ))}
-        </nav>
-      )}
-      {showUpgrade && <Upgrade userEmail={session?.user?.email} onClose={() => setShowUpgrade(false)} />}
-    </div>
-  );
-}
+        <div style={{ background: C.header, padding: isDesktop ? "16px 40px" : "14px 20px", display: "flex", alignItems: "center", justif
