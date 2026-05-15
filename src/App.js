@@ -678,19 +678,6 @@ export default function App() {
     />;
     if (screen === "about") return <About onBack={() => setScreen("landing")} />;
     if (screen === "sample") {
-      const hasSeenSample = document.cookie.includes("plainly_sample=1");
-      if (hasSeenSample) {
-        return (
-          <div style={{ padding: "40px 20px", textAlign: "center" }}>
-            <div style={{ fontSize: "48px", marginBottom: "16px" }}>🔒</div>
-            <h2 style={{ fontSize: "22px", fontWeight: "700", color: C.text, marginBottom: "8px" }}>You have seen the demo</h2>
-            <p style={{ fontSize: "15px", color: C.sub, marginBottom: "24px", lineHeight: "1.5" }}>Create a free account to analyse your own documents.</p>
-            <button onClick={() => { setAuthMode("signup"); setScreen("auth"); }} style={{ ...btnStyle("primary", false), marginBottom: "10px" }}>Sign up free</button>
-            <button onClick={() => setScreen("landing")} style={btnStyle("secondary", false)}>Back</button>
-          </div>
-        );
-      }
-      document.cookie = "plainly_sample=1; max-age=2592000; path=/";
       const DEMO = {
         document_type: "Freelance Services Agreement",
         trust_score: 3,
