@@ -1040,31 +1040,129 @@ export default function App() {
       const DEMO = {
         document_type: "Freelance Services Agreement",
         trust_score: 3,
-        score_label: "This contract strongly favours the client and leaves you with almost no protection.",
-        score_reasoning: "The unlimited revisions clause, 60-day payment terms with no late penalty, and the right to terminate without paying for completed work create serious financial risk. The worldwide 2-year non-compete is unusually aggressive.",
-        summary: "This is a freelance agreement where the client holds almost all the power. They can request unlimited changes, withhold payment subjectively, terminate without notice, and prevent you from working in your industry for 2 years worldwide. Your work becomes their property before you are even paid.",
-        deep_analysis: "This contract was drafted by the client with no input from the freelancer. Every ambiguous clause resolves in the client favour. This is a deliberate pattern not an accident.\n\nThe combination of unlimited revisions and subjective payment withholding is particularly dangerous. Together they mean the client can demand changes indefinitely and then decide the work is not good enough to pay for. There is no mechanism that protects you from a client acting in bad faith.\n\nThe termination clause compounds this further. The client can walk away at any point without paying for completed work. Combined with the IP transfer clause which gives them ownership from the moment of creation, they could take your work and legally owe you nothing.\n\nThe non-compete is the clause that should concern you most long term. Two years worldwide in the same industry is not a standard freelance restriction. For a graphic design agreement it is disproportionate and could seriously limit your ability to earn a living after this single project ends.",
+        score_label: "This contract strongly favours the client and leaves the freelancer with almost no protection.",
+        score_reasoning: "Three clauses in combination create serious financial exposure: unlimited revisions with no cap, payment withholding at the client's sole discretion, and termination without payment for completed work. The 2-year worldwide non-compete is disproportionate for a single freelance project and would not survive scrutiny in most jurisdictions. This contract was drafted entirely in the client's interest.",
+        summary: "This is a freelance services agreement in which the client retains almost all control. The freelancer must complete unlimited revisions at no extra cost, cannot enforce payment if the client deems the work unsatisfactory, and forfeits all completed work if the client terminates. Intellectual property transfers to the client at the moment of creation, before any payment is made. A 2-year worldwide non-compete prevents the freelancer from working in the same industry after the project ends. Every ambiguous clause resolves in the client's favour. This is a deliberate drafting choice, not an oversight.",
+        deep_analysis: "This contract was drafted by someone whose sole objective was to protect the client at every point of friction. The structure is consistent: wherever a clause could go either way, it goes the client's way. This is not a balanced commercial agreement between two parties. It is a terms of engagement document written by one party for signature by the other.\n\nThe unlimited revisions clause is the most immediately dangerous provision. Combined with the subjective payment standard, it creates a mechanism by which a client can demand changes indefinitely, decide at any point that the work does not meet their satisfaction, and legally withhold payment in full. There is no definition of what constitutes satisfactory completion, no limit on the number of revision cycles, and no independent standard against which the work is measured. A client acting in bad faith has everything they need here.\n\nThe termination clause compounds this risk severely. The client can end the agreement at any time for any reason without compensating the freelancer for work already completed. Combined with the IP transfer clause which vests ownership in the client from the moment of creation, the client could terminate after receiving substantial completed work, retain full ownership of that work, and owe nothing. This is not a theoretical risk. It is the most common mechanism through which freelancers are defrauded.\n\nThe 2-year worldwide non-compete is the clause that will cause the most long-term damage. A restriction of this scope is simply not proportionate to a single freelance project. It is designed to prevent a competitor from hiring the freelancer after the project ends, not to protect any legitimate business interest. Courts in the Netherlands, the United Kingdom and most European jurisdictions would likely find this unenforceable, but enforceability depends on litigation, which is expensive and uncertain. The safer approach is to remove it before signing.\n\nThe payment terms of 60 days with no late payment penalty create a final layer of risk. Industry standard for freelance work is 14 to 30 days with a late payment clause. 60 days with no consequence for delay is a cash flow problem that compounds every other issue in this agreement.",
+        clauses: [
+          {
+            title: "Unlimited revisions",
+            what_it_says: "The freelancer must make revisions to the work until the client is satisfied. There is no limit on the number of revision rounds and no definition of what constitutes satisfaction. The obligation continues indefinitely until the client approves the work.",
+            standard: "unusually aggressive",
+            worst_case: "A client could request revisions for months or years, changing direction repeatedly, and the freelancer would be contractually obligated to comply without additional compensation. The project could consume far more time than scoped with no financial recourse.",
+            negotiation_script: "I am happy to include a revision clause but I need it to be limited to two rounds of revisions within the agreed scope. Anything beyond that would be treated as a new instruction and quoted separately. Could we update clause 4 to reflect that?"
+          },
+          {
+            title: "Subjective payment standard",
+            what_it_says: "Payment is conditional on the client's satisfaction. The client has sole discretion to determine whether the work meets the required standard. There is no objective benchmark, no independent review mechanism and no timeline for the client to communicate their decision.",
+            standard: "unusually aggressive",
+            worst_case: "The client could withhold payment indefinitely or permanently by claiming dissatisfaction with no obligation to specify what would constitute acceptable work. The freelancer has no contractual ground to enforce payment even after delivering work that meets the original brief.",
+            negotiation_script: "Payment should be tied to delivery against the agreed brief, not to subjective satisfaction. I would like to replace the satisfaction standard with delivery of work consistent with the specifications in Schedule A. Can we make that change to clause 6?"
+          },
+          {
+            title: "Termination without payment",
+            what_it_says: "The client may terminate this agreement at any time for any reason by giving written notice. On termination, the freelancer is not entitled to payment for work completed but not yet invoiced.",
+            standard: "unusually aggressive",
+            worst_case: "The client terminates after receiving 80 percent of the completed project. They retain ownership of all work created to that point and owe nothing. The freelancer loses all time invested with no compensation.",
+            negotiation_script: "I need a kill fee provision. If you terminate the project I need to be paid for all work completed to the termination date at the pro-rata day rate. Could we add a clause confirming that termination does not affect the right to payment for work already delivered?"
+          },
+          {
+            title: "Worldwide 2-year non-compete",
+            what_it_says: "For 2 years following the end of this agreement, the freelancer may not provide services to any business operating in the same industry anywhere in the world.",
+            standard: "unusually aggressive",
+            worst_case: "The freelancer is prevented from working in their primary industry for 2 years globally. A graphic designer working for a marketing agency could not take any marketing agency client worldwide for 2 years. This effectively ends their freelance practice.",
+            negotiation_script: "A 2-year worldwide restriction is disproportionate for a freelance project. I cannot accept a clause that prevents me from working in my industry. I would accept a 3-month non-solicitation restricted to your direct competitors in the Netherlands, but not a global non-compete of this scope."
+          },
+          {
+            title: "IP transfer before payment",
+            what_it_says: "All intellectual property in the work transfers to the client at the moment of creation. The freelancer retains no rights in the work from that point regardless of whether payment has been received.",
+            standard: "very restrictive",
+            worst_case: "The client receives full ownership of the work before paying for it. If payment is withheld or the client terminates, the freelancer cannot use their own work as leverage because they no longer own it.",
+            negotiation_script: "IP should transfer on receipt of full payment, not on creation. Until payment clears I need to retain ownership as security. Please amend clause 8 so that IP transfers upon final payment being received in full."
+          },
+        ],
         red_flags: [
-          { title: "Unlimited revisions with no cap", explanation: "The contract allows the client to request unlimited changes until satisfied. This means a project could drag on indefinitely while you receive no additional pay.", severity: "high", industry_comparison: "This is unusually aggressive. Most fair freelance contracts cap revisions at 2 to 3 rounds. Unlimited revisions with no additional compensation is rarely seen in balanced agreements." },
-          { title: "Client can withhold payment subjectively", explanation: "Payment can be withheld if the work does not meet subjective satisfaction. The client has complete discretion to refuse payment for any reason with little recourse for you.", severity: "high" },
-          { title: "No payment for completed work on termination", explanation: "The client can terminate at any time without paying for work already completed. You could spend weeks on a project and walk away with nothing.", severity: "high" },
-          { title: "Worldwide 2-year non-compete", explanation: "You cannot work with any business in the same industry for 2 years anywhere in the world. This is extremely broad for a freelance contract.", severity: "medium" },
-          { title: "IP transfers before payment", explanation: "Your work becomes the client's property the moment you create it, regardless of whether payment has been made.", severity: "medium" },
+          {
+            title: "Unlimited revisions with no cap",
+            explanation: "Clause 4 requires the freelancer to make revisions until the client is satisfied with no limit on the number of rounds and no definition of satisfaction. This clause, combined with the subjective payment standard in clause 6, creates a mechanism for a client to demand indefinite work without ever triggering a payment obligation. The freelancer has no contractual exit from this cycle. In practice this is how projects drag from weeks into months without additional compensation.",
+            severity: "high",
+            industry_comparison: "This is unusually aggressive. Standard freelance contracts in the Netherlands and across the EU cap revisions at 2 to 3 rounds within the original scope. Any additional revisions are treated as change requests and quoted separately. Unlimited revision obligations without compensation are not found in balanced commercial agreements.",
+            negotiation_script: "Clause 4 needs a revision limit. I propose 2 rounds of revisions within the original scope included in the fee, with any further revisions quoted at my standard day rate. Please confirm you are happy to amend this before I sign."
+          },
+          {
+            title: "Payment withheld at client's sole discretion",
+            explanation: "Clause 6 makes payment conditional on the client's subjective satisfaction. There is no objective standard, no independent arbiter and no timeline for the client to communicate their decision. This gives the client a legally defensible reason to withhold payment indefinitely simply by claiming dissatisfaction. A freelancer who has delivered work consistent with the brief has no contractual mechanism to enforce payment if the client chooses to invoke this clause. This is the single most common cause of non-payment disputes in freelance agreements.",
+            severity: "high",
+            industry_comparison: "This is significantly more restrictive than standard. Industry standard payment terms tie payment to delivery of work consistent with the agreed brief or specification. Subjective satisfaction standards are occasionally seen in consumer-facing service agreements but are not acceptable in commercial B2B freelance contracts.",
+            negotiation_script: "Payment should not be conditional on satisfaction. It should be conditional on delivery of work consistent with the agreed brief in Schedule A. I need clause 6 amended to reflect objective delivery criteria before I can sign."
+          },
+          {
+            title: "Termination without compensation for completed work",
+            explanation: "The termination clause allows the client to end the agreement at any time for any reason and explicitly excludes payment for work completed but not yet invoiced. Combined with the IP transfer clause which vests ownership in the client from the moment of creation, this means the client can terminate after receiving substantial completed work, retain full ownership of everything created, and owe nothing. This is not a theoretical edge case. It is the mechanism most commonly used in deliberate non-payment disputes.",
+            severity: "high",
+            industry_comparison: "This is unusually aggressive. Standard freelance and agency contracts include a kill fee provision requiring payment for all work completed to the termination date, typically at the pro-rata project rate or day rate. Termination without any compensation for completed work is not found in fair commercial agreements.",
+            negotiation_script: "I cannot sign a contract that allows termination without paying for completed work. I need a kill fee clause confirming that if you terminate, you pay for all work completed to the termination date at the pro-rata rate. This is a standard provision and I require it before signing."
+          },
+          {
+            title: "2-year worldwide non-compete",
+            explanation: "The non-compete clause prohibits the freelancer from working with any business in the same industry anywhere in the world for 2 years after the agreement ends. For a single freelance project this restriction is grossly disproportionate. It would prevent a graphic designer working for one marketing agency from taking any other marketing client globally for 2 years. While this clause would likely be found unenforceable by Dutch courts due to its disproportionate scope, enforceability requires litigation which is expensive and uncertain. The safer approach is to remove or significantly narrow it before signing.",
+            severity: "high",
+            industry_comparison: "This is unusually aggressive. Standard freelance non-compete provisions, where they exist at all, are limited to 3 to 6 months and restricted to direct competitors in the same geographic market. A 2-year worldwide restriction is not commercially proportionate to any single freelance engagement and would not survive challenge in most EU jurisdictions.",
+            negotiation_script: "A 2-year worldwide non-compete is not something I can accept for a single project. I would consider a 3-month non-solicitation clause covering your direct competitors in the Netherlands only. Please remove the current clause and replace it with that narrower restriction if you need any non-compete protection at all."
+          },
+          {
+            title: "60-day payment terms with no late payment penalty",
+            explanation: "Payment is due 60 days after invoice with no late payment interest or penalty clause. Industry standard for freelance services is 14 to 30 days. 60 days creates a significant cash flow burden on the freelancer, and the absence of any late payment consequence means there is no financial incentive for the client to pay on time.",
+            severity: "medium",
+            industry_comparison: "This is more restrictive than standard. The EU Late Payment Directive entitles business creditors to interest at 8 percentage points above the ECB reference rate on overdue invoices automatically. A well-drafted freelance contract includes this right explicitly and specifies 14 to 30 day payment terms.",
+            negotiation_script: "I work on 30-day payment terms. 60 days is not something I can accommodate for project work. I would also like to add a late payment clause at the statutory rate under the EU Late Payment Directive. Can we update the payment clause to 30 days net with statutory interest on overdue amounts?"
+          },
         ],
         key_points: [
-          "You must provide unlimited revisions at no extra cost with no protection against a client who is never satisfied.",
-          "The client can terminate at any time and legally owes you nothing for work already completed.",
-          "You cannot work in the same industry anywhere in the world for 2 years after this contract ends."
+          "The client can request unlimited revisions, decide the work is unsatisfactory, and legally withhold payment in full. These three clauses work together and the combination is the most dangerous element of this contract.",
+          "Your work becomes the client's property the moment you create it, before you are paid. If they terminate or refuse to pay, they keep everything you made.",
+          "The 2-year worldwide non-compete would prevent you from working in your industry globally for 2 years after one project. This clause alone is sufficient reason to decline to sign."
         ],
         legal_terms: [
-          { term: "Intellectual Property", plain_english: "The rights to your creative work. This contract transfers all rights to the client before you are even paid." },
-          { term: "Non-compete", plain_english: "An agreement not to work with competing businesses. This one covers the entire world for 2 years which is unusually broad." },
+          { term: "Intellectual Property", plain_english: "The legal rights to creative work including designs, code, writing and images. This contract transfers all intellectual property to the client at the moment of creation, which means you lose ownership of your own work before receiving any payment. If payment is refused you cannot reclaim the work." },
+          { term: "Non-compete", plain_english: "A clause preventing you from working with competing businesses. This one covers the entire world for 2 years which is disproportionate for a freelance agreement. Dutch courts would likely find this unenforceable due to its scope but proving that requires litigation." },
+          { term: "Termination", plain_english: "The right to end the contract. This clause gives the client an unconditional right to terminate at any time without paying for completed work. It is drafted entirely in the client's favour with no reciprocal protection for the freelancer." },
+          { term: "Indemnification", plain_english: "A requirement to compensate the other party for losses caused by your actions. This contract requires the freelancer to indemnify the client for any third party claims arising from the work. Combined with the IP transfer clause this means you bear legal risk for work you no longer own." },
         ],
         missing_clauses: [
-          "Revision limit: a fair contract specifies a maximum number of revision rounds.",
-          "Kill fee: a fair contract compensates the freelancer for work completed if the client cancels.",
+          "Revision limit: a fair contract specifies a maximum number of revision rounds included in the fee, typically 2 to 3. Any additional revisions should be treated as a change request and quoted separately.",
+          "Kill fee: a fair contract requires the client to pay for all work completed to the termination date if they choose to end the project early. The current contract has no such provision.",
+          "Late payment interest: a fair contract includes the right to charge statutory interest on overdue invoices under the EU Late Payment Directive. The current contract has no late payment consequence.",
         ],
-        recommendation: "Do not sign this contract as-is. Negotiate a revision cap, a kill fee, and removal of the worldwide non-compete before agreeing."
+        negotiation_email: `Subject: Proposed amendments to the Freelance Services Agreement before signing
+
+Dear [Client name],
+
+Thank you for sending the agreement. I have reviewed it carefully and I am keen to proceed with the project. Before I can sign I need to propose a small number of amendments to ensure the terms are workable for both of us.
+
+1. Revision limit (Clause 4)
+The current clause requires unlimited revisions. I propose a limit of 2 rounds of revisions within the agreed scope, included in the project fee. Any further revisions would be treated as a change request and quoted separately at my standard rate.
+
+2. Payment standard (Clause 6)
+Payment should be tied to delivery of work consistent with the agreed brief in Schedule A rather than to subjective satisfaction. I would like to replace the satisfaction standard with an objective delivery criterion.
+
+3. Termination and kill fee
+I need a provision confirming that if you terminate the project, payment is due for all work completed to the termination date at the pro-rata rate. I cannot carry the risk of delivering work for which I receive no payment if the project ends early.
+
+4. Non-compete (Clause 11)
+A 2-year worldwide restriction is not proportionate to a single freelance project. I would accept a 3-month non-solicitation clause covering your direct competitors in the Netherlands only.
+
+5. IP transfer (Clause 8)
+Intellectual property should transfer on receipt of full payment rather than on creation. Until payment is received I need to retain ownership as standard commercial security.
+
+6. Payment terms
+I work on 30-day payment terms. I would also like to include statutory late payment interest under the EU Late Payment Directive.
+
+These are standard commercial protections that I include in all my agreements. I am happy to discuss any of these points on a call if that would help. I look forward to working with you on this project.
+
+Best regards,
+[Your name]`,
+        recommendation: "Do not sign this contract as-is. Negotiate a revision cap, an objective payment standard, a kill fee, removal of the worldwide non-compete and IP transfer on payment before signing anything."
       };
       return <Results data={DEMO} onNew={() => setScreen("landing")} isGuest onSignUp={() => { setAuthMode("signup"); setScreen("auth"); }} />;
     }
