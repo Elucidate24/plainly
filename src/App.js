@@ -31,7 +31,7 @@ const T = {
     chatTitle: "Ask anything about this contract", chatPlaceholder: "Ask a question about this contract...",
     chatLocked: "Pro+ feature", chatLockedDesc: "Upgrade to Pro+ to ask unlimited follow-up questions about any analysis.",
     thinking: "Thinking...", noEmail: "No negotiation email was generated for this document.",
-    noFlags: "No significant red flags found in this document.", noClauses: "No clauses returned for this document.", flagsIntro: "Issues ranked by severity. Each flag includes the full analysis, industry comparison and negotiation script.",
+    noFlags: "No significant red flags found in this document.", noClauses: "No clauses returned for this document.", flagsIntro: "Issues ranked by severity. Each flag includes the full analysis, industry comparison and negotiation script.", clausesIntro: "Every significant clause rated and explained. Each clause includes the legal effect, worst case scenario and a negotiation script.", expandAll: "Expand all", collapseAll: "Collapse all",
     upgradeTitle: "You have used your free analysis", upgradeSubtitle: "Choose the plan that works for you.",
     oneTimeDesc: "Single analysis. No subscription. Pay once.", oneTimeLabel: "One-time", buyOne: "Buy one analysis",
     proDesc: "Unlimited analyses. No storage. Cancel anytime.", startPro: "Start Pro",
@@ -121,7 +121,7 @@ const T = {
     chatTitle: "Stel alles over dit contract", chatPlaceholder: "Stel een vraag over dit contract...",
     chatLocked: "Pro+ functie", chatLockedDesc: "Upgrade naar Pro+ voor onbeperkte vervolgvragen.",
     thinking: "Nadenken...", noEmail: "Geen onderhandelingsmail gegenereerd voor dit document.",
-    noFlags: "Geen significante rode vlaggen gevonden.", noClauses: "Geen clausules teruggegeven.", flagsIntro: "Problemen gerangschikt op ernst. Elke vlag bevat de volledige analyse, industrievergelijking en onderhandelingsscript.",
+    noFlags: "Geen significante rode vlaggen gevonden.", noClauses: "Geen clausules teruggegeven.", flagsIntro: "Problemen gerangschikt op ernst. Elke vlag bevat de volledige analyse, industrievergelijking en onderhandelingsscript.", clausesIntro: "Elke belangrijke clausule beoordeeld en uitgelegd. Elke clausule bevat het juridische effect, het worst-case scenario en een onderhandelingsscript.", expandAll: "Alles uitklappen", collapseAll: "Alles inklappen",
     upgradeTitle: "Je hebt je gratis analyse gebruikt", upgradeSubtitle: "Kies het plan dat bij je past.",
     oneTimeDesc: "Enkele analyse. Geen abonnement.", oneTimeLabel: "Eenmalig", buyOne: "Koop één analyse",
     proDesc: "Onbeperkte analyses. Geen opslag. Altijd opzegbaar.", startPro: "Pro starten",
@@ -211,7 +211,7 @@ const T = {
     chatTitle: "Pregunta lo que quieras sobre este contrato", chatPlaceholder: "Haz una pregunta sobre este contrato...",
     chatLocked: "Función Pro+", chatLockedDesc: "Actualiza a Pro+ para hacer preguntas ilimitadas.",
     thinking: "Pensando...", noEmail: "No se generó ningún correo de negociación para este documento.",
-    noFlags: "No se encontraron señales de alerta significativas.", noClauses: "No se devolvieron cláusulas.", flagsIntro: "Problemas clasificados por gravedad. Cada alerta incluye el análisis completo, comparación con el sector y guión de negociación.",
+    noFlags: "No se encontraron señales de alerta significativas.", noClauses: "No se devolvieron cláusulas.", flagsIntro: "Problemas clasificados por gravedad. Cada alerta incluye el análisis completo, comparación con el sector y guión de negociación.", clausesIntro: "Cada cláusula significativa valorada y explicada. Cada cláusula incluye el efecto legal, el peor caso posible y un guión de negociación.", expandAll: "Expandir todo", collapseAll: "Contraer todo",
     upgradeTitle: "Has usado tu análisis gratuito", upgradeSubtitle: "Elige el plan que mejor se adapte a ti.",
     oneTimeDesc: "Análisis único. Sin suscripción. Pago único.", oneTimeLabel: "Una vez", buyOne: "Comprar un análisis",
     proDesc: "Análisis ilimitados. Sin almacenamiento. Cancela cuando quieras.", startPro: "Empezar Pro",
@@ -888,16 +888,22 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp, user, us
       {/* CLAUSES TAB */}
       {activeTab === "clauses" && (
         <div>
-          <p style={{ fontSize: "13px", color: C.sub, marginBottom: "12px", lineHeight: "1.5" }}>Every significant clause rated and explained. Tap any clause to read the full analysis and negotiation script.</p>
+          <p style={{ fontSize: "17px", fontWeight: "700", color: C.text, marginBottom: "10px", lineHeight: "1.5" }}>{tx.clausesIntro || "Every significant clause rated and explained. Each clause includes the legal effect, worst case scenario and a negotiation script."}</p>
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "12px" }}>
+            <button onClick={() => setExpClause(expClause === "all" ? null : "all")}
+              style={{ background: C.light, border: `1px solid ${C.border}`, borderRadius: "8px", padding: "6px 14px", fontSize: "13px", fontWeight: "600", color: C.accent, cursor: "pointer" }}>
+              {expClause === "all" ? (tx.collapseAll || "Collapse all") : (tx.expandAll || "Expand all")}
+            </button>
+          </div>
           {(data.clauses || []).length === 0 && (
             <div style={{ ...cardStyle, textAlign: "center", color: C.sub }}>{tx.noClauses}</div>
           )}
           {(data.clauses || []).map((cl, i) => {
             const lvl = cl.standard === "unusually aggressive" ? 3 : cl.standard === "very restrictive" ? 2 : cl.standard === "restrictive" ? 1 : 0;
             const meta = gaugeMeta[lvl];
-            const open = expClause === i;
+            const open = expClause === "all" || expClause === i;
             return (
-              <div key={i} style={{ ...cardStyle, marginBottom: "8px", borderLeft: `4px solid ${meta.color}`, cursor: "pointer" }} onClick={() => setExpClause(open ? null : i)}>
+              <div key={i} style={{ ...cardStyle, marginBottom: "8px", borderLeft: `4px solid ${meta.color}`, cursor: "pointer" }} onClick={() => setExpClause(expClause === "all" ? i : open ? null : i)}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <div style={{ fontWeight: "600", fontSize: "14px", color: C.text, flex: 1 }}>{cl.title}</div>
                   <span style={{ background: meta.bg, color: meta.color, fontSize: "10px", fontWeight: "600", padding: "2px 8px", borderRadius: "20px", marginLeft: "8px", whiteSpace: "nowrap" }}>{meta.label}</span>
@@ -933,16 +939,22 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp, user, us
       {/* FLAGS TAB */}
       {activeTab === "flags" && (
         <div>
-          <p style={{ fontSize: "17px", fontWeight: "700", color: C.text, marginBottom: "14px", lineHeight: "1.5" }}>{tx.flagsIntro || "Issues ranked by severity. Each flag includes the full analysis, industry comparison and negotiation script."}</p>
+          <p style={{ fontSize: "17px", fontWeight: "700", color: C.text, marginBottom: "10px", lineHeight: "1.5" }}>{tx.flagsIntro || "Issues ranked by severity. Each flag includes the full analysis, industry comparison and negotiation script."}</p>
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "12px" }}>
+            <button onClick={() => setExpFlag(expFlag === "all" ? null : "all")}
+              style={{ background: C.light, border: `1px solid ${C.border}`, borderRadius: "8px", padding: "6px 14px", fontSize: "13px", fontWeight: "600", color: C.accent, cursor: "pointer" }}>
+              {expFlag === "all" ? (tx.collapseAll || "Collapse all") : (tx.expandAll || "Expand all")}
+            </button>
+          </div>
           {sortedFlags.length === 0 && (
             <div style={{ ...cardStyle, textAlign: "center", color: C.sub }}>{tx.noFlags}</div>
           )}
           {sortedFlags.map((flag, i) => {
             const lvl = gaugeLevel(flag.industry_comparison);
             const meta = gaugeMeta[lvl];
-            const open = expFlag === i;
+            const open = expFlag === "all" || expFlag === i;
             return (
-              <div key={i} style={{ ...cardStyle, borderLeft: `4px solid ${sevColor(flag.severity)}`, marginBottom: "8px", cursor: "pointer" }} onClick={() => setExpFlag(open ? null : i)}>
+              <div key={i} style={{ ...cardStyle, borderLeft: `4px solid ${sevColor(flag.severity)}`, marginBottom: "8px", cursor: "pointer" }} onClick={() => setExpFlag(expFlag === "all" ? i : open ? null : i)}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                   <div style={{ fontWeight: "600", fontSize: "14px", color: C.text, flex: 1 }}>{flag.title}</div>
                   <span style={{ background: sevColor(flag.severity) + "22", color: sevColor(flag.severity), fontSize: "11px", fontWeight: "600", padding: "2px 8px", borderRadius: "20px", marginLeft: "8px" }}>{flag.severity}</span>
