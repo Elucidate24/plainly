@@ -308,12 +308,37 @@ function useDesktop() {
 }
 
 const scoreColor = (s) => s >= 7 ? "#C9A84C" : s >= 4 ? "#C4973D" : "#C0504A";
-const scoreContext = (s) => {
-  if (s >= 9) return { label: "Excellent", desc: "This is a well balanced and fair contract. Safe to sign." };
-  if (s >= 7) return { label: "Good", desc: "Generally fair with a few things worth noting. Minor adjustments may help." };
-  if (s >= 5) return { label: "Average", desc: "A typical contract. Some clauses favour the other party but this is common. Review the red flags before signing." };
-  if (s >= 3) return { label: "Below average", desc: "This contract has notable issues that could affect you. Negotiate before signing." };
-  return { label: "High risk", desc: "This contract strongly favours the other party. Several clauses are unusual or potentially harmful." };
+const SCORE_LABELS = {
+  en: [
+    { label: "Excellent",     desc: "This is a well balanced and fair contract. Safe to sign." },
+    { label: "Good",          desc: "Generally fair with a few things worth noting. Minor adjustments may help." },
+    { label: "Average",       desc: "A typical contract. Some clauses favour the other party but this is common. Review the red flags before signing." },
+    { label: "Below average", desc: "This contract has notable issues that could affect you. Negotiate before signing." },
+    { label: "High risk",     desc: "This contract strongly favours the other party. Several clauses are unusual or potentially harmful." },
+  ],
+  nl: [
+    { label: "Uitstekend",        desc: "Dit is een goed uitgebalanceerd en eerlijk contract. Veilig om te tekenen." },
+    { label: "Goed",              desc: "Over het algemeen eerlijk met een paar aandachtspunten. Kleine aanpassingen kunnen helpen." },
+    { label: "Gemiddeld",         desc: "Een typisch contract. Sommige clausules begunstigen de andere partij maar dat is gebruikelijk. Bekijk de rode vlaggen voor het tekenen." },
+    { label: "Onder gemiddeld",   desc: "Dit contract heeft noemenswaardige problemen die je kunnen beïnvloeden. Onderhandel voor het tekenen." },
+    { label: "Hoog risico",       desc: "Dit contract begunstigt de andere partij sterk. Verschillende clausules zijn ongebruikelijk of potentieel schadelijk." },
+  ],
+  es: [
+    { label: "Excelente",         desc: "Este es un contrato bien equilibrado y justo. Seguro para firmar." },
+    { label: "Bueno",             desc: "Generalmente justo con algunas cosas a tener en cuenta. Pequeños ajustes pueden ayudar." },
+    { label: "Promedio",          desc: "Un contrato típico. Algunas cláusulas favorecen a la otra parte pero esto es común. Revisa las señales de alerta antes de firmar." },
+    { label: "Por debajo del promedio", desc: "Este contrato tiene problemas notables que podrían afectarte. Negocia antes de firmar." },
+    { label: "Alto riesgo",       desc: "Este contrato favorece fuertemente a la otra parte. Varias cláusulas son inusuales o potencialmente dañinas." },
+  ],
+};
+
+const scoreContext = (s, lang = "en") => {
+  const labels = SCORE_LABELS[lang] || SCORE_LABELS.en;
+  if (s >= 9) return labels[0];
+  if (s >= 7) return labels[1];
+  if (s >= 5) return labels[2];
+  if (s >= 3) return labels[3];
+  return labels[4];
 };
 const sevColor = (s) => s === "high" ? "#C0504A" : s === "medium" ? "#C4973D" : "#2563EB";
 
@@ -775,9 +800,9 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp, user, us
         <div style={{ display: "inline-block", background: "#EDECE6", borderRadius: "20px", padding: "4px 12px", fontSize: "12px", fontWeight: "600", color: C.sub, marginBottom: "12px" }}>{data.document_type}</div>
         <div style={{ display: "flex", justifyContent: "center", marginBottom: "12px" }}><ScoreRing score={data.trust_score} /></div>
         <div style={{ display: "inline-block", background: scoreColor(data.trust_score) + "22", color: scoreColor(data.trust_score), borderRadius: "20px", padding: "4px 14px", fontSize: "13px", fontWeight: "700", marginBottom: "8px" }}>
-          {scoreContext(data.trust_score).label}
+          {scoreContext(data.trust_score, lang).label}
         </div>
-        <p style={{ fontSize: "13px", color: C.sub, margin: "0 0 10px", lineHeight: "1.5" }}>{scoreContext(data.trust_score).desc}</p>
+        <p style={{ fontSize: "13px", color: C.sub, margin: "0 0 10px", lineHeight: "1.5" }}>{scoreContext(data.trust_score, lang).desc}</p>
         <div style={{ fontWeight: "700", fontSize: "16px", color: C.text, marginBottom: "4px" }}>{data.score_label}</div>
         <div style={{ fontSize: "13px", color: C.sub, lineHeight: "1.6" }}>{data.score_reasoning}</div>
       </div>
