@@ -97,10 +97,10 @@ function truncate(text, max = 12000) {
   return text.slice(0, max) + '\n\n[Document truncated. First ' + max + ' characters analysed.]';
 }
 
-async function callClaude(documentText, strict = false) {
+async function callClaude(documentText, strict = false, systemPrompt = SYSTEM_PROMPT) {
   const system = strict
-    ? SYSTEM_PROMPT + '\n\nCRITICAL: Return ONLY valid JSON starting with { and ending with }. No other text.'
-    : SYSTEM_PROMPT;
+    ? systemPrompt + '\n\nCRITICAL: Return ONLY valid JSON starting with { and ending with }. No other text.'
+    : systemPrompt;
 
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -143,11 +143,30 @@ module.exports = async function handler(req, res) {
     return res.status(429).json({ error: 'Too many requests. Please try again in an hour.' });
   }
 
-  const { text, userId, chatMode } = req.body;
+  const { text, userId, chatMode, lang } = req.body;
+
+  const langInstructions = {
+    nl: "BELANGRIJK: Schrijf ALLE velden in de JSON uitsluitend in het Nederlands. Geen enkel veld mag in het Engels zijn. Alle uitleg, analyses, aanbevelingen, onderhandelingsscripts en e-mails moeten volledig in het Nederlands worden geschreven.",
+    es: "IMPORTANTE: Escribe TODOS los campos del JSON exclusivamente en español. Ningún campo debe estar en inglés. Todas las explicaciones, análisis, recomendaciones, guiones de negociación y correos electrónicos deben estar completamente en español.",
+    en: ""
+  };
+
+  const langInstruction = langInstructions[lang] || "";
+  const SYSTEM_PROMPT_LANG = langInstruction
+    ? SYSTEM_PROMPT + "\n\n" + langInstruction
+    : SYSTEM_PROMPT;
 
   // Chat mode — plain conversational reply, no JSON structure needed
   if (chatMode) {
     try {
+      const chatLangInstruction = lang === "nl"
+        ? "Beantwoord de vraag volledig in het Nederlands."
+        : lang === "es"
+        ? "Responde la pregunta completamente en español."
+        : "";
+      const chatSystem = chatLangInstruction
+        ? "You are a helpful legal assistant. " + chatLangInstruction
+        : "You are a helpful legal assistant.";
       const response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
@@ -158,6 +177,7 @@ module.exports = async function handler(req, res) {
         body: JSON.stringify({
           model: 'claude-sonnet-4-5',
           max_tokens: 1000,
+          system: chatSystem,
           messages: [{ role: 'user', content: text }],
         }),
       });
@@ -192,13 +212,13 @@ module.exports = async function handler(req, res) {
 
   try {
     const clean = truncate(sanitise(text.trim()));
-    let raw = await callClaude(clean);
+    let raw = await callClaude(clean, false, SYSTEM_PROMPT_LANG);
     let parsed;
 
     try {
       parsed = sanitiseJSON(raw);
     } catch {
-      raw = await callClaude(clean, true);
+      raw = await callClaude(clean, true, SYSTEM_PROMPT_LANG);
       try {
         parsed = sanitiseJSON(raw);
       } catch {
