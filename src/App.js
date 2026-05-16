@@ -14,7 +14,7 @@ const T = {
     tooShort: "This looks quite short. A real legal document is usually much longer.",
     usedFree: "free analyses used this month", freePlan: "Free plan",
     signUpFree: "Sign up free", usedAnalysis: "You have used your 1 free analysis",
-    createAccount: "{tx.createAccount}",
+    createAccount: "Create a free account for 1 analysis per month.",
     recommendation: "Recommendation", whatItSays: "What this document says",
     expertAnalysis: "Expert analysis", threeThings: "3 things to know before signing",
     missing: "Missing from this document", legalTerms: "Legal terms explained",
@@ -25,14 +25,14 @@ const T = {
     copyEmail: "Copy email", clauseScripts: "Clause-by-clause scripts",
     clauseScriptsDesc: "Use these individually in conversation or on a call.",
     compareTitle: "Compare with another version",
-    compareDesc: "{tx.compareDesc}",
+    compareDesc: "Paste a revised version of this contract. Plainly will identify what changed and whether each change helps or hurts you.",
     comparePlaceholder: "Paste the revised contract here...", compareBtn: "Compare versions",
     comparing: "Comparing...", whatChanged: "What changed", send: "Send",
     chatTitle: "Ask anything about this contract", chatPlaceholder: "Ask a question about this contract...",
-    chatLocked: "Pro+ feature", chatLockedDesc: "{tx.chatLockedDesc}",
-    thinking: "Thinking...", noEmail: "{tx.noEmail}",
-    noFlags: "{tx.noFlags}", noClauses: "{tx.noClauses}",
-    upgradeTitle: "You have used your free analysis", upgradeSubtitle: "{tx.upgradeSubtitle}",
+    chatLocked: "Pro+ feature", chatLockedDesc: "Upgrade to Pro+ to ask unlimited follow-up questions about any analysis.",
+    thinking: "Thinking...", noEmail: "No negotiation email was generated for this document.",
+    noFlags: "No significant red flags found in this document.", noClauses: "No clauses returned for this document.",
+    upgradeTitle: "You have used your free analysis", upgradeSubtitle: "Choose the plan that works for you.",
     oneTimeDesc: "Single analysis. No subscription. Pay once.", buyOne: "Buy one analysis",
     proDesc: "Unlimited analyses. No storage. Cancel anytime.", startPro: "Start Pro",
     proPlusDesc: "Unlimited analyses plus unlimited AI chat on every analysis.", startProPlus: "Start Pro+",
@@ -361,7 +361,7 @@ function Landing({ onSignUp, onLogin, onSample, onAbout, t, lang }) {
     <div>
       <div style={{ background: C.header, padding: "24px 20px 20px" }}>
         <h1 style={{ color: "#fff", fontSize: "28px", fontWeight: "700", margin: "0 0 4px" }}>{APP_NAME}</h1>
-        <p style={{ color: C.accent, fontSize: "13px", margin: 0, fontWeight: "500" }}>{APP_TAGLINE}</p>
+        <p style={{ color: C.accent, fontSize: "13px", margin: 0, fontWeight: "500" }}>{tx.tagline}</p>
       </div>
       <div style={{ padding: "28px 20px" }}>
         <h2 style={{ fontSize: "26px", fontWeight: "700", color: C.text, lineHeight: "1.2", marginBottom: "12px" }}>{tx.landingHeadline}</h2>
@@ -398,14 +398,14 @@ function Landing({ onSignUp, onLogin, onSample, onAbout, t, lang }) {
         </div>
 
         <button onClick={onSignUp} style={{ ...btnStyle("primary", false), marginBottom: "10px" }}>{tx.getStarted}</button>
-        <button onClick={onLogin} style={{ ...btnStyle("secondary", false), marginBottom: "10px" }}>Sign in</button>
+        <button onClick={onLogin} style={{ ...btnStyle("secondary", false), marginBottom: "10px" }}>{tx.signIn}</button>
         <div style={{ display: "flex", justifyContent: "center", gap: "24px", marginBottom: "20px" }}>
-          <button onClick={onAbout} style={{ background: "none", border: "none", color: C.accent, fontSize: "14px", cursor: "pointer", fontWeight: "500" }}>About</button>
-          <a href="mailto:plainlyteam@gmail.com" style={{ color: C.accent, fontSize: "14px", textDecoration: "none", fontWeight: "500" }}>Contact</a>
+          <button onClick={onAbout} style={{ background: "none", border: "none", color: C.accent, fontSize: "14px", cursor: "pointer", fontWeight: "500" }}>{tx.about}</button>
+          <a href="mailto:plainlyteam@gmail.com" style={{ color: C.accent, fontSize: "14px", textDecoration: "none", fontWeight: "500" }}>{tx.contact}</a>
         </div>
 
         <div style={{ background: C.light, borderRadius: "12px", padding: "16px", marginBottom: "20px" }}>
-          <div style={{ fontSize: "12px", fontWeight: "600", color: C.sub, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "12px" }}>What people say</div>
+          <div style={{ fontSize: "12px", fontWeight: "600", color: C.sub, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "12px" }}>{lang === "nl" ? "Wat mensen zeggen" : lang === "es" ? "Lo que dice la gente" : "What people say"}</div>
           <div style={{ fontSize: "14px", color: C.text, lineHeight: "1.6", fontStyle: "italic", marginBottom: "8px" }}>{tx.testimonial}</div>
           <div style={{ fontSize: "12px", color: C.sub }}>— Freelance designer, Amsterdam</div>
         </div>
@@ -413,14 +413,14 @@ function Landing({ onSignUp, onLogin, onSample, onAbout, t, lang }) {
         <div style={{ border: `0.5px solid ${C.border}`, borderRadius: "12px", overflow: "hidden", marginBottom: "12px" }}>
           <div style={{ display: "flex" }}>
             <div style={{ flex: 1, padding: "12px", borderRight: `0.5px solid ${C.border}` }}>
-              <div style={{ fontWeight: "700", fontSize: "11px", color: C.sub, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "4px" }}>Free</div>
+              <div style={{ fontWeight: "700", fontSize: "11px", color: C.sub, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "4px" }}>{lang === "nl" ? "Gratis" : lang === "es" ? "Gratis" : "Free"}</div>
               <div style={{ fontSize: "18px", fontWeight: "700", color: C.text, marginBottom: "6px" }}>$0</div>
               {(tx.freeFeatures || T.en.freeFeatures).map((f, i) => (
                 <div key={i} style={{ fontSize: "10px", color: C.sub, marginBottom: "3px" }}>✓ {f}</div>
               ))}
             </div>
             <div style={{ flex: 1, padding: "12px", borderRight: `0.5px solid ${C.border}`, background: C.light }}>
-              <div style={{ fontWeight: "700", fontSize: "11px", color: C.accent, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "4px" }}>One-time</div>
+              <div style={{ fontWeight: "700", fontSize: "11px", color: C.accent, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "4px" }}>{lang === "nl" ? "Eenmalig" : lang === "es" ? "Una vez" : "One-time"}</div>
               <div style={{ fontSize: "18px", fontWeight: "700", color: C.text, marginBottom: "6px" }}>${ONE_TIME_PRICE}</div>
               {(tx.freeFeatures || T.en.freeFeatures).map((f, i) => (
                 <div key={i} style={{ fontSize: "10px", color: C.sub, marginBottom: "3px" }}>✓ {f}</div>
@@ -1367,7 +1367,20 @@ export default function App() {
         }
       };
       const DEMO = DEMOS[lang] || DEMOS.en;
-      return <Results data={DEMO} onNew={() => setScreen("landing")} isGuest onSignUp={() => { setAuthMode("signup"); setScreen("auth"); }} t={t} lang={lang} />;
+      return (
+        <div>
+          <div style={{ background: C.header, padding: "12px 20px", display: "flex", alignItems: "center", gap: "12px" }}>
+            <button onClick={() => setScreen("landing")}
+              style={{ background: "rgba(255,255,255,0.1)", border: "none", borderRadius: "8px", padding: "8px 14px", color: "#fff", fontSize: "13px", fontWeight: "600", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}>
+              ← {lang === "nl" ? "Terug" : lang === "es" ? "Volver" : "Go back"}
+            </button>
+            <span style={{ color: C.accent, fontSize: "13px", fontWeight: "500" }}>
+              {lang === "nl" ? "Voorbeeldanalyse" : lang === "es" ? "Análisis de ejemplo" : "Sample analysis"}
+            </span>
+          </div>
+          <Results data={DEMO} onNew={() => setScreen("landing")} isGuest onSignUp={() => { setAuthMode("signup"); setScreen("auth"); }} t={t} lang={lang} />
+        </div>
+      );
     }
     if (!isAuthed) { setScreen("landing"); return null; }
     if (tab === "analyse") {
