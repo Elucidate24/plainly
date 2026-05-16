@@ -489,6 +489,66 @@ function Landing({ onSignUp, onLogin, onSample, onAbout, t, lang, onLangChange }
           ))}
         </div>
 
+        {/* ChatGPT vs Plainly comparison */}
+        <div style={{ marginBottom: "24px" }}>
+          <div style={{ fontWeight: "700", fontSize: "18px", color: C.text, marginBottom: "6px", textAlign: "center" }}>
+            {lang === "nl" ? "Waarom niet gewoon ChatGPT?" : lang === "es" ? "¿Por qué no simplemente ChatGPT?" : "Why not just use ChatGPT?"}
+          </div>
+          <p style={{ fontSize: "13px", color: C.sub, textAlign: "center", marginBottom: "16px", lineHeight: "1.5" }}>
+            {lang === "nl"
+              ? "ChatGPT kan het ook. Maar alleen als je weet wat je moet vragen."
+              : lang === "es"
+              ? "ChatGPT también puede hacerlo. Pero solo si sabes qué preguntar."
+              : "ChatGPT can do it too. But only if you know what to ask."}
+          </p>
+
+          <div style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
+            {/* ChatGPT column */}
+            <div style={{ flex: 1, background: C.light, borderRadius: "12px", padding: "14px", border: `1px solid ${C.border}` }}>
+              <div style={{ fontWeight: "700", fontSize: "13px", color: C.sub, marginBottom: "12px", textAlign: "center" }}>ChatGPT</div>
+              {[
+                lang === "nl" ? "Je moet precies weten wat je moet vragen" : lang === "es" ? "Necesitas saber exactamente qué preguntar" : "You need to know what to ask",
+                lang === "nl" ? "Meerdere berichten heen en weer" : lang === "es" ? "Múltiples mensajes de ida y vuelta" : "Multiple messages back and forth",
+                lang === "nl" ? "Geen score of oordeel" : lang === "es" ? "Sin puntuación ni veredicto" : "No score or verdict",
+                lang === "nl" ? "Geen industrievergelijking" : lang === "es" ? "Sin comparación con el sector" : "No industry comparison",
+                lang === "nl" ? "Jij moet de e-mail nog schrijven" : lang === "es" ? "Tú escribes el correo tú mismo" : "You still write the email yourself",
+              ].map((item, i) => (
+                <div key={i} style={{ display: "flex", gap: "8px", marginBottom: "8px", alignItems: "flex-start" }}>
+                  <span style={{ color: C.danger, fontSize: "14px", flexShrink: 0, marginTop: "1px" }}>✗</span>
+                  <span style={{ fontSize: "12px", color: C.sub, lineHeight: "1.4" }}>{item}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Plainly column */}
+            <div style={{ flex: 1, background: C.header, borderRadius: "12px", padding: "14px", border: `1px solid ${C.header}` }}>
+              <div style={{ fontWeight: "700", fontSize: "13px", color: C.accent, marginBottom: "12px", textAlign: "center" }}>Plainly</div>
+              {[
+                lang === "nl" ? "Gewoon plakken, klaar" : lang === "es" ? "Simplemente pega y listo" : "Just paste and go",
+                lang === "nl" ? "Volledig resultaat in 30 seconden" : lang === "es" ? "Resultado completo en 30 segundos" : "Complete result in 30 seconds",
+                lang === "nl" ? "Vertrouwensscore van 1 tot 10" : lang === "es" ? "Puntuación de confianza del 1 al 10" : "Trust score from 1 to 10",
+                lang === "nl" ? "Vergelijking met industriestandaard" : lang === "es" ? "Comparación con el estándar del sector" : "Industry standard comparison",
+                lang === "nl" ? "Kant-en-klare onderhandelingsmail" : lang === "es" ? "Correo de negociación listo para enviar" : "Ready to send negotiation email",
+              ].map((item, i) => (
+                <div key={i} style={{ display: "flex", gap: "8px", marginBottom: "8px", alignItems: "flex-start" }}>
+                  <span style={{ color: C.accent, fontSize: "14px", flexShrink: 0, marginTop: "1px" }}>✓</span>
+                  <span style={{ fontSize: "12px", color: "#E8D4A0", lineHeight: "1.4" }}>{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ background: C.accentLight, border: `1px solid #E8D4A0`, borderRadius: "10px", padding: "12px 14px", textAlign: "center" }}>
+            <p style={{ fontSize: "13px", color: C.accentDark, margin: 0, lineHeight: "1.5", fontWeight: "500" }}>
+              {lang === "nl"
+                ? "ChatGPT is een leeg vel papier. Plainly is een specialist die al weet wat te zoeken."
+                : lang === "es"
+                ? "ChatGPT es una página en blanco. Plainly es un especialista que ya sabe qué buscar."
+                : "ChatGPT is a blank page. Plainly is a specialist that already knows what to look for."}
+            </p>
+          </div>
+        </div>
+
         <div style={{ background: "#F5EDD6", border: `1px solid #E8D4A0`, borderRadius: "12px", padding: "16px", marginBottom: "24px" }}>
           <div style={{ fontWeight: "600", fontSize: "14px", color: "#8A6828", marginBottom: "6px" }}>{tx.demoTitle}</div>
           <p style={{ fontSize: "13px", color: "#6A5020", margin: "0 0 12px", lineHeight: "1.5" }}>{tx.demoDesc}</p>
