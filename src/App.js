@@ -33,7 +33,7 @@ const T = {
     thinking: "Thinking...", noEmail: "No negotiation email was generated for this document.",
     noFlags: "No significant red flags found in this document.", noClauses: "No clauses returned for this document.",
     upgradeTitle: "You have used your free analysis", upgradeSubtitle: "Choose the plan that works for you.",
-    oneTimeDesc: "Single analysis. No subscription. Pay once.", buyOne: "Buy one analysis",
+    oneTimeDesc: "Single analysis. No subscription. Pay once.", oneTimeLabel: "One-time", buyOne: "Buy one analysis",
     proDesc: "Unlimited analyses. No storage. Cancel anytime.", startPro: "Start Pro",
     proPlusDesc: "Unlimited analyses plus unlimited AI chat on every analysis.", startProPlus: "Start Pro+",
     continueFree: "Continue on free plan", newAnalysis: "Analyse another document",
@@ -102,7 +102,7 @@ const T = {
     thinking: "Nadenken...", noEmail: "Geen onderhandelingsmail gegenereerd voor dit document.",
     noFlags: "Geen significante rode vlaggen gevonden.", noClauses: "Geen clausules teruggegeven.",
     upgradeTitle: "Je hebt je gratis analyse gebruikt", upgradeSubtitle: "Kies het plan dat bij je past.",
-    oneTimeDesc: "Enkele analyse. Geen abonnement.", buyOne: "Koop één analyse",
+    oneTimeDesc: "Enkele analyse. Geen abonnement.", oneTimeLabel: "Eenmalig", buyOne: "Koop één analyse",
     proDesc: "Onbeperkte analyses. Geen opslag. Altijd opzegbaar.", startPro: "Pro starten",
     proPlusDesc: "Onbeperkte analyses plus onbeperkte AI-chat.", startProPlus: "Pro+ starten",
     continueFree: "Doorgaan met gratis plan", newAnalysis: "Nog een document analyseren",
@@ -171,7 +171,7 @@ const T = {
     thinking: "Pensando...", noEmail: "No se generó ningún correo de negociación para este documento.",
     noFlags: "No se encontraron señales de alerta significativas.", noClauses: "No se devolvieron cláusulas.",
     upgradeTitle: "Has usado tu análisis gratuito", upgradeSubtitle: "Elige el plan que mejor se adapte a ti.",
-    oneTimeDesc: "Análisis único. Sin suscripción. Pago único.", buyOne: "Comprar un análisis",
+    oneTimeDesc: "Análisis único. Sin suscripción. Pago único.", oneTimeLabel: "Una vez", buyOne: "Comprar un análisis",
     proDesc: "Análisis ilimitados. Sin almacenamiento. Cancela cuando quieras.", startPro: "Empezar Pro",
     proPlusDesc: "Análisis ilimitados más chat IA ilimitado.", startProPlus: "Empezar Pro+",
     continueFree: "Continuar con el plan gratuito", newAnalysis: "Analizar otro documento",
@@ -355,12 +355,22 @@ function Onboarding({ onFinish }) {
   );
 }
 
-function Landing({ onSignUp, onLogin, onSample, onAbout, t, lang }) {
+function Landing({ onSignUp, onLogin, onSample, onAbout, t, lang, onLangChange }) {
   const tx = t || T.en;
   return (
     <div>
       <div style={{ background: C.header, padding: "24px 20px 20px" }}>
-        <h1 style={{ color: "#fff", fontSize: "28px", fontWeight: "700", margin: "0 0 4px" }}>{APP_NAME}</h1>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "4px" }}>
+          <h1 style={{ color: "#fff", fontSize: "28px", fontWeight: "700", margin: 0 }}>{APP_NAME}</h1>
+          <div style={{ display: "flex", gap: "3px", background: "rgba(255,255,255,0.1)", borderRadius: "8px", padding: "3px" }}>
+            {Object.entries(LANGS).map(([code, label]) => (
+              <button key={code} onClick={() => onLangChange(code)}
+                style={{ background: lang === code ? C.accent : "transparent", color: lang === code ? "#1A1814" : "#9CA3AF", border: "none", borderRadius: "6px", padding: "4px 9px", fontSize: "12px", fontWeight: "700", cursor: "pointer" }}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
         <p style={{ color: C.accent, fontSize: "13px", margin: 0, fontWeight: "500" }}>{tx.tagline}</p>
       </div>
       <div style={{ padding: "28px 20px" }}>
@@ -1052,7 +1062,7 @@ function Upgrade({ userEmail, onClose, t }) {
 
         <div style={{ display: "flex", gap: "10px", marginBottom: "14px" }}>
           <div style={{ flex: 1, background: C.light, borderRadius: "12px", padding: "14px", border: `1px solid ${C.border}` }}>
-            <div style={{ fontSize: "10px", fontWeight: "700", color: C.sub, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "4px" }}>One-time</div>
+            <div style={{ fontSize: "10px", fontWeight: "700", color: C.sub, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "4px" }}>{tx.oneTimeLabel || "One-time"}</div>
             <div style={{ fontSize: "24px", fontWeight: "700", color: C.text, marginBottom: "6px" }}>${ONE_TIME_PRICE}</div>
             <div style={{ fontSize: "11px", color: C.sub, marginBottom: "10px", lineHeight: "1.4" }}>{tx.oneTimeDesc}</div>
             <a href={oneTimeUrl} target="_blank" rel="noreferrer" style={{ ...btnStyle("secondary", false), fontSize: "12px", padding: "8px", textDecoration: "none" }}>
@@ -1231,6 +1241,7 @@ export default function App() {
   const renderBody = () => {
     if (onboarding) return <Onboarding onFinish={() => setOnboarding(false)} />;
     if (screen === "landing") return <Landing
+      t={t} lang={lang} onLangChange={setLang}
       onSignUp={() => { setAuthMode("signup"); setScreen("auth"); }}
       onLogin={() => { setAuthMode("login"); setScreen("auth"); }}
       onSample={() => setScreen("sample")}
