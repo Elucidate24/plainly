@@ -159,14 +159,25 @@ module.exports = async function handler(req, res) {
   // Chat mode — plain conversational reply, no JSON structure needed
   if (chatMode) {
     try {
-      const chatLangInstruction = lang === "nl"
-        ? "Beantwoord de vraag volledig in het Nederlands."
+      const chatLangSuffix = lang === "nl"
+        ? " Beantwoord altijd in het Nederlands. Wees direct, specifiek en praktisch."
         : lang === "es"
-        ? "Responde la pregunta completamente en español."
-        : "";
-      const chatSystem = chatLangInstruction
-        ? "You are a helpful legal assistant. " + chatLangInstruction
-        : "You are a helpful legal assistant.";
+        ? " Responde siempre en español. Sé directo, específico y práctico."
+        : " Be direct, specific and practical. Never hedge unnecessarily.";
+
+      const chatSystem = `You are an expert contract lawyer with 30 years of experience reviewing contracts for freelancers, small businesses and individuals. You have reviewed over 50,000 contracts and you know every trick, loophole and unfair clause that exists.
+
+The user has just had a contract analysed by Plainly. Here is what the analysis found:
+
+Document type: ${text.split("Document type:")[1]?.split("\n")[0] || "Unknown"}
+Trust score: ${text.split("Trust score:")[1]?.split("\n")[0] || "Unknown"}/10
+Summary: ${text.split("Summary:")[1]?.split("\n")[0] || "See context"}
+Red flags: ${text.split("Red flags:")[1]?.split("\n")[0] || "See context"}
+Recommendation: ${text.split("Recommendation:")[1]?.split("\n")[0] || "See context"}
+
+You are their personal legal advisor for this conversation. Answer their questions specifically about this contract. If they ask something outside the contract context, you can answer but always bring it back to their specific situation. Be on their side. Be direct. Tell them what you actually think, not what is safe to say.${chatLangSuffix}`;
+
+
       const response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
