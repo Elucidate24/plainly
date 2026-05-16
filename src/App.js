@@ -1,6 +1,218 @@
 import { useState, useEffect, useRef, memo } from "react";
 import { createClient } from "@supabase/supabase-js";
 
+const LANGS = { en: "EN", nl: "NL", es: "ES" };
+
+const T = {
+  en: {
+    tagline: "Understand anything you sign",
+    disclaimer: "Plainly provides information, not legal advice. Always consult a qualified lawyer for important decisions.",
+    analyseBtn: "Analyse document", analysing: "Analysing...", clearBtn: "Clear",
+    newBtn: "Analyse another document", shareBtn: "Share this analysis",
+    placeholder: "Paste your contract, rental agreement, employment terms, or any legal document here...",
+    privacyNote: "Your document is never stored. It is analysed and immediately forgotten.",
+    tooShort: "This looks quite short. A real legal document is usually much longer.",
+    usedFree: "free analyses used this month", freePlan: "Free plan",
+    signUpFree: "Sign up free", usedAnalysis: "You have used your 1 free analysis",
+    createAccount: "{tx.createAccount}",
+    recommendation: "Recommendation", whatItSays: "What this document says",
+    expertAnalysis: "Expert analysis", threeThings: "3 things to know before signing",
+    missing: "Missing from this document", legalTerms: "Legal terms explained",
+    redFlags: "Red flags", vsIndustry: "vs industry standard",
+    worstCase: "Worst case if enforced", negotiationScript: "Negotiation script",
+    copy: "Copy", copied: "Copied!", readyEmail: "Ready-to-send negotiation email",
+    emailDesc: "This email addresses all the major issues in this contract. Fill in the bracketed details and send.",
+    copyEmail: "Copy email", clauseScripts: "Clause-by-clause scripts",
+    clauseScriptsDesc: "Use these individually in conversation or on a call.",
+    compareTitle: "Compare with another version",
+    compareDesc: "{tx.compareDesc}",
+    comparePlaceholder: "Paste the revised contract here...", compareBtn: "Compare versions",
+    comparing: "Comparing...", whatChanged: "What changed", send: "Send",
+    chatTitle: "Ask anything about this contract", chatPlaceholder: "Ask a question about this contract...",
+    chatLocked: "Pro+ feature", chatLockedDesc: "{tx.chatLockedDesc}",
+    thinking: "Thinking...", noEmail: "{tx.noEmail}",
+    noFlags: "{tx.noFlags}", noClauses: "{tx.noClauses}",
+    upgradeTitle: "You have used your free analysis", upgradeSubtitle: "{tx.upgradeSubtitle}",
+    oneTimeDesc: "Single analysis. No subscription. Pay once.", buyOne: "Buy one analysis",
+    proDesc: "Unlimited analyses. No storage. Cancel anytime.", startPro: "Start Pro",
+    proPlusDesc: "Unlimited analyses plus unlimited AI chat on every analysis.", startProPlus: "Start Pro+",
+    continueFree: "Continue on free plan", newAnalysis: "Analyse another document",
+    viewDemo: "View sample analysis", getStarted: "Get started free", signIn: "Sign in",
+    about: "About", contact: "Contact", demoTitle: "See a real example",
+    demoDesc: "See how Plainly analyses a freelance contract. No account needed.",
+    landingHeadline: "Stop signing things you do not understand.",
+    landingSubtitle: "Paste any legal document. Get a plain English breakdown with risk warnings in seconds.",
+    trustTitle: "What happens when you paste a document",
+    testimonial: "Finally understood what I was signing in my rental agreement. Found two clauses I would never have noticed.",
+    testimonialAuthor: "Freelance designer, Amsterdam",
+    showDetails: "Show details", hideDetails: "Hide",
+    tabs: { overview: "Overview", clauses: "Clauses", flags: "Flags", negotiate: "Negotiate", compare: "Compare", chat: "Chat" },
+    freeFeatures: ["1 analysis per month", "Full analysis every time", "No document storage"],
+    proFeatures: ["Unlimited analyses", "No storage", "Cancel anytime"],
+    proPlusFeatures: ["Unlimited analyses", "Unlimited chat", "No storage", "Cancel anytime"],
+    features: [
+      { icon: "🔍", title: "Plain English summary", desc: "Legal jargon translated instantly" },
+      { icon: "🚩", title: "Red flag detection", desc: "Risky clauses highlighted with worst case scenarios" },
+      { icon: "⚖️", title: "Industry comparison", desc: "See exactly how restrictive each clause is versus market standard" },
+      { icon: "🔒", title: "Complete privacy", desc: "Your documents are never stored. Analysed and immediately forgotten." },
+    ],
+    trustSteps: [
+      { step: "1", icon: "📄", title: "You paste your document", desc: "The text goes directly to our analysis engine. It never touches a database." },
+      { step: "2", icon: "🤖", title: "AI analyses it in seconds", desc: "Our system reads every clause and generates your breakdown." },
+      { step: "3", icon: "🗑️", title: "Document is immediately forgotten", desc: "The moment your results appear, the document is gone. Permanently." },
+    ],
+    gaugeMeta: [
+      { label: "Standard", desc: "Consistent with prevailing market terms. No elevated risk." },
+      { label: "Restrictive", desc: "Departs from standard practice. Shifts risk toward the signing party." },
+      { label: "Very restrictive", desc: "Materially exceeds what is commercially reasonable. Should be negotiated." },
+      { label: "Aggressive", desc: "Significantly outside acceptable commercial practice." },
+    ],
+    onboarding: [
+      { title: "Welcome to Plainly", body: "Paste any legal document and get a plain English breakdown in seconds.", icon: "👋" },
+      { title: "We flag the risks", body: "Red flags highlighted automatically before you sign anything.", icon: "🚩" },
+      { title: "Your privacy is protected", body: "We never store your documents. Everything disappears when you close the app.", icon: "🔒" },
+    ],
+  },
+  nl: {
+    tagline: "Begrijp alles wat je ondertekent",
+    disclaimer: "Plainly biedt informatie, geen juridisch advies. Raadpleeg altijd een gekwalificeerde advocaat voor belangrijke beslissingen.",
+    analyseBtn: "Document analyseren", analysing: "Analyseren...", clearBtn: "Wissen",
+    newBtn: "Nog een document analyseren", shareBtn: "Analyse delen",
+    placeholder: "Plak hier je contract, huurovereenkomst, arbeidsvoorwaarden of een ander juridisch document...",
+    privacyNote: "Je document wordt nooit opgeslagen. Het wordt geanalyseerd en onmiddellijk vergeten.",
+    tooShort: "Dit lijkt erg kort. Een echt juridisch document is meestal veel langer.",
+    usedFree: "gratis analyses gebruikt deze maand", freePlan: "Gratis plan",
+    signUpFree: "Gratis aanmelden", usedAnalysis: "Je hebt je gratis analyse gebruikt",
+    createAccount: "Maak een gratis account aan voor 1 analyse per maand.",
+    recommendation: "Aanbeveling", whatItSays: "Wat dit document zegt",
+    expertAnalysis: "Expertanalyse", threeThings: "3 dingen om te weten voor het tekenen",
+    missing: "Ontbreekt in dit document", legalTerms: "Juridische termen uitgelegd",
+    redFlags: "Rode vlaggen", vsIndustry: "vs. industriestandaard",
+    worstCase: "Worst case als dit wordt afgedwongen", negotiationScript: "Onderhandelingsscript",
+    copy: "Kopiëren", copied: "Gekopieerd!", readyEmail: "Kant-en-klare onderhandelingsmail",
+    emailDesc: "Deze e-mail behandelt alle belangrijke kwesties. Vul de gegevens in en verstuur.",
+    copyEmail: "E-mail kopiëren", clauseScripts: "Clausule-per-clausule scripts",
+    clauseScriptsDesc: "Gebruik deze individueel in een gesprek of telefoongesprek.",
+    compareTitle: "Vergelijk met een andere versie",
+    compareDesc: "Plak een herziene versie. Plainly identificeert wat er veranderd is.",
+    comparePlaceholder: "Plak hier het herziene contract...", compareBtn: "Versies vergelijken",
+    comparing: "Vergelijken...", whatChanged: "Wat er veranderd is", send: "Versturen",
+    chatTitle: "Stel alles over dit contract", chatPlaceholder: "Stel een vraag over dit contract...",
+    chatLocked: "Pro+ functie", chatLockedDesc: "Upgrade naar Pro+ voor onbeperkte vervolgvragen.",
+    thinking: "Nadenken...", noEmail: "Geen onderhandelingsmail gegenereerd voor dit document.",
+    noFlags: "Geen significante rode vlaggen gevonden.", noClauses: "Geen clausules teruggegeven.",
+    upgradeTitle: "Je hebt je gratis analyse gebruikt", upgradeSubtitle: "Kies het plan dat bij je past.",
+    oneTimeDesc: "Enkele analyse. Geen abonnement.", buyOne: "Koop één analyse",
+    proDesc: "Onbeperkte analyses. Geen opslag. Altijd opzegbaar.", startPro: "Pro starten",
+    proPlusDesc: "Onbeperkte analyses plus onbeperkte AI-chat.", startProPlus: "Pro+ starten",
+    continueFree: "Doorgaan met gratis plan", newAnalysis: "Nog een document analyseren",
+    viewDemo: "Voorbeeldanalyse bekijken", getStarted: "Gratis beginnen",
+    signIn: "Inloggen", about: "Over ons", contact: "Contact",
+    demoTitle: "Bekijk een echt voorbeeld", demoDesc: "Zie hoe Plainly een freelancecontract analyseert. Geen account nodig.",
+    landingHeadline: "Stop met ondertekenen wat je niet begrijpt.",
+    landingSubtitle: "Plak een juridisch document. Krijg in seconden een duidelijke uitleg met risicowaarschuwingen.",
+    trustTitle: "Wat er gebeurt als je een document plakt",
+    testimonial: "Begreep eindelijk wat ik tekende in mijn huurcontract. Vond twee clausules die ik nooit had opgemerkt.",
+    testimonialAuthor: "Freelance ontwerper, Amsterdam",
+    showDetails: "Details tonen", hideDetails: "Verbergen",
+    tabs: { overview: "Overzicht", clauses: "Clausules", flags: "Vlaggen", negotiate: "Onderhandelen", compare: "Vergelijken", chat: "Chat" },
+    freeFeatures: ["1 analyse per maand", "Volledige analyse elke keer", "Geen documentopslag"],
+    proFeatures: ["Onbeperkte analyses", "Geen opslag", "Altijd opzegbaar"],
+    proPlusFeatures: ["Onbeperkte analyses", "Onbeperkte chat", "Geen opslag", "Altijd opzegbaar"],
+    features: [
+      { icon: "🔍", title: "Begrijpelijke samenvatting", desc: "Juridisch jargon direct vertaald" },
+      { icon: "🚩", title: "Rode vlaggen detecteren", desc: "Risicovolle clausules gemarkeerd met worst-case scenario's" },
+      { icon: "⚖️", title: "Industrievergelijking", desc: "Zie hoe restrictief elke clausule is ten opzichte van de marktstandaard" },
+      { icon: "🔒", title: "Volledige privacy", desc: "Je documenten worden nooit opgeslagen." },
+    ],
+    trustSteps: [
+      { step: "1", icon: "📄", title: "Je plakt je document", desc: "De tekst gaat rechtstreeks naar onze analyse-engine. Het raakt nooit een database." },
+      { step: "2", icon: "🤖", title: "AI analyseert het in seconden", desc: "Ons systeem leest elke clausule en genereert jouw analyse." },
+      { step: "3", icon: "🗑️", title: "Document wordt onmiddellijk vergeten", desc: "Op het moment dat je resultaten verschijnen, is het document weg. Permanent." },
+    ],
+    gaugeMeta: [
+      { label: "Standaard", desc: "In overeenstemming met gangbare marktvoorwaarden. Geen verhoogd risico." },
+      { label: "Restrictief", desc: "Wijkt af van de standaard marktpraktijk. Verdient aandacht voor ondertekening." },
+      { label: "Zeer restrictief", desc: "Overschrijdt wat commercieel redelijk is. Moet worden onderhandeld." },
+      { label: "Agressief", desc: "Significant buiten de grenzen van aanvaardbare commerciële praktijk." },
+    ],
+    onboarding: [
+      { title: "Welkom bij Plainly", body: "Plak een juridisch document en krijg in seconden een begrijpelijke uitleg.", icon: "👋" },
+      { title: "Wij signaleren de risico's", body: "Rode vlaggen automatisch gemarkeerd voordat je iets ondertekent.", icon: "🚩" },
+      { title: "Je privacy is beschermd", body: "Wij slaan je documenten nooit op.", icon: "🔒" },
+    ],
+  },
+  es: {
+    tagline: "Entiende todo lo que firmas",
+    disclaimer: "Plainly proporciona información, no asesoramiento legal. Consulta siempre a un abogado cualificado para decisiones importantes.",
+    analyseBtn: "Analizar documento", analysing: "Analizando...", clearBtn: "Limpiar",
+    newBtn: "Analizar otro documento", shareBtn: "Compartir este análisis",
+    placeholder: "Pega aquí tu contrato, contrato de arrendamiento, condiciones laborales o cualquier documento legal...",
+    privacyNote: "Tu documento nunca se almacena. Se analiza y se olvida inmediatamente.",
+    tooShort: "Esto parece muy corto. Un documento legal real suele ser mucho más largo.",
+    usedFree: "análisis gratuitos usados este mes", freePlan: "Plan gratuito",
+    signUpFree: "Registrarse gratis", usedAnalysis: "Has usado tu análisis gratuito",
+    createAccount: "Crea una cuenta gratuita para 1 análisis por mes.",
+    recommendation: "Recomendación", whatItSays: "Lo que dice este documento",
+    expertAnalysis: "Análisis experto", threeThings: "3 cosas que saber antes de firmar",
+    missing: "Lo que falta en este documento", legalTerms: "Términos legales explicados",
+    redFlags: "Señales de alerta", vsIndustry: "vs. estándar de la industria",
+    worstCase: "Peor caso si se aplica", negotiationScript: "Guión de negociación",
+    copy: "Copiar", copied: "¡Copiado!", readyEmail: "Correo de negociación listo para enviar",
+    emailDesc: "Este correo aborda todos los problemas principales. Rellena los detalles y envía.",
+    copyEmail: "Copiar correo", clauseScripts: "Guiones cláusula por cláusula",
+    clauseScriptsDesc: "Úsalos individualmente en una conversación o llamada.",
+    compareTitle: "Comparar con otra versión",
+    compareDesc: "Pega una versión revisada. Plainly identificará qué cambió y si te beneficia o perjudica.",
+    comparePlaceholder: "Pega aquí el contrato revisado...", compareBtn: "Comparar versiones",
+    comparing: "Comparando...", whatChanged: "Qué cambió", send: "Enviar",
+    chatTitle: "Pregunta lo que quieras sobre este contrato", chatPlaceholder: "Haz una pregunta sobre este contrato...",
+    chatLocked: "Función Pro+", chatLockedDesc: "Actualiza a Pro+ para hacer preguntas ilimitadas.",
+    thinking: "Pensando...", noEmail: "No se generó ningún correo de negociación para este documento.",
+    noFlags: "No se encontraron señales de alerta significativas.", noClauses: "No se devolvieron cláusulas.",
+    upgradeTitle: "Has usado tu análisis gratuito", upgradeSubtitle: "Elige el plan que mejor se adapte a ti.",
+    oneTimeDesc: "Análisis único. Sin suscripción. Pago único.", buyOne: "Comprar un análisis",
+    proDesc: "Análisis ilimitados. Sin almacenamiento. Cancela cuando quieras.", startPro: "Empezar Pro",
+    proPlusDesc: "Análisis ilimitados más chat IA ilimitado.", startProPlus: "Empezar Pro+",
+    continueFree: "Continuar con el plan gratuito", newAnalysis: "Analizar otro documento",
+    viewDemo: "Ver análisis de ejemplo", getStarted: "Empezar gratis",
+    signIn: "Iniciar sesión", about: "Acerca de", contact: "Contacto",
+    demoTitle: "Ver un ejemplo real", demoDesc: "Mira cómo Plainly analiza un contrato freelance. Sin cuenta necesaria.",
+    landingHeadline: "Deja de firmar lo que no entiendes.",
+    landingSubtitle: "Pega cualquier documento legal. Obtén una explicación clara con avisos de riesgo en segundos.",
+    trustTitle: "Qué ocurre cuando pegas un documento",
+    testimonial: "Por fin entendí lo que firmaba en mi contrato de alquiler. Encontré dos cláusulas que nunca habría notado.",
+    testimonialAuthor: "Diseñadora freelance, Barcelona",
+    showDetails: "Mostrar detalles", hideDetails: "Ocultar",
+    tabs: { overview: "Resumen", clauses: "Cláusulas", flags: "Alertas", negotiate: "Negociar", compare: "Comparar", chat: "Chat" },
+    freeFeatures: ["1 análisis por mes", "Análisis completo cada vez", "Sin almacenamiento"],
+    proFeatures: ["Análisis ilimitados", "Sin almacenamiento", "Cancela cuando quieras"],
+    proPlusFeatures: ["Análisis ilimitados", "Chat ilimitado", "Sin almacenamiento", "Cancela cuando quieras"],
+    features: [
+      { icon: "🔍", title: "Resumen en lenguaje claro", desc: "Jerga legal traducida al instante" },
+      { icon: "🚩", title: "Detección de alertas", desc: "Cláusulas de riesgo destacadas con escenarios en el peor caso" },
+      { icon: "⚖️", title: "Comparación con el sector", desc: "Ve cómo de restrictiva es cada cláusula frente al estándar del mercado" },
+      { icon: "🔒", title: "Privacidad total", desc: "Tus documentos nunca se almacenan." },
+    ],
+    trustSteps: [
+      { step: "1", icon: "📄", title: "Pegas tu documento", desc: "El texto va directamente a nuestro motor de análisis. Nunca toca una base de datos." },
+      { step: "2", icon: "🤖", title: "La IA lo analiza en segundos", desc: "Nuestro sistema lee cada cláusula y genera tu análisis." },
+      { step: "3", icon: "🗑️", title: "El documento se olvida inmediatamente", desc: "En el momento en que aparecen tus resultados, el documento desaparece. Permanentemente." },
+    ],
+    gaugeMeta: [
+      { label: "Estándar", desc: "Coherente con los términos de mercado predominantes. Sin riesgo elevado." },
+      { label: "Restrictivo", desc: "Se aparta de la práctica estándar. Merece atención antes de la firma." },
+      { label: "Muy restrictivo", desc: "Supera lo que es comercialmente razonable. Debe negociarse antes de firmar." },
+      { label: "Agresivo", desc: "Significativamente fuera de los límites de la práctica comercial aceptable." },
+    ],
+    onboarding: [
+      { title: "Bienvenido a Plainly", body: "Pega cualquier documento legal y obtén una explicación en segundos.", icon: "👋" },
+      { title: "Detectamos los riesgos", body: "Señales de alerta resaltadas automáticamente antes de que firmes nada.", icon: "🚩" },
+      { title: "Tu privacidad está protegida", body: "Nunca almacenamos tus documentos.", icon: "🔒" },
+    ],
+  },
+};
+
 const APP_NAME = "Plainly";
 const APP_TAGLINE = "Understand anything you sign";
 const PRO_PRICE = "4.99";
@@ -143,7 +355,8 @@ function Onboarding({ onFinish }) {
   );
 }
 
-function Landing({ onSignUp, onLogin, onSample, onAbout }) {
+function Landing({ onSignUp, onLogin, onSample, onAbout, t, lang }) {
+  const tx = t || T.en;
   return (
     <div>
       <div style={{ background: C.header, padding: "24px 20px 20px" }}>
@@ -151,15 +364,10 @@ function Landing({ onSignUp, onLogin, onSample, onAbout }) {
         <p style={{ color: C.accent, fontSize: "13px", margin: 0, fontWeight: "500" }}>{APP_TAGLINE}</p>
       </div>
       <div style={{ padding: "28px 20px" }}>
-        <h2 style={{ fontSize: "26px", fontWeight: "700", color: C.text, lineHeight: "1.2", marginBottom: "12px" }}>Stop signing things you do not understand.</h2>
-        <p style={{ fontSize: "15px", color: C.sub, lineHeight: "1.6", marginBottom: "28px" }}>Paste any legal document. Get a plain English breakdown with risk warnings in seconds.</p>
+        <h2 style={{ fontSize: "26px", fontWeight: "700", color: C.text, lineHeight: "1.2", marginBottom: "12px" }}>{tx.landingHeadline}</h2>
+        <p style={{ fontSize: "15px", color: C.sub, lineHeight: "1.6", marginBottom: "28px" }}>{tx.landingSubtitle}</p>
 
-        {[
-          { icon: "🔍", title: "Plain English summary", desc: "Legal jargon translated instantly" },
-          { icon: "🚩", title: "Red flag detection", desc: "Risky clauses highlighted with worst case scenarios" },
-          { icon: "⚖️", title: "Industry comparison", desc: "See exactly how restrictive each clause is versus market standard" },
-          { icon: "🔒", title: "Complete privacy", desc: "Your documents are never stored. Analysed and immediately forgotten." },
-        ].map((f, i) => (
+        {(tx.features || T.en.features).map((f, i) => (
           <div key={i} style={{ display: "flex", gap: "14px", marginBottom: "18px" }}>
             <div style={{ fontSize: "22px", flexShrink: 0 }}>{f.icon}</div>
             <div>
@@ -171,12 +379,8 @@ function Landing({ onSignUp, onLogin, onSample, onAbout }) {
 
         {/* Trust section */}
         <div style={{ background: C.light, border: `1px solid ${C.border}`, borderRadius: "14px", padding: "20px", marginBottom: "24px" }}>
-          <div style={{ fontSize: "13px", fontWeight: "700", color: C.text, marginBottom: "16px" }}>What happens when you paste a document</div>
-          {[
-            { step: "1", icon: "📄", title: "You paste your document", desc: "The text goes directly to our analysis engine. It never touches a database." },
-            { step: "2", icon: "🤖", title: "AI analyses it in seconds", desc: "Our system reads every clause and generates your breakdown." },
-            { step: "3", icon: "🗑️", title: "Document is immediately forgotten", desc: "The moment your results appear, the document is gone. Permanently. We have no record it ever existed." },
-          ].map((s, i) => (
+          <div style={{ fontSize: "13px", fontWeight: "700", color: C.text, marginBottom: "16px" }}>{tx.trustTitle}</div>
+          {(tx.trustSteps || T.en.trustSteps).map((s, i) => (
             <div key={i} style={{ display: "flex", gap: "14px", marginBottom: i < 2 ? "16px" : 0, alignItems: "flex-start" }}>
               <div style={{ width: "28px", height: "28px", borderRadius: "50%", background: C.accent, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: "700", flexShrink: 0 }}>{s.step}</div>
               <div>
@@ -190,10 +394,10 @@ function Landing({ onSignUp, onLogin, onSample, onAbout }) {
         <div style={{ background: "#F5EDD6", border: `1px solid #E8D4A0`, borderRadius: "12px", padding: "16px", marginBottom: "24px" }}>
           <div style={{ fontWeight: "600", fontSize: "14px", color: "#8A6828", marginBottom: "6px" }}>See a real example</div>
           <p style={{ fontSize: "13px", color: "#6A5020", margin: "0 0 12px", lineHeight: "1.5" }}>See how Plainly analyses a freelance contract. No account needed.</p>
-          <button onClick={onSample} style={{ ...btnStyle("primary", false), background: "#8A6828", padding: "10px", fontSize: "14px" }}>View sample analysis</button>
+          <button onClick={onSample} style={{ ...btnStyle("primary", false), background: "#8A6828", padding: "10px", fontSize: "14px" }}>{tx.viewDemo}</button>
         </div>
 
-        <button onClick={onSignUp} style={{ ...btnStyle("primary", false), marginBottom: "10px" }}>Get started free</button>
+        <button onClick={onSignUp} style={{ ...btnStyle("primary", false), marginBottom: "10px" }}>{tx.getStarted}</button>
         <button onClick={onLogin} style={{ ...btnStyle("secondary", false), marginBottom: "10px" }}>Sign in</button>
         <div style={{ display: "flex", justifyContent: "center", gap: "24px", marginBottom: "20px" }}>
           <button onClick={onAbout} style={{ background: "none", border: "none", color: C.accent, fontSize: "14px", cursor: "pointer", fontWeight: "500" }}>About</button>
@@ -202,7 +406,7 @@ function Landing({ onSignUp, onLogin, onSample, onAbout }) {
 
         <div style={{ background: C.light, borderRadius: "12px", padding: "16px", marginBottom: "20px" }}>
           <div style={{ fontSize: "12px", fontWeight: "600", color: C.sub, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "12px" }}>What people say</div>
-          <div style={{ fontSize: "14px", color: C.text, lineHeight: "1.6", fontStyle: "italic", marginBottom: "8px" }}>"Finally understood what I was signing in my rental agreement. Found two clauses I would never have noticed."</div>
+          <div style={{ fontSize: "14px", color: C.text, lineHeight: "1.6", fontStyle: "italic", marginBottom: "8px" }}>{tx.testimonial}</div>
           <div style={{ fontSize: "12px", color: C.sub }}>— Freelance designer, Amsterdam</div>
         </div>
 
@@ -211,34 +415,34 @@ function Landing({ onSignUp, onLogin, onSample, onAbout }) {
             <div style={{ flex: 1, padding: "12px", borderRight: `0.5px solid ${C.border}` }}>
               <div style={{ fontWeight: "700", fontSize: "11px", color: C.sub, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "4px" }}>Free</div>
               <div style={{ fontSize: "18px", fontWeight: "700", color: C.text, marginBottom: "6px" }}>$0</div>
-              {["1 analysis/month", "Full analysis", "No storage"].map((f, i) => (
+              {(tx.freeFeatures || T.en.freeFeatures).map((f, i) => (
                 <div key={i} style={{ fontSize: "10px", color: C.sub, marginBottom: "3px" }}>✓ {f}</div>
               ))}
             </div>
             <div style={{ flex: 1, padding: "12px", borderRight: `0.5px solid ${C.border}`, background: C.light }}>
               <div style={{ fontWeight: "700", fontSize: "11px", color: C.accent, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "4px" }}>One-time</div>
               <div style={{ fontSize: "18px", fontWeight: "700", color: C.text, marginBottom: "6px" }}>${ONE_TIME_PRICE}</div>
-              {["Single analysis", "No subscription", "No storage"].map((f, i) => (
+              {(tx.freeFeatures || T.en.freeFeatures).map((f, i) => (
                 <div key={i} style={{ fontSize: "10px", color: C.sub, marginBottom: "3px" }}>✓ {f}</div>
               ))}
             </div>
             <div style={{ flex: 1, padding: "12px", borderRight: `0.5px solid ${C.border}`, background: C.header }}>
               <div style={{ fontWeight: "700", fontSize: "11px", color: C.accent, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "4px" }}>Pro</div>
               <div style={{ fontSize: "18px", fontWeight: "700", color: "#fff", marginBottom: "6px" }}>${PRO_PRICE}<span style={{ fontSize: "10px", fontWeight: "400", color: "#8A8585" }}>/mo</span></div>
-              {["Unlimited analyses", "No storage", "Cancel anytime"].map((f, i) => (
+              {(tx.proFeatures || T.en.proFeatures).map((f, i) => (
                 <div key={i} style={{ fontSize: "10px", color: "#E8D4A0", marginBottom: "3px" }}>✓ {f}</div>
               ))}
             </div>
             <div style={{ flex: 1, padding: "12px", background: "#141414" }}>
               <div style={{ fontWeight: "700", fontSize: "11px", color: C.accent, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "4px" }}>Pro+</div>
               <div style={{ fontSize: "18px", fontWeight: "700", color: "#fff", marginBottom: "6px" }}>${PRO_PLUS_PRICE}<span style={{ fontSize: "10px", fontWeight: "400", color: "#8A8585" }}>/mo</span></div>
-              {["Unlimited analyses", "Unlimited chat", "No storage", "Cancel anytime"].map((f, i) => (
+              {(tx.proPlusFeatures || T.en.proPlusFeatures).map((f, i) => (
                 <div key={i} style={{ fontSize: "10px", color: "#E8D4A0", marginBottom: "3px" }}>✓ {f}</div>
               ))}
             </div>
           </div>
         </div>
-        <p style={{ fontSize: "11px", color: C.sub, textAlign: "center", lineHeight: "1.5" }}>{DISCLAIMER}</p>
+        <p style={{ fontSize: "11px", color: C.sub, textAlign: "center", lineHeight: "1.5" }}>{tx ? tx.disclaimer : DISCLAIMER}</p>
       </div>
     </div>
   );
@@ -327,7 +531,8 @@ function Auth({ mode, onSuccess, onSwitch, onBack }) {
   );
 }
 
-function Analyse({ user, userMeta, prefill, onDone, onUpgrade }) {
+function Analyse({ user, userMeta, prefill, onDone, onUpgrade, t, lang }) {
+  const tx = t || T.en;
   const [text, setText] = useState(prefill || "");
   const [charCount, setCharCount] = useState(prefill ? prefill.length : 0);
   const [loading, setLoading] = useState(false);
@@ -399,15 +604,16 @@ function Analyse({ user, userMeta, prefill, onDone, onUpgrade }) {
       {text.trim() && !loading && <button onClick={() => { setText(""); setCharCount(0); setError(""); }} style={{ ...btnStyle("secondary", false), marginBottom: "10px", padding: "10px", fontSize: "14px" }}>Clear</button>}
       {error && <ErrBox message={error} onRetry={canGo ? analyse : null} />}
       {loading ? <Spinner label={stepMsg} /> : <button onClick={analyse} disabled={!canGo} style={btnStyle("primary", !canGo)}>Analyse document</button>}
-      <p style={{ fontSize: "11px", color: C.sub, textAlign: "center", marginTop: "16px", lineHeight: "1.5" }}>{DISCLAIMER}</p>
+      <p style={{ fontSize: "11px", color: C.sub, textAlign: "center", marginTop: "16px", lineHeight: "1.5" }}>{tx ? tx.disclaimer : DISCLAIMER}</p>
     </div>
   );
 }
 
-const Results = memo(function Results({ data, onNew, isGuest, onSignUp, user, userMeta }) {
+const Results = memo(function Results({ data, onNew, isGuest, onSignUp, user, userMeta, t, lang }) {
+  const tx = t || T.en;
   const [expTerm, setExpTerm] = useState(null);
-  const [expClause, setExpClause] = useState(null);
-  const [expFlag, setExpFlag] = useState(null);
+  const [expClause, setExpClause] = useState(0);
+  const [expFlag, setExpFlag] = useState(0);
   const [activeTab, setActiveTab] = useState("overview");
   const [chatMessages, setChatMessages] = useState([]);
   const [chatInput, setChatInput] = useState("");
@@ -465,29 +671,27 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp, user, us
     return 0;
   };
 
-  const gaugeMeta = [
-    { label: "Standard", color: "#4A7A5A", bg: "#F0F7F0", desc: "Consistent with prevailing market terms. No material deviation from established commercial practice. This clause presents no elevated risk." },
-    { label: "Restrictive", color: "#C4973D", bg: "#FBF5E8", desc: "Departs from standard market practice in a manner that shifts risk toward the signing party. Warrants specific attention before execution." },
-    { label: "Very restrictive", color: "#C07040", bg: "#FBF0E8", desc: "Materially exceeds what is commercially reasonable for this contract type. This clause should be subject to negotiation or amendment prior to signing." },
-    { label: "Aggressive", color: "#C0504A", bg: "#FBF0F0", desc: "Significantly outside the bounds of acceptable commercial practice. Clauses of this nature are typically challenged or removed in arm's-length negotiations between informed parties." },
-  ];
+  const gaugeColors = ["#4A7A5A","#C4973D","#C07040","#C0504A"];
+  const gaugeBgs = ["#F0F7F0","#FBF5E8","#FBF0E8","#FBF0F0"];
+  const gaugeMeta = (tx.gaugeMeta || T.en.gaugeMeta).map((m, i) => ({ ...m, color: gaugeColors[i], bg: gaugeBgs[i] }));
 
+  const tbs = tx.tabs || T.en.tabs;
   const TABS = [
-    { key: "overview", label: "Overview" },
-    { key: "clauses", label: "Clauses" },
-    { key: "flags", label: `Flags (${sortedFlags.length})` },
-    { key: "negotiate", label: "Negotiate" },
-    { key: "compare", label: "Compare" },
-    { key: "chat", label: "Chat" },
+    { key: "overview", label: tbs.overview },
+    { key: "clauses", label: tbs.clauses },
+    { key: "flags", label: `${tbs.flags} (${sortedFlags.length})` },
+    { key: "negotiate", label: tbs.negotiate },
+    { key: "compare", label: tbs.compare },
+    { key: "chat", label: tbs.chat },
   ];
 
   return (
     <div>
       {isGuest && (
         <div style={{ background: C.header, borderRadius: "12px", padding: "16px", marginBottom: "16px", textAlign: "center" }}>
-          <p style={{ color: "#fff", fontSize: "14px", margin: "0 0 4px", fontWeight: "600" }}>You have used your 1 free analysis</p>
-          <p style={{ color: "#8A8585", fontSize: "13px", margin: "0 0 10px" }}>Create a free account for 1 analysis per month.</p>
-          <button onClick={onSignUp} style={{ ...btnStyle("primary", false), padding: "10px", fontSize: "14px" }}>Sign up free</button>
+          <p style={{ color: "#fff", fontSize: "14px", margin: "0 0 4px", fontWeight: "600" }}>{tx.usedAnalysis}</p>
+          <p style={{ color: "#8A8585", fontSize: "13px", margin: "0 0 10px" }}>{tx.createAccount}</p>
+          <button onClick={onSignUp} style={{ ...btnStyle("primary", false), padding: "10px", fontSize: "14px" }}>{tx.signUpFree}</button>
         </div>
       )}
 
@@ -505,7 +709,7 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp, user, us
 
       {/* Recommendation */}
       <div style={{ ...cardStyle, background: recColor + "11", border: `1px solid ${recColor}44`, textAlign: "center", marginBottom: "16px" }}>
-        <div style={{ fontSize: "11px", fontWeight: "600", color: recColor, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "6px" }}>Recommendation</div>
+        <div style={{ fontSize: "11px", fontWeight: "600", color: recColor, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "6px" }}>{tx.recommendation}</div>
         <p style={{ fontSize: "15px", color: C.text, margin: 0, fontWeight: "600" }}>{data.recommendation}</p>
       </div>
 
@@ -525,13 +729,13 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp, user, us
       {activeTab === "overview" && (
         <div>
           <div style={cardStyle}>
-            <div style={labelStyle}>What this document says</div>
+            <div style={labelStyle}>{tx.whatItSays}</div>
             <p style={{ fontSize: "15px", color: C.text, lineHeight: "1.7", margin: 0 }}>{data.summary}</p>
           </div>
 
           {data.deep_analysis && (
             <div style={cardStyle}>
-              <div style={labelStyle}>Expert analysis</div>
+              <div style={labelStyle}>{tx.expertAnalysis}</div>
               {data.deep_analysis.split("\n").filter(p => p.trim()).map((para, i, arr) => (
                 <p key={i} style={{ fontSize: "14px", color: C.text, lineHeight: "1.8", margin: 0, marginBottom: i < arr.length - 1 ? "14px" : 0 }}>{para}</p>
               ))}
@@ -539,7 +743,7 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp, user, us
           )}
 
           <div style={cardStyle}>
-            <div style={labelStyle}>3 things to know before signing</div>
+            <div style={labelStyle}>{tx.threeThings}</div>
             {(data.key_points || []).map((pt, i) => (
               <div key={i} style={{ display: "flex", gap: "10px", padding: "10px 0", borderBottom: i < 2 ? `0.5px solid ${C.border}` : "none" }}>
                 <span style={{ color: C.accent, fontWeight: "700", fontSize: "16px", flexShrink: 0 }}>0{i + 1}</span>
@@ -550,7 +754,7 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp, user, us
 
           {data.missing_clauses?.length > 0 && (
             <div style={cardStyle}>
-              <div style={labelStyle}>Missing from this document</div>
+              <div style={labelStyle}>{tx.missing}</div>
               {data.missing_clauses.map((c, i) => (
                 <div key={i} style={{ display: "flex", gap: "10px", padding: "8px 0", borderBottom: i < data.missing_clauses.length - 1 ? `0.5px solid ${C.border}` : "none" }}>
                   <span style={{ color: C.warning, flexShrink: 0, fontSize: "16px" }}>⚠</span>
@@ -562,7 +766,7 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp, user, us
 
           {data.legal_terms?.length > 0 && (
             <div style={cardStyle}>
-              <div style={labelStyle}>Legal terms explained</div>
+              <div style={labelStyle}>{tx.legalTerms}</div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: expTerm !== null ? "12px" : 0 }}>
                 {data.legal_terms.map((lt, i) => (
                   <button key={i} onClick={() => setExpTerm(expTerm === i ? null : i)}
@@ -586,7 +790,7 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp, user, us
         <div>
           <p style={{ fontSize: "13px", color: C.sub, marginBottom: "12px", lineHeight: "1.5" }}>Every significant clause rated and explained. Tap any clause to read the full analysis and negotiation script.</p>
           {(data.clauses || []).length === 0 && (
-            <div style={{ ...cardStyle, textAlign: "center", color: C.sub }}>No clauses returned for this document.</div>
+            <div style={{ ...cardStyle, textAlign: "center", color: C.sub }}>{tx.noClauses}</div>
           )}
           {(data.clauses || []).map((cl, i) => {
             const lvl = cl.standard === "unusually aggressive" ? 3 : cl.standard === "very restrictive" ? 2 : cl.standard === "restrictive" ? 1 : 0;
@@ -603,16 +807,16 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp, user, us
                     <div style={{ fontSize: "12px", fontWeight: "600", color: C.accent, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "4px" }}>What it says</div>
                     <p style={{ fontSize: "13px", color: C.text, lineHeight: "1.6", margin: "0 0 12px" }}>{cl.what_it_says}</p>
                     <div style={{ background: "#FAF0EF", border: "1px solid #E8C0BE", borderRadius: "8px", padding: "10px 12px", marginBottom: "12px" }}>
-                      <div style={{ fontSize: "11px", fontWeight: "600", color: C.danger, marginBottom: "4px" }}>Worst case if enforced</div>
+                      <div style={{ fontSize: "11px", fontWeight: "600", color: C.danger, marginBottom: "4px" }}>{tx.worstCase}</div>
                       <p style={{ fontSize: "13px", color: C.text, margin: 0, lineHeight: "1.5" }}>{cl.worst_case}</p>
                     </div>
                     {cl.negotiation_script && (
                       <div style={{ background: C.accentLight, border: `1px solid #E8D4A0`, borderRadius: "8px", padding: "10px 12px" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-                          <div style={{ fontSize: "11px", fontWeight: "600", color: C.accentDark }}>Negotiation script</div>
+                          <div style={{ fontSize: "11px", fontWeight: "600", color: C.accentDark }}>{tx.negotiationScript}</div>
                           <button onClick={e => { e.stopPropagation(); copy(cl.negotiation_script, "clause" + i); }}
                             style={{ background: "none", border: "none", color: C.accent, fontSize: "12px", cursor: "pointer", fontWeight: "600" }}>
-                            {copied === "clause" + i ? "Copied!" : "Copy"}
+                            {copied === "clause" + i ? tx.copied : tx.copy}
                           </button>
                         </div>
                         <p style={{ fontSize: "13px", color: C.text, margin: 0, lineHeight: "1.6", fontStyle: "italic" }}>{cl.negotiation_script}</p>
@@ -631,7 +835,7 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp, user, us
         <div>
           <p style={{ fontSize: "13px", color: C.sub, marginBottom: "12px", lineHeight: "1.5" }}>Issues ranked by severity. Tap any flag for the full analysis, industry comparison and negotiation script.</p>
           {sortedFlags.length === 0 && (
-            <div style={{ ...cardStyle, textAlign: "center", color: C.sub }}>No significant red flags found in this document.</div>
+            <div style={{ ...cardStyle, textAlign: "center", color: C.sub }}>{tx.noFlags}</div>
           )}
           {sortedFlags.map((flag, i) => {
             const lvl = gaugeLevel(flag.industry_comparison);
@@ -649,7 +853,7 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp, user, us
                     <p style={{ fontSize: "13px", color: C.text, margin: "0 0 14px", lineHeight: "1.7" }}>{flag.explanation}</p>
                     {flag.industry_comparison && (
                       <div style={{ marginBottom: "12px" }}>
-                        <div style={{ fontSize: "10px", fontWeight: "600", color: C.sub, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "8px" }}>vs industry standard</div>
+                        <div style={{ fontSize: "10px", fontWeight: "600", color: C.sub, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "8px" }}>{tx.vsIndustry}</div>
                         <div style={{ display: "flex", gap: "4px", marginBottom: "6px" }}>
                           {[0, 1, 2, 3].map(j => (
                             <div key={j} style={{ flex: 1, height: "4px", borderRadius: "2px", background: j <= lvl ? gaugeMeta[lvl].color : C.border }} />
@@ -672,10 +876,10 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp, user, us
                     {flag.negotiation_script && (
                       <div style={{ background: C.accentLight, border: `1px solid #E8D4A0`, borderRadius: "8px", padding: "10px 12px" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-                          <div style={{ fontSize: "11px", fontWeight: "600", color: C.accentDark }}>Negotiation script</div>
+                          <div style={{ fontSize: "11px", fontWeight: "600", color: C.accentDark }}>{tx.negotiationScript}</div>
                           <button onClick={e => { e.stopPropagation(); copy(flag.negotiation_script, "flag" + i); }}
                             style={{ background: "none", border: "none", color: C.accent, fontSize: "12px", cursor: "pointer", fontWeight: "600" }}>
-                            {copied === "flag" + i ? "Copied!" : "Copy"}
+                            {copied === "flag" + i ? tx.copied : tx.copy}
                           </button>
                         </div>
                         <p style={{ fontSize: "13px", color: C.text, margin: 0, lineHeight: "1.6", fontStyle: "italic" }}>{flag.negotiation_script}</p>
@@ -693,8 +897,8 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp, user, us
       {activeTab === "negotiate" && (
         <div>
           <div style={cardStyle}>
-            <div style={labelStyle}>Ready-to-send negotiation email</div>
-            <p style={{ fontSize: "13px", color: C.sub, marginBottom: "14px", lineHeight: "1.5" }}>This email addresses all the major issues in this contract. Fill in the bracketed details and send.</p>
+            <div style={labelStyle}>{tx.readyEmail}</div>
+            <p style={{ fontSize: "13px", color: C.sub, marginBottom: "14px", lineHeight: "1.5" }}>{tx.emailDesc}</p>
             {data.negotiation_email ? (
               <>
                 <div style={{ background: C.light, border: `0.5px solid ${C.border}`, borderRadius: "8px", padding: "14px", fontSize: "13px", color: C.text, lineHeight: "1.8", whiteSpace: "pre-wrap", fontFamily: "inherit", marginBottom: "12px" }}>
@@ -706,21 +910,21 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp, user, us
                 </button>
               </>
             ) : (
-              <div style={{ color: C.sub, fontSize: "13px" }}>No negotiation email was generated for this document.</div>
+              <div style={{ color: C.sub, fontSize: "13px" }}>{tx.noEmail}</div>
             )}
           </div>
 
           {(data.clauses || []).filter(c => c.negotiation_script).length > 0 && (
             <div style={cardStyle}>
-              <div style={labelStyle}>Clause-by-clause scripts</div>
-              <p style={{ fontSize: "13px", color: C.sub, marginBottom: "12px" }}>Use these individually in conversation or on a call.</p>
+              <div style={labelStyle}>{tx.clauseScripts}</div>
+              <p style={{ fontSize: "13px", color: C.sub, marginBottom: "12px" }}>{tx.clauseScriptsDesc}</p>
               {(data.clauses || []).filter(c => c.negotiation_script).map((cl, i) => (
                 <div key={i} style={{ background: C.light, borderRadius: "8px", padding: "12px", marginBottom: "8px" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
                     <div style={{ fontWeight: "600", fontSize: "13px", color: C.text }}>{cl.title}</div>
                     <button onClick={() => copy(cl.negotiation_script, "neg" + i)}
                       style={{ background: "none", border: "none", color: C.accent, fontSize: "12px", cursor: "pointer", fontWeight: "600" }}>
-                      {copied === "neg" + i ? "Copied!" : "Copy"}
+                      {copied === "neg" + i ? tx.copied : tx.copy}
                     </button>
                   </div>
                   <p style={{ fontSize: "13px", color: C.sub, margin: 0, lineHeight: "1.6", fontStyle: "italic" }}>{cl.negotiation_script}</p>
@@ -735,8 +939,8 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp, user, us
       {activeTab === "compare" && (
         <div>
           <div style={cardStyle}>
-            <div style={labelStyle}>Compare with another version</div>
-            <p style={{ fontSize: "13px", color: C.sub, marginBottom: "12px", lineHeight: "1.5" }}>Paste a revised version of this contract. Plainly will identify what changed and whether each change helps or hurts you.</p>
+            <div style={labelStyle}>{tx.compareTitle}</div>
+            <p style={{ fontSize: "13px", color: C.sub, marginBottom: "12px", lineHeight: "1.5" }}>{tx.compareDesc}</p>
             <textarea value={compText} onChange={e => setCompText(e.target.value)}
               placeholder="Paste the revised contract here..."
               style={{ ...inputCss, height: "160px", resize: "vertical", fontSize: "13px", lineHeight: "1.6", marginBottom: "10px" }} />
@@ -761,7 +965,7 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp, user, us
           </div>
           {compResult && (
             <div style={cardStyle}>
-              <div style={labelStyle}>What changed</div>
+              <div style={labelStyle}>{tx.whatChanged}</div>
               {compResult.split("\n").filter(p => p.trim()).map((para, i, arr) => (
                 <p key={i} style={{ fontSize: "14px", color: C.text, lineHeight: "1.7", margin: 0, marginBottom: i < arr.length - 1 ? "12px" : 0 }}>{para}</p>
               ))}
@@ -775,13 +979,13 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp, user, us
         <div>
           {!isProPlus && (
             <div style={{ background: C.header, borderRadius: "12px", padding: "16px", marginBottom: "16px", textAlign: "center" }}>
-              <p style={{ color: "#fff", fontSize: "14px", margin: "0 0 4px", fontWeight: "600" }}>Pro+ feature</p>
-              <p style={{ color: "#9CA3AF", fontSize: "13px", margin: "0 0 10px" }}>Upgrade to Pro+ to ask unlimited follow-up questions about any analysis.</p>
+              <p style={{ color: "#fff", fontSize: "14px", margin: "0 0 4px", fontWeight: "600" }}>{tx.chatLocked}</p>
+              <p style={{ color: "#9CA3AF", fontSize: "13px", margin: "0 0 10px" }}>{tx.chatLockedDesc}</p>
               <button onClick={onSignUp} style={{ ...btnStyle("primary", false), padding: "10px", fontSize: "14px", background: C.accent, color: "#1A1814" }}>Upgrade to Pro+ — ${PRO_PLUS_PRICE}/mo</button>
             </div>
           )}
           <div style={{ ...cardStyle, opacity: isProPlus ? 1 : 0.4, pointerEvents: isProPlus ? "auto" : "none" }}>
-            <div style={labelStyle}>Ask anything about this contract</div>
+            <div style={labelStyle}>{tx.chatTitle}</div>
             <div ref={chatRef} style={{ height: "280px", overflowY: "auto", marginBottom: "12px", display: "flex", flexDirection: "column", gap: "10px" }}>
               {chatMessages.length === 0 && (
                 <div style={{ color: C.muted, fontSize: "13px", textAlign: "center", padding: "40px 0" }}>
@@ -798,14 +1002,14 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp, user, us
               ))}
               {chatLoading && (
                 <div style={{ display: "flex", justifyContent: "flex-start" }}>
-                  <div style={{ background: C.light, borderRadius: "12px 12px 12px 2px", padding: "10px 14px", fontSize: "13px", color: C.sub }}>Thinking...</div>
+                  <div style={{ background: C.light, borderRadius: "12px 12px 12px 2px", padding: "10px 14px", fontSize: "13px", color: C.sub }}>{tx.thinking}</div>
                 </div>
               )}
             </div>
             <div style={{ display: "flex", gap: "8px" }}>
               <input value={chatInput} onChange={e => setChatInput(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && !e.shiftKey && sendChat()}
-                placeholder="Ask a question about this contract..."
+                placeholder={tx.chatPlaceholder}
                 style={{ ...inputCss, flex: 1, padding: "10px 14px", fontSize: "14px" }} />
               <button onClick={sendChat} disabled={!chatInput.trim() || chatLoading}
                 style={{ background: C.accent, color: "#1A1814", border: "none", borderRadius: "8px", padding: "0 16px", fontWeight: "600", cursor: chatInput.trim() && !chatLoading ? "pointer" : "not-allowed", opacity: chatInput.trim() && !chatLoading ? 1 : 0.5, fontSize: "14px", flexShrink: 0 }}>
@@ -820,17 +1024,18 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp, user, us
       <div style={{ marginTop: "16px" }}>
         <button onClick={() => { copy(`Plainly Contract Analysis\n\n${data.document_type}\nTrust Score: ${data.trust_score}/10\n\n${data.score_label}\n\n${data.recommendation}\n\nAnalysed with Plainly — plainly-opal.vercel.app`, "share"); }}
           style={{ ...btnStyle("secondary", false), marginBottom: "8px", fontSize: "14px", padding: "12px" }}>
-          {copied === "share" ? "Copied!" : "Share this analysis"}
+          {copied === "share" ? tx.copied : "Share this analysis"}
         </button>
-        <button onClick={onNew} style={{ ...btnStyle("primary", false), marginBottom: "12px" }}>Analyse another document</button>
-        <p style={{ fontSize: "11px", color: C.sub, textAlign: "center", lineHeight: "1.5" }}>{DISCLAIMER}</p>
+        <button onClick={onNew} style={{ ...btnStyle("primary", false), marginBottom: "12px" }}>{tx.newBtn}</button>
+        <p style={{ fontSize: "11px", color: C.sub, textAlign: "center", lineHeight: "1.5" }}>{tx ? tx.disclaimer : DISCLAIMER}</p>
       </div>
     </div>
   );
 });
 
 
-function Upgrade({ userEmail, onClose }) {
+function Upgrade({ userEmail, onClose, t }) {
+  const tx = t || T.en;
   const productId = process.env.REACT_APP_LEMONSQUEEZY_PRODUCT_ID;
   const proUrl = productId ? `https://store.lemonsqueezy.com/checkout/buy/${productId}?checkout[email]=${encodeURIComponent(userEmail || "")}` : "https://app.lemonsqueezy.com";
   const proPlusUrl = proUrl;
@@ -841,15 +1046,15 @@ function Upgrade({ userEmail, onClose }) {
       <div style={{ background: C.bg, borderRadius: "20px 20px 0 0", padding: "24px 20px 44px", width: "100%", maxWidth: "720px" }}>
         <div style={{ width: "36px", height: "4px", background: C.border, borderRadius: "2px", margin: "0 auto 20px" }} />
         <div style={{ textAlign: "center", marginBottom: "20px" }}>
-          <h2 style={{ fontSize: "22px", fontWeight: "700", margin: "0 0 6px", color: C.text }}>You have used your free analysis</h2>
-          <p style={{ fontSize: "14px", color: C.sub, margin: 0 }}>Choose the plan that works for you.</p>
+          <h2 style={{ fontSize: "22px", fontWeight: "700", margin: "0 0 6px", color: C.text }}>{tx.upgradeTitle}</h2>
+          <p style={{ fontSize: "14px", color: C.sub, margin: 0 }}>{tx.upgradeSubtitle}</p>
         </div>
 
         <div style={{ display: "flex", gap: "10px", marginBottom: "14px" }}>
           <div style={{ flex: 1, background: C.light, borderRadius: "12px", padding: "14px", border: `1px solid ${C.border}` }}>
             <div style={{ fontSize: "10px", fontWeight: "700", color: C.sub, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "4px" }}>One-time</div>
             <div style={{ fontSize: "24px", fontWeight: "700", color: C.text, marginBottom: "6px" }}>${ONE_TIME_PRICE}</div>
-            <div style={{ fontSize: "11px", color: C.sub, marginBottom: "10px", lineHeight: "1.4" }}>Single analysis. No subscription. Pay once.</div>
+            <div style={{ fontSize: "11px", color: C.sub, marginBottom: "10px", lineHeight: "1.4" }}>{tx.oneTimeDesc}</div>
             <a href={oneTimeUrl} target="_blank" rel="noreferrer" style={{ ...btnStyle("secondary", false), fontSize: "12px", padding: "8px", textDecoration: "none" }}>
               Buy one analysis
             </a>
@@ -858,7 +1063,7 @@ function Upgrade({ userEmail, onClose }) {
           <div style={{ flex: 1, background: C.surface, borderRadius: "12px", padding: "14px", border: `1px solid ${C.border}` }}>
             <div style={{ fontSize: "10px", fontWeight: "700", color: C.accent, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "4px" }}>Pro</div>
             <div style={{ fontSize: "24px", fontWeight: "700", color: C.text, marginBottom: "2px" }}>${PRO_PRICE}<span style={{ fontSize: "11px", fontWeight: "400", color: C.sub }}>/mo</span></div>
-            <div style={{ fontSize: "11px", color: C.sub, marginBottom: "10px", lineHeight: "1.4" }}>Unlimited analyses. No storage. Cancel anytime.</div>
+            <div style={{ fontSize: "11px", color: C.sub, marginBottom: "10px", lineHeight: "1.4" }}>{tx.proDesc}</div>
             <a href={proUrl} target="_blank" rel="noreferrer" style={{ ...btnStyle("primary", false), fontSize: "12px", padding: "8px", textDecoration: "none" }}>
               Start Pro
             </a>
@@ -867,14 +1072,14 @@ function Upgrade({ userEmail, onClose }) {
           <div style={{ flex: 1, background: C.header, borderRadius: "12px", padding: "14px", border: `1px solid ${C.header}` }}>
             <div style={{ fontSize: "10px", fontWeight: "700", color: C.accent, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "4px" }}>Pro+</div>
             <div style={{ fontSize: "24px", fontWeight: "700", color: "#fff", marginBottom: "2px" }}>${PRO_PLUS_PRICE}<span style={{ fontSize: "11px", fontWeight: "400", color: "#8A8585" }}>/mo</span></div>
-            <div style={{ fontSize: "11px", color: "#9CA3AF", marginBottom: "10px", lineHeight: "1.4" }}>Unlimited analyses plus unlimited AI chat on every analysis.</div>
+            <div style={{ fontSize: "11px", color: "#9CA3AF", marginBottom: "10px", lineHeight: "1.4" }}>{tx.proPlusDesc}</div>
             <a href={proPlusUrl} target="_blank" rel="noreferrer" style={{ ...btnStyle("primary", false), fontSize: "12px", padding: "8px", textDecoration: "none", background: C.accent, color: C.header }}>
               Start Pro+
             </a>
           </div>
         </div>
 
-        <button onClick={onClose} style={{ ...btnStyle("secondary", false), fontSize: "13px", color: C.sub }}>Continue on free plan</button>
+        <button onClick={onClose} style={{ ...btnStyle("secondary", false), fontSize: "13px", color: C.sub }}>{tx.continueFree}</button>
       </div>
     </div>
   );
@@ -990,6 +1195,8 @@ export default function App() {
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [booting, setBooting] = useState(true);
   const [onboarding, setOnboarding] = useState(false);
+  const [lang, setLang] = useState("en");
+  const t = T[lang];
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session: s } }) => {
@@ -1164,11 +1371,11 @@ Best regards,
 [Your name]`,
         recommendation: "Do not sign this contract as-is. Negotiate a revision cap, an objective payment standard, a kill fee, removal of the worldwide non-compete and IP transfer on payment before signing anything."
       };
-      return <Results data={DEMO} onNew={() => setScreen("landing")} isGuest onSignUp={() => { setAuthMode("signup"); setScreen("auth"); }} />;
+      return <Results data={DEMO} onNew={() => setScreen("landing")} isGuest onSignUp={() => { setAuthMode("signup"); setScreen("auth"); }} t={t} lang={lang} />;
     }
     if (!isAuthed) { setScreen("landing"); return null; }
     if (tab === "analyse") {
-      if (result) return <Results data={result} onNew={() => setResult(null)} user={session?.user} userMeta={userMeta} />;
+      if (result) return <Results data={result} onNew={() => setResult(null)} user={session?.user} userMeta={userMeta} t={t} lang={lang} />;
       return <Analyse user={session.user} userMeta={userMeta} prefill={null} onDone={(d) => { setResult(d); loadMeta(session.user.id); }} onUpgrade={() => setShowUpgrade(true)} />;
     }
     if (tab === "about") return <About onBack={() => setTab("analyse")} />;
@@ -1179,7 +1386,7 @@ Best regards,
   if (booting) return (
     <div style={{ minHeight: "100vh", background: "#EDECE6", display: "flex", justifyContent: "center", fontFamily: "Georgia, serif" }}>
       <div style={{ width: "100%", maxWidth: isDesktop ? "1100px" : "480px", minHeight: "100vh", background: C.bg }}>
-        <div style={{ background: C.header, padding: "14px 20px 12px" }}><h1 style={{ color: "#fff", fontSize: "20px", fontWeight: "700", margin: 0 }}>{APP_NAME}</h1></div>
+        <div style={{ background: C.header, padding: "14px 20px 12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}><h1 style={{ color: "#fff", fontSize: "20px", fontWeight: "700", margin: 0 }}>{APP_NAME}</h1><div style={{ display: "flex", gap: "3px", background: "rgba(255,255,255,0.1)", borderRadius: "8px", padding: "3px" }}>{Object.entries(LANGS).map(([code, label]) => (<button key={code} onClick={() => setLang(code)} style={{ background: lang === code ? C.accent : "transparent", color: lang === code ? "#1A1814" : "#9CA3AF", border: "none", borderRadius: "6px", padding: "3px 8px", fontSize: "11px", fontWeight: "700", cursor: "pointer" }}>{label}</button>))}</div></div>
         <Spinner label="Loading..." />
       </div>
     </div>
@@ -1191,18 +1398,28 @@ Best regards,
         <div style={{ background: C.header, padding: isDesktop ? "16px 40px" : "14px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
             <h1 style={{ color: "#fff", fontSize: isDesktop ? "22px" : "20px", fontWeight: "700", margin: "0 0 2px" }}>{APP_NAME}</h1>
-            <p style={{ color: C.accent, fontSize: "12px", margin: 0, fontWeight: "500" }}>{APP_TAGLINE}</p>
+            <p style={{ color: C.accent, fontSize: "12px", margin: 0, fontWeight: "500" }}>{t ? t.tagline : APP_TAGLINE}</p>
           </div>
-          {showNav && isDesktop && (
-            <div style={{ display: "flex", gap: "8px" }}>
-              {[{ key: "analyse", label: "Analyse", icon: "📄" }, { key: "about", label: "About", icon: "ℹ️" }, { key: "settings", label: "Settings", icon: "⚙️" }].map(({ key, label, icon }) => (
-                <button key={key} onClick={() => { setTab(key); setResult(null); }}
-                  style={{ background: tab === key ? C.accent : "transparent", color: tab === key ? "#1A1814" : "#9CA3AF", border: tab === key ? "none" : "0.5px solid #555", borderRadius: "8px", padding: "8px 16px", fontSize: "13px", fontWeight: "600", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}>
-                  <span>{icon}</span>{label}
+<div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <div style={{ display: "flex", gap: "3px", background: "rgba(255,255,255,0.08)", borderRadius: "8px", padding: "3px" }}>
+              {Object.entries(LANGS).map(([code, label]) => (
+                <button key={code} onClick={() => setLang(code)}
+                  style={{ background: lang === code ? C.accent : "transparent", color: lang === code ? "#1A1814" : "#9CA3AF", border: "none", borderRadius: "6px", padding: "4px 9px", fontSize: "12px", fontWeight: "700", cursor: "pointer" }}>
+                  {label}
                 </button>
               ))}
             </div>
-          )}
+            {showNav && isDesktop && (
+              <div style={{ display: "flex", gap: "8px" }}>
+                {[{ key: "analyse", label: "Analyse", icon: "📄" }, { key: "about", label: "About", icon: "ℹ️" }, { key: "settings", label: "Settings", icon: "⚙️" }].map(({ key, label, icon }) => (
+                  <button key={key} onClick={() => { setTab(key); setResult(null); }}
+                    style={{ background: tab === key ? C.accent : "transparent", color: tab === key ? "#1A1814" : "#9CA3AF", border: tab === key ? "none" : "0.5px solid #555", borderRadius: "8px", padding: "8px 16px", fontSize: "13px", fontWeight: "600", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <span>{icon}</span>{label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
 
@@ -1221,7 +1438,7 @@ Best regards,
             </div>
             {result && tab === "analyse" && (
               <div style={{ background: C.bg, borderRadius: "16px", padding: "32px", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
-                <Results data={result} onNew={() => setResult(null)} user={session?.user} userMeta={userMeta} />
+                <Results data={result} onNew={() => setResult(null)} user={session?.user} userMeta={userMeta} t={t} lang={lang} />
               </div>
             )}
           </div>
@@ -1242,7 +1459,7 @@ Best regards,
           ))}
         </nav>
       )}
-      {showUpgrade && <Upgrade userEmail={session?.user?.email} onClose={() => setShowUpgrade(false)} />}
+      {showUpgrade && <Upgrade userEmail={session?.user?.email} onClose={() => setShowUpgrade(false)} t={t} />}
     </div>
   );
 }
