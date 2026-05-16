@@ -419,7 +419,6 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp, user, us
   const [compLoading, setCompLoading] = useState(false);
   const chatRef = useRef(null);
 
-  const isPro = userMeta?.is_pro;
   const isProPlus = userMeta?.is_pro_plus;
 
   const recColor = data.recommendation?.toLowerCase().includes("avoid") || data.recommendation?.toLowerCase().includes("do not") ? C.danger
