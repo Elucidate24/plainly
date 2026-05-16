@@ -31,7 +31,7 @@ const T = {
     chatTitle: "Ask anything about this contract", chatPlaceholder: "Ask a question about this contract...",
     chatLocked: "Pro+ feature", chatLockedDesc: "Upgrade to Pro+ to ask unlimited follow-up questions about any analysis.",
     thinking: "Thinking...", noEmail: "No negotiation email was generated for this document.",
-    noFlags: "No significant red flags found in this document.", noClauses: "No clauses returned for this document.",
+    noFlags: "No significant red flags found in this document.", noClauses: "No clauses returned for this document.", flagsIntro: "Issues ranked by severity. Each flag includes the full analysis, industry comparison and negotiation script.",
     upgradeTitle: "You have used your free analysis", upgradeSubtitle: "Choose the plan that works for you.",
     oneTimeDesc: "Single analysis. No subscription. Pay once.", oneTimeLabel: "One-time", buyOne: "Buy one analysis",
     proDesc: "Unlimited analyses. No storage. Cancel anytime.", startPro: "Start Pro",
@@ -72,6 +72,27 @@ const T = {
       { title: "We flag the risks", body: "Red flags highlighted automatically before you sign anything.", icon: "🚩" },
       { title: "Your privacy is protected", body: "We never store your documents. Everything disappears when you close the app.", icon: "🔒" },
     ],
+    nav: { analyse: "Analyse", about: "About", settings: "Settings" },
+    auth: {
+      createAccount: "Create account", welcomeBack: "Welcome back", resetPassword: "Reset password",
+      emailLabel: "Email", passwordLabel: "Password", confirmLabel: "Confirm password",
+      emailPh: "you@example.com", passwordPh: "At least 8 characters", confirmPh: "Same password again",
+      forgotLink: "Forgot password?", noAccount: "No account? Sign up free", hasAccount: "Already have an account? Sign in",
+      sendReset: "Send reset link", pleaseWait: "Please wait...", freeStart: "Free to start. No credit card needed.",
+      signInDesc: "Sign in to continue.", resetDesc: "We will email a reset link.",
+      confirmEmail: "Confirm your email", checkEmail: "Check your email",
+      confirmSent: "We sent a confirmation link to", resetSent: "Reset link sent to",
+      confirmNote: "Click the link in the email to activate your account. Then come back here and sign in.",
+      goToSignIn: "Go to sign in", backToSignIn: "Back to sign in",
+      passwordRequired: "Password is required.", passwordMatch: "Passwords do not match.", passwordLength: "Password must be at least 8 characters.",
+      next: "Next", startAnalysing: "Start analysing", skip: "Skip",
+    },
+    settings: {
+      title: "Settings", currentPlan: "Current plan", free: "Free", pro: "Pro", proPlus: "Pro+",
+      signOut: "Sign out", upgrade: "Upgrade plan", privacyNote: "We never store your documents. Every analysis is processed and immediately forgotten. Only your usage count is saved.",
+      usedThis: "analyses used this month", unlimited: "Unlimited",
+    },
+    privacyShort: "Your document is never stored. It is analysed and immediately forgotten.",
   },
   nl: {
     tagline: "Begrijp alles wat je ondertekent",
@@ -100,7 +121,7 @@ const T = {
     chatTitle: "Stel alles over dit contract", chatPlaceholder: "Stel een vraag over dit contract...",
     chatLocked: "Pro+ functie", chatLockedDesc: "Upgrade naar Pro+ voor onbeperkte vervolgvragen.",
     thinking: "Nadenken...", noEmail: "Geen onderhandelingsmail gegenereerd voor dit document.",
-    noFlags: "Geen significante rode vlaggen gevonden.", noClauses: "Geen clausules teruggegeven.",
+    noFlags: "Geen significante rode vlaggen gevonden.", noClauses: "Geen clausules teruggegeven.", flagsIntro: "Problemen gerangschikt op ernst. Elke vlag bevat de volledige analyse, industrievergelijking en onderhandelingsscript.",
     upgradeTitle: "Je hebt je gratis analyse gebruikt", upgradeSubtitle: "Kies het plan dat bij je past.",
     oneTimeDesc: "Enkele analyse. Geen abonnement.", oneTimeLabel: "Eenmalig", buyOne: "Koop één analyse",
     proDesc: "Onbeperkte analyses. Geen opslag. Altijd opzegbaar.", startPro: "Pro starten",
@@ -141,6 +162,27 @@ const T = {
       { title: "Wij signaleren de risico's", body: "Rode vlaggen automatisch gemarkeerd voordat je iets ondertekent.", icon: "🚩" },
       { title: "Je privacy is beschermd", body: "Wij slaan je documenten nooit op.", icon: "🔒" },
     ],
+    nav: { analyse: "Analyseren", about: "Over ons", settings: "Instellingen" },
+    auth: {
+      createAccount: "Account aanmaken", welcomeBack: "Welkom terug", resetPassword: "Wachtwoord resetten",
+      emailLabel: "E-mail", passwordLabel: "Wachtwoord", confirmLabel: "Wachtwoord bevestigen",
+      emailPh: "jij@voorbeeld.nl", passwordPh: "Minimaal 8 tekens", confirmPh: "Hetzelfde wachtwoord",
+      forgotLink: "Wachtwoord vergeten?", noAccount: "Geen account? Gratis aanmelden", hasAccount: "Al een account? Inloggen",
+      sendReset: "Resetlink sturen", pleaseWait: "Even geduld...", freeStart: "Gratis beginnen. Geen creditcard nodig.",
+      signInDesc: "Log in om verder te gaan.", resetDesc: "We sturen een resetlink per e-mail.",
+      confirmEmail: "Bevestig je e-mail", checkEmail: "Controleer je e-mail",
+      confirmSent: "We hebben een bevestigingslink gestuurd naar", resetSent: "Resetlink verstuurd naar",
+      confirmNote: "Klik op de link in de e-mail om je account te activeren. Kom daarna terug en log in.",
+      goToSignIn: "Naar inloggen", backToSignIn: "Terug naar inloggen",
+      passwordRequired: "Wachtwoord is verplicht.", passwordMatch: "Wachtwoorden komen niet overeen.", passwordLength: "Wachtwoord moet minimaal 8 tekens bevatten.",
+      next: "Volgende", startAnalysing: "Beginnen met analyseren", skip: "Overslaan",
+    },
+    settings: {
+      title: "Instellingen", currentPlan: "Huidig abonnement", free: "Gratis", pro: "Pro", proPlus: "Pro+",
+      signOut: "Uitloggen", upgrade: "Abonnement upgraden", privacyNote: "Wij slaan je documenten nooit op. Elke analyse wordt verwerkt en onmiddellijk vergeten. Alleen je gebruikstelling wordt opgeslagen.",
+      usedThis: "analyses gebruikt deze maand", unlimited: "Onbeperkt",
+    },
+    privacyShort: "Je document wordt nooit opgeslagen. Het wordt geanalyseerd en onmiddellijk vergeten.",
   },
   es: {
     tagline: "Entiende todo lo que firmas",
@@ -169,7 +211,7 @@ const T = {
     chatTitle: "Pregunta lo que quieras sobre este contrato", chatPlaceholder: "Haz una pregunta sobre este contrato...",
     chatLocked: "Función Pro+", chatLockedDesc: "Actualiza a Pro+ para hacer preguntas ilimitadas.",
     thinking: "Pensando...", noEmail: "No se generó ningún correo de negociación para este documento.",
-    noFlags: "No se encontraron señales de alerta significativas.", noClauses: "No se devolvieron cláusulas.",
+    noFlags: "No se encontraron señales de alerta significativas.", noClauses: "No se devolvieron cláusulas.", flagsIntro: "Problemas clasificados por gravedad. Cada alerta incluye el análisis completo, comparación con el sector y guión de negociación.",
     upgradeTitle: "Has usado tu análisis gratuito", upgradeSubtitle: "Elige el plan que mejor se adapte a ti.",
     oneTimeDesc: "Análisis único. Sin suscripción. Pago único.", oneTimeLabel: "Una vez", buyOne: "Comprar un análisis",
     proDesc: "Análisis ilimitados. Sin almacenamiento. Cancela cuando quieras.", startPro: "Empezar Pro",
@@ -210,6 +252,27 @@ const T = {
       { title: "Detectamos los riesgos", body: "Señales de alerta resaltadas automáticamente antes de que firmes nada.", icon: "🚩" },
       { title: "Tu privacidad está protegida", body: "Nunca almacenamos tus documentos.", icon: "🔒" },
     ],
+    nav: { analyse: "Analizar", about: "Acerca de", settings: "Configuración" },
+    auth: {
+      createAccount: "Crear cuenta", welcomeBack: "Bienvenido de nuevo", resetPassword: "Restablecer contraseña",
+      emailLabel: "Correo electrónico", passwordLabel: "Contraseña", confirmLabel: "Confirmar contraseña",
+      emailPh: "tu@ejemplo.com", passwordPh: "Al menos 8 caracteres", confirmPh: "La misma contraseña",
+      forgotLink: "¿Olvidaste tu contraseña?", noAccount: "¿Sin cuenta? Regístrate gratis", hasAccount: "¿Ya tienes cuenta? Inicia sesión",
+      sendReset: "Enviar enlace de restablecimiento", pleaseWait: "Por favor espera...", freeStart: "Empieza gratis. Sin tarjeta de crédito.",
+      signInDesc: "Inicia sesión para continuar.", resetDesc: "Te enviaremos un enlace de restablecimiento.",
+      confirmEmail: "Confirma tu correo", checkEmail: "Revisa tu correo",
+      confirmSent: "Enviamos un enlace de confirmación a", resetSent: "Enlace de restablecimiento enviado a",
+      confirmNote: "Haz clic en el enlace del correo para activar tu cuenta. Luego vuelve aquí e inicia sesión.",
+      goToSignIn: "Ir a iniciar sesión", backToSignIn: "Volver a iniciar sesión",
+      passwordRequired: "La contraseña es obligatoria.", passwordMatch: "Las contraseñas no coinciden.", passwordLength: "La contraseña debe tener al menos 8 caracteres.",
+      next: "Siguiente", startAnalysing: "Empezar a analizar", skip: "Omitir",
+    },
+    settings: {
+      title: "Configuración", currentPlan: "Plan actual", free: "Gratis", pro: "Pro", proPlus: "Pro+",
+      signOut: "Cerrar sesión", upgrade: "Mejorar plan", privacyNote: "Nunca almacenamos tus documentos. Cada análisis se procesa y se olvida inmediatamente. Solo se guarda tu contador de uso.",
+      usedThis: "análisis usados este mes", unlimited: "Ilimitado",
+    },
+    privacyShort: "Tu documento nunca se almacena. Se analiza y se olvida inmediatamente.",
   },
 };
 
@@ -328,7 +391,7 @@ function ScoreRing({ score }) {
   );
 }
 
-function Onboarding({ onFinish }) {
+function Onboarding({ onFinish, t }) {
   const [step, setStep] = useState(0);
   const cur = ONBOARDING[step];
   const isLast = step === ONBOARDING.length - 1;
@@ -347,9 +410,9 @@ function Onboarding({ onFinish }) {
           ))}
         </div>
         <button onClick={() => isLast ? onFinish() : setStep(s => s + 1)} style={btnStyle("primary", false)}>
-          {isLast ? "Start analysing" : "Next"}
+          {isLast ? (t?.auth?.startAnalysing || "Start analysing") : (t?.auth?.next || "Next")}
         </button>
-        {!isLast && <button onClick={onFinish} style={{ ...btnStyle("secondary", false), marginTop: "10px", fontSize: "14px" }}>Skip</button>}
+        {!isLast && <button onClick={onFinish} style={{ ...btnStyle("secondary", false), marginTop: "10px", fontSize: "14px" }}>{t?.auth?.skip || "Skip"}</button>}
       </div>
     </div>
   );
@@ -458,7 +521,9 @@ function Landing({ onSignUp, onLogin, onSample, onAbout, t, lang, onLangChange }
   );
 }
 
-function Auth({ mode, onSuccess, onSwitch, onBack }) {
+function Auth({ mode, onSuccess, onSwitch, onBack, t }) {
+  const tx = t || T.en;
+  const a = tx.auth || T.en.auth;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -471,9 +536,9 @@ function Auth({ mode, onSuccess, onSwitch, onBack }) {
   const submit = async () => {
     setError("");
     if (!email.trim()) return setError("Email is required.");
-    if (!forgot && !password) return setError("Password is required.");
-    if (isSignUp && password !== confirm) return setError("Passwords do not match.");
-    if (isSignUp && password.length < 8) return setError("Password must be at least 8 characters.");
+    if (!forgot && !password) return setError(a.passwordRequired);
+    if (isSignUp && password !== confirm) return setError(a.passwordMatch);
+    if (isSignUp && password.length < 8) return setError(a.passwordLength);
     setLoading(true);
     try {
       if (forgot) {
@@ -498,32 +563,32 @@ function Auth({ mode, onSuccess, onSwitch, onBack }) {
     <div style={{ padding: "40px 20px", textAlign: "center" }}>
       <div style={{ fontSize: "48px", marginBottom: "16px" }}>📧</div>
       <h2 style={{ fontSize: "22px", fontWeight: "700", marginBottom: "8px" }}>
-        {isSignUp ? "Confirm your email" : "Check your email"}
+        {isSignUp ? a.confirmEmail : a.checkEmail}
       </h2>
       <p style={{ color: C.sub, marginBottom: "8px" }}>
-        {isSignUp ? `We sent a confirmation link to ${email}` : `Reset link sent to ${email}`}
+        {isSignUp ? `${a.confirmSent} ${email}` : `${a.resetSent} ${email}`}
       </p>
-      {isSignUp && <p style={{ color: C.sub, fontSize: "13px", marginBottom: "24px" }}>Click the link in the email to activate your account. Then come back here and sign in.</p>}
+      {isSignUp && <p style={{ color: C.sub, fontSize: "13px", marginBottom: "24px" }}>{a.confirmNote}</p>}
       <button onClick={() => { setForgot(false); setForgotSent(false); }} style={btnStyle("secondary", false)}>
-        {isSignUp ? "Go to sign in" : "Back to sign in"}
+        {isSignUp ? a.goToSignIn : a.backToSignIn}
       </button>
     </div>
   );
 
   return (
     <div style={{ padding: "32px 20px" }}>
-      <button onClick={onBack} style={{ background: "none", border: "none", color: C.accent, fontSize: "14px", cursor: "pointer", marginBottom: "20px", padding: 0 }}>← Back to home</button>
+      <button onClick={onBack} style={{ background: "none", border: "none", color: C.accent, fontSize: "14px", cursor: "pointer", marginBottom: "20px", padding: 0 }}>← {tx.about === "Over ons" ? "Terug" : tx.about === "Acerca de" ? "Volver" : "Back to home"}</button>
       <h2 style={{ fontSize: "26px", fontWeight: "700", color: C.text, marginBottom: "4px" }}>
-        {forgot ? "Reset password" : isSignUp ? "Create account" : "Welcome back"}
+        {forgot ? a.resetPassword : isSignUp ? a.createAccount : a.welcomeBack}
       </h2>
       <p style={{ fontSize: "14px", color: C.sub, marginBottom: "24px" }}>
-        {forgot ? "We will email a reset link." : isSignUp ? "Free to start. No credit card needed." : "Sign in to continue."}
+        {forgot ? a.resetDesc : isSignUp ? a.freeStart : a.signInDesc}
       </p>
       {error && <div style={errCss}>{error}</div>}
       {[
-        { label: "Email", type: "email", val: email, set: setEmail, ph: "you@example.com" },
-        ...(!forgot ? [{ label: "Password", type: "password", val: password, set: setPassword, ph: "At least 8 characters" }] : []),
-        ...(isSignUp && !forgot ? [{ label: "Confirm password", type: "password", val: confirm, set: setConfirm, ph: "Same password again" }] : []),
+        { label: a.emailLabel, type: "email", val: email, set: setEmail, ph: a.emailPh },
+        ...(!forgot ? [{ label: a.passwordLabel, type: "password", val: password, set: setPassword, ph: a.passwordPh }] : []),
+        ...(isSignUp && !forgot ? [{ label: a.confirmLabel, type: "password", val: confirm, set: setConfirm, ph: a.confirmPh }] : []),
       ].map(({ label, type, val, set, ph }) => (
         <div key={label} style={{ marginBottom: "14px" }}>
           <label style={{ fontSize: "13px", fontWeight: "500", color: C.sub, display: "block", marginBottom: "6px" }}>{label}</label>
@@ -531,11 +596,11 @@ function Auth({ mode, onSuccess, onSwitch, onBack }) {
         </div>
       ))}
       <button onClick={submit} disabled={loading} style={{ ...btnStyle("primary", loading), marginBottom: "12px" }}>
-        {loading ? "Please wait..." : forgot ? "Send reset link" : isSignUp ? "Create account" : "Sign in"}
+        {loading ? a.pleaseWait : forgot ? a.sendReset : isSignUp ? a.createAccount : tx.signIn}
       </button>
-      {!forgot && !isSignUp && <button onClick={() => setForgot(true)} style={{ background: "none", border: "none", color: C.accent, fontSize: "14px", cursor: "pointer", display: "block", marginBottom: "12px", padding: 0 }}>Forgot password?</button>}
+      {!forgot && !isSignUp && <button onClick={() => setForgot(true)} style={{ background: "none", border: "none", color: C.accent, fontSize: "14px", cursor: "pointer", display: "block", marginBottom: "12px", padding: 0 }}>{a.forgotLink}</button>}
       <button onClick={onSwitch} style={{ background: "none", border: "none", color: C.sub, fontSize: "14px", cursor: "pointer", padding: 0 }}>
-        {isSignUp ? "Already have an account? Sign in" : "No account? Sign up free"}
+        {isSignUp ? a.hasAccount : a.noAccount}
       </button>
     </div>
   );
@@ -600,11 +665,11 @@ function Analyse({ user, userMeta, prefill, onDone, onUpgrade, t, lang }) {
       )}
       <div style={{ background: "#F5EDD6", border: "1px solid #E8D4A0", borderRadius: "8px", padding: "10px 14px", marginBottom: "14px", display: "flex", gap: "8px", alignItems: "center" }}>
         <span style={{ fontSize: "16px" }}>🔒</span>
-        <span style={{ fontSize: "13px", color: "#8A6828" }}>Your document is never stored. It is analysed and immediately forgotten.</span>
+        <span style={{ fontSize: "13px", color: "#8A6828" }}>{tx.privacyShort || tx.privacyNote}</span>
       </div>
       <div style={{ marginBottom: "14px" }}>
         <textarea value={text} onChange={e => change(e.target.value)}
-          placeholder="Paste your contract, rental agreement, employment terms, or any legal document here..."
+          placeholder={tx.placeholder}
           style={{ ...inputCss, height: "200px", resize: "vertical", lineHeight: "1.6", fontSize: "14px" }} />
         <div style={{ display: "flex", justifyContent: "space-between", marginTop: "6px" }}>
           <span style={{ fontSize: "12px", color: C.sub }}>{charCount.toLocaleString()} characters</span>
@@ -660,7 +725,7 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp, user, us
       const res = await fetch("/api/analyse", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-plainly-secret": process.env.REACT_APP_API_SECRET || "" },
-        body: JSON.stringify({ text: context + "\n\nUser question: " + msg, userId: null, chatMode: true })
+        body: JSON.stringify({ text: context + "\n\nUser question: " + msg, userId: null, chatMode: true, lang: lang || "en" })
       });
       const resData = await res.json();
       const reply = resData.chatReply || resData.result?.summary || "I could not answer that. Please try rephrasing.";
@@ -843,7 +908,7 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp, user, us
       {/* FLAGS TAB */}
       {activeTab === "flags" && (
         <div>
-          <p style={{ fontSize: "13px", color: C.sub, marginBottom: "12px", lineHeight: "1.5" }}>Issues ranked by severity. Tap any flag for the full analysis, industry comparison and negotiation script.</p>
+          <p style={{ fontSize: "17px", fontWeight: "700", color: C.text, marginBottom: "14px", lineHeight: "1.5" }}>{tx.flagsIntro || "Issues ranked by severity. Each flag includes the full analysis, industry comparison and negotiation script."}</p>
           {sortedFlags.length === 0 && (
             <div style={{ ...cardStyle, textAlign: "center", color: C.sub }}>{tx.noFlags}</div>
           )}
@@ -963,7 +1028,7 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp, user, us
                 const res = await fetch("/api/analyse", {
                   method: "POST",
                   headers: { "Content-Type": "application/json", "x-plainly-secret": process.env.REACT_APP_API_SECRET || "" },
-                  body: JSON.stringify({ text: prompt, userId: null, chatMode: true })
+                  body: JSON.stringify({ text: prompt, userId: null, chatMode: true, lang: lang || "en" })
                 });
                 const d = await res.json();
                 setCompResult(d.chatReply || d.result?.summary || "Could not generate comparison.");
@@ -991,7 +1056,7 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp, user, us
             <div style={{ background: C.header, borderRadius: "12px", padding: "16px", marginBottom: "16px", textAlign: "center" }}>
               <p style={{ color: "#fff", fontSize: "14px", margin: "0 0 4px", fontWeight: "600" }}>{tx.chatLocked}</p>
               <p style={{ color: "#9CA3AF", fontSize: "13px", margin: "0 0 10px" }}>{tx.chatLockedDesc}</p>
-              <button onClick={onSignUp} style={{ ...btnStyle("primary", false), padding: "10px", fontSize: "14px", background: C.accent, color: "#1A1814" }}>Upgrade to Pro+ — ${PRO_PLUS_PRICE}/mo</button>
+              <button onClick={onSignUp} style={{ ...btnStyle("primary", false), padding: "10px", fontSize: "14px", background: C.accent, color: "#1A1814" }}>{tx.startProPlus} — ${PRO_PLUS_PRICE}/mo</button>
             </div>
           )}
           <div style={{ ...cardStyle, opacity: isProPlus ? 1 : 0.4, pointerEvents: isProPlus ? "auto" : "none" }}>
@@ -999,8 +1064,8 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp, user, us
             <div ref={chatRef} style={{ height: "280px", overflowY: "auto", marginBottom: "12px", display: "flex", flexDirection: "column", gap: "10px" }}>
               {chatMessages.length === 0 && (
                 <div style={{ color: C.muted, fontSize: "13px", textAlign: "center", padding: "40px 0" }}>
-                  Ask anything about this contract. Try:<br /><br />
-                  <span style={{ color: C.sub }}>"Can I negotiate the non-compete clause?"<br />"What happens if I break clause 3?"<br />"Is the payment term normal?"</span>
+                  {tx.chatEmpty || "Ask anything about this contract. Try:"}<br /><br />
+                  <span style={{ color: C.sub }}>{(tx.chatSuggestions || []).map((s, i) => <span key={i}>"{s}"<br /></span>)}</span>
                 </div>
               )}
               {chatMessages.map((m, i) => (
@@ -1136,7 +1201,9 @@ function About({ onBack }) {
   );
 }
 
-function Settings({ user, userMeta, onSignOut, onUpgrade }) {
+function Settings({ user, userMeta, onSignOut, onUpgrade, t }) {
+  const tx = t || T.en;
+  const s = tx.settings || T.en.settings;
   const [cancelling, setCancelling] = useState(false);
 
   const cancel = async () => {
@@ -1157,6 +1224,8 @@ function Settings({ user, userMeta, onSignOut, onUpgrade }) {
     } catch (err) { alert("Could not delete account. Please contact support."); }
   };
 
+  const planLabel = userMeta?.is_pro_plus ? s.proPlus : userMeta?.is_pro ? s.pro : s.free;
+
   return (
     <div>
       <div style={cardStyle}>
@@ -1164,32 +1233,32 @@ function Settings({ user, userMeta, onSignOut, onUpgrade }) {
         <div style={{ fontSize: "15px", color: C.text, fontWeight: "500" }}>{user.email}</div>
       </div>
       <div style={cardStyle}>
-        <div style={labelStyle}>Plan</div>
+        <div style={labelStyle}>{s.currentPlan}</div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: userMeta?.is_pro ? "12px" : 0 }}>
           <div>
-            <span style={{ fontWeight: "700", fontSize: "18px", color: userMeta?.is_pro ? C.accent : C.text }}>{userMeta?.is_pro ? "Pro" : "Free"}</span>
-            {!userMeta?.is_pro && <span style={{ fontSize: "13px", color: C.sub, marginLeft: "8px" }}>{userMeta?.usage_count || 0}/{FREE_LIMIT} used this month</span>}
+            <span style={{ fontWeight: "700", fontSize: "18px", color: userMeta?.is_pro ? C.accent : C.text }}>{planLabel}</span>
+            {!userMeta?.is_pro && <span style={{ fontSize: "13px", color: C.sub, marginLeft: "8px" }}>{userMeta?.usage_count || 0}/{FREE_LIMIT} {s.usedThis}</span>}
           </div>
-          {!userMeta?.is_pro && <button onClick={onUpgrade} style={{ background: C.accent, color: "#fff", border: "none", borderRadius: "6px", padding: "7px 14px", fontSize: "13px", cursor: "pointer", fontWeight: "600" }}>Upgrade</button>}
+          {!userMeta?.is_pro && <button onClick={onUpgrade} style={{ background: C.accent, color: "#1A1814", border: "none", borderRadius: "6px", padding: "7px 14px", fontSize: "13px", cursor: "pointer", fontWeight: "600" }}>{s.upgrade}</button>}
         </div>
-        {userMeta?.is_pro && <button onClick={cancel} disabled={cancelling} style={{ background: "none", border: "none", color: C.danger, fontSize: "13px", cursor: "pointer", padding: 0 }}>{cancelling ? "Cancelling..." : "Cancel Pro subscription"}</button>}
+        {userMeta?.is_pro && <button onClick={cancel} disabled={cancelling} style={{ background: "none", border: "none", color: C.danger, fontSize: "13px", cursor: "pointer", padding: 0 }}>{cancelling ? "..." : "Cancel Pro subscription"}</button>}
       </div>
       <div style={{ ...cardStyle, background: "#F5EDD6", border: "1px solid #E8D4A0" }}>
         <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
           <span style={{ fontSize: "20px" }}>🔒</span>
           <div>
-            <div style={{ fontWeight: "600", fontSize: "14px", color: "#8A6828", marginBottom: "4px" }}>Your privacy is protected</div>
-            <div style={{ fontSize: "13px", color: "#8A6828", lineHeight: "1.5" }}>We never store your documents. Every analysis is processed and immediately forgotten. Only your usage count is saved.</div>
+            <div style={{ fontWeight: "600", fontSize: "14px", color: "#8A6828", marginBottom: "4px" }}>{tx.about === "Over ons" ? "Je privacy is beschermd" : tx.about === "Acerca de" ? "Tu privacidad está protegida" : "Your privacy is protected"}</div>
+            <div style={{ fontSize: "13px", color: "#8A6828", lineHeight: "1.5" }}>{s.privacyNote}</div>
           </div>
         </div>
       </div>
-      <button onClick={onSignOut} style={{ ...btnStyle("secondary", false), marginBottom: "8px" }}>Sign out</button>
-      <button onClick={deleteAccount} style={{ ...btnStyle("secondary", false), color: C.danger, borderColor: "#E8C0BE", marginBottom: "20px", fontSize: "14px" }}>Delete my account</button>
+      <button onClick={onSignOut} style={{ ...btnStyle("secondary", false), marginBottom: "8px" }}>{s.signOut}</button>
+      <button onClick={deleteAccount} style={{ ...btnStyle("secondary", false), color: C.danger, borderColor: "#E8C0BE", marginBottom: "20px", fontSize: "14px" }}>{tx.about === "Over ons" ? "Account verwijderen" : tx.about === "Acerca de" ? "Eliminar mi cuenta" : "Delete my account"}</button>
       <div style={{ display: "flex", justifyContent: "center", gap: "20px", flexWrap: "wrap" }}>
-        <a href="/about.html" style={{ fontSize: "12px", color: C.sub, textDecoration: "none" }}>About</a>
-        <a href="/privacy.html" style={{ fontSize: "12px", color: C.sub, textDecoration: "none" }}>Privacy policy</a>
-        <a href="/terms.html" style={{ fontSize: "12px", color: C.sub, textDecoration: "none" }}>Terms of service</a>
-        <a href="mailto:plainlyteam@gmail.com" style={{ fontSize: "12px", color: C.sub, textDecoration: "none" }}>Contact</a>
+        <a href="/about.html" style={{ fontSize: "12px", color: C.sub, textDecoration: "none" }}>{tx.about}</a>
+        <a href="/privacy.html" style={{ fontSize: "12px", color: C.sub, textDecoration: "none" }}>{tx.about === "Over ons" ? "Privacybeleid" : tx.about === "Acerca de" ? "Política de privacidad" : "Privacy policy"}</a>
+        <a href="/terms.html" style={{ fontSize: "12px", color: C.sub, textDecoration: "none" }}>{tx.about === "Over ons" ? "Gebruiksvoorwaarden" : tx.about === "Acerca de" ? "Términos de servicio" : "Terms of service"}</a>
+        <a href="mailto:plainlyteam@gmail.com" style={{ fontSize: "12px", color: C.sub, textDecoration: "none" }}>{tx.contact}</a>
       </div>
     </div>
   );
@@ -1239,7 +1308,7 @@ export default function App() {
   const showNav = isAuthed && screen === "app" && !onboarding;
 
   const renderBody = () => {
-    if (onboarding) return <Onboarding onFinish={() => setOnboarding(false)} />;
+    if (onboarding) return <Onboarding onFinish={() => setOnboarding(false)} t={t} />;
     if (screen === "landing") return <Landing
       t={t} lang={lang} onLangChange={setLang}
       onSignUp={() => { setAuthMode("signup"); setScreen("auth"); }}
@@ -1248,6 +1317,7 @@ export default function App() {
       onAbout={() => setScreen("about")}
     />;
     if (screen === "auth") return <Auth
+      t={t}
       mode={authMode}
       onSuccess={(isNew) => { if (isNew) setOnboarding(true); setScreen("app"); setTab("analyse"); }}
       onSwitch={() => setAuthMode(m => m === "signup" ? "login" : "signup")}
@@ -1431,7 +1501,7 @@ export default function App() {
             </div>
             {showNav && isDesktop && (
               <div style={{ display: "flex", gap: "8px" }}>
-                {[{ key: "analyse", label: "Analyse", icon: "📄" }, { key: "about", label: "About", icon: "ℹ️" }, { key: "settings", label: "Settings", icon: "⚙️" }].map(({ key, label, icon }) => (
+                {[{ key: "analyse", label: t?.nav?.analyse || "Analyse", icon: "📄" }, { key: "about", label: t?.nav?.about || "About", icon: "ℹ️" }, { key: "settings", label: t?.nav?.settings || "Settings", icon: "⚙️" }].map(({ key, label, icon }) => (
                   <button key={key} onClick={() => { setTab(key); setResult(null); }}
                     style={{ background: tab === key ? C.accent : "transparent", color: tab === key ? "#1A1814" : "#9CA3AF", border: tab === key ? "none" : "0.5px solid #555", borderRadius: "8px", padding: "8px 16px", fontSize: "13px", fontWeight: "600", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}>
                     <span>{icon}</span>{label}
@@ -1446,7 +1516,7 @@ export default function App() {
       <div style={{ maxWidth: isDesktop ? "1100px" : "480px", margin: "0 auto", padding: isDesktop ? "40px" : "0", minHeight: "calc(100vh - 60px)" }}>
         {onboarding ? (
           <div style={{ background: C.bg, borderRadius: isDesktop ? "16px" : 0, padding: isDesktop ? "40px" : "20px" }}>
-            <Onboarding onFinish={() => setOnboarding(false)} />
+            <Onboarding onFinish={() => setOnboarding(false)} t={t} />
           </div>
         ) : isDesktop && screen === "app" && isAuthed ? (
           <div style={{ display: "grid", gridTemplateColumns: result ? "1fr 1fr" : "600px", gap: "32px", alignItems: "start", justifyContent: "center" }}>
@@ -1454,7 +1524,7 @@ export default function App() {
               {tab === "analyse" && !result && <Analyse user={session.user} userMeta={userMeta} prefill={null} onDone={(d) => { setResult(d); loadMeta(session.user.id); }} onUpgrade={() => setShowUpgrade(true)} />}
               {tab === "analyse" && result && <Analyse user={session.user} userMeta={userMeta} prefill={null} onDone={(d) => { setResult(d); loadMeta(session.user.id); }} onUpgrade={() => setShowUpgrade(true)} />}
               {tab === "about" && <About onBack={() => setTab("analyse")} />}
-              {tab === "settings" && <Settings user={session.user} userMeta={userMeta} onSignOut={signOut} onUpgrade={() => setShowUpgrade(true)} />}
+              {tab === "settings" && <Settings user={session.user} userMeta={userMeta} onSignOut={signOut} onUpgrade={() => setShowUpgrade(true)} t={t} />}
             </div>
             {result && tab === "analyse" && (
               <div style={{ background: C.bg, borderRadius: "16px", padding: "32px", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
@@ -1471,7 +1541,7 @@ export default function App() {
 
       {showNav && !isDesktop && (
         <nav style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: C.bg, borderTop: `0.5px solid ${C.border}`, display: "flex", zIndex: 100 }}>
-          {[{ key: "analyse", label: "Analyse", icon: "📄" }, { key: "about", label: "About", icon: "ℹ️" }, { key: "settings", label: "Settings", icon: "⚙️" }].map(({ key, label, icon }) => (
+          {[{ key: "analyse", label: t?.nav?.analyse || "Analyse", icon: "📄" }, { key: "about", label: t?.nav?.about || "About", icon: "ℹ️" }, { key: "settings", label: t?.nav?.settings || "Settings", icon: "⚙️" }].map(({ key, label, icon }) => (
             <button key={key} onClick={() => { setTab(key); setResult(null); }}
               style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "3px", padding: "10px 0 14px", cursor: "pointer", border: "none", background: "transparent", color: tab === key ? C.accent : "#8A8585", fontSize: "11px", fontWeight: tab === key ? "600" : "400" }}>
               <span style={{ fontSize: "20px" }}>{icon}</span>{label}
