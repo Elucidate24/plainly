@@ -465,8 +465,8 @@ function Landing({ onSignUp, onLogin, onSample, onAbout, t, lang, onLangChange }
         </div>
 
         <div style={{ background: "#F5EDD6", border: `1px solid #E8D4A0`, borderRadius: "12px", padding: "16px", marginBottom: "24px" }}>
-          <div style={{ fontWeight: "600", fontSize: "14px", color: "#8A6828", marginBottom: "6px" }}>See a real example</div>
-          <p style={{ fontSize: "13px", color: "#6A5020", margin: "0 0 12px", lineHeight: "1.5" }}>See how Plainly analyses a freelance contract. No account needed.</p>
+          <div style={{ fontWeight: "600", fontSize: "14px", color: "#8A6828", marginBottom: "6px" }}>{tx.demoTitle}</div>
+          <p style={{ fontSize: "13px", color: "#6A5020", margin: "0 0 12px", lineHeight: "1.5" }}>{tx.demoDesc}</p>
           <button onClick={onSample} style={{ ...btnStyle("primary", false), background: "#8A6828", padding: "10px", fontSize: "14px" }}>{tx.viewDemo}</button>
         </div>
 
@@ -1099,7 +1099,7 @@ const Results = memo(function Results({ data, onNew, isGuest, onSignUp, user, us
       <div style={{ marginTop: "16px" }}>
         <button onClick={() => { copy(`Plainly Contract Analysis\n\n${data.document_type}\nTrust Score: ${data.trust_score}/10\n\n${data.score_label}\n\n${data.recommendation}\n\nAnalysed with Plainly — plainly-opal.vercel.app`, "share"); }}
           style={{ ...btnStyle("secondary", false), marginBottom: "8px", fontSize: "14px", padding: "12px" }}>
-          {copied === "share" ? tx.copied : "Share this analysis"}
+          {copied === "share" ? tx.copied : tx.shareBtn}
         </button>
         <button onClick={onNew} style={{ ...btnStyle("primary", false), marginBottom: "12px" }}>{tx.newBtn}</button>
         <p style={{ fontSize: "11px", color: C.sub, textAlign: "center", lineHeight: "1.5" }}>{tx ? tx.disclaimer : DISCLAIMER}</p>
