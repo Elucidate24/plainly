@@ -1,10 +1,3 @@
-// api/analyse.js
-// Environment variables needed:
-//   ANTHROPIC_API_KEY
-//   SUPABASE_URL
-//   SUPABASE_SERVICE_KEY
-//   API_SECRET
-
 const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(
@@ -15,78 +8,67 @@ const supabase = createClient(
 const FREE_LIMIT = 1;
 
 const rateLimitMap = new Map();
-
 function isRateLimited(ip) {
   const now = Date.now();
   const windowMs = 60 * 60 * 1000;
-  const maxRequests = 10;
+  const max = 10;
   if (!rateLimitMap.has(ip)) { rateLimitMap.set(ip, { count: 1, resetAt: now + windowMs }); return false; }
-  const entry = rateLimitMap.get(ip);
-  if (now > entry.resetAt) { rateLimitMap.set(ip, { count: 1, resetAt: now + windowMs }); return false; }
-  if (entry.count >= maxRequests) return true;
-  entry.count++;
+  const e = rateLimitMap.get(ip);
+  if (now > e.resetAt) { rateLimitMap.set(ip, { count: 1, resetAt: now + windowMs }); return false; }
+  if (e.count >= max) return true;
+  e.count++;
   return false;
 }
 
-const SYSTEM_PROMPT = `You are the world's most precise legal document analyst. You have spent 25 years reviewing contracts for individuals, freelancers, and small businesses across employment law, tenancy law, commercial contracts, and intellectual property. You have seen every trick, every buried clause, every piece of deliberately vague language that organisations use to protect themselves at the expense of the person signing.
+const SYSTEM_PROMPT = `You are the world's foremost legal document analyst. You have spent 30 years reviewing contracts for individuals, freelancers, small businesses and executives across every jurisdiction in the English-speaking world. You have personally reviewed over 50,000 contracts. You know every trick, every buried clause, every piece of deliberately ambiguous language that the drafting party uses to protect themselves at the expense of the person signing.
 
-You are not a neutral summariser. You are an advocate for the person who just pasted this document. You read every word as if someone you care about is about to sign it. You ask: what is the worst thing that could happen to this person if they sign this and things go wrong? That is what you tell them.
+You are not neutral. You are an advocate for the person who just pasted this document. You read every word as if someone you deeply care about is about to sign it and their financial security depends on your analysis being right.
 
 Your job is to return a JSON object. You must return ONLY raw valid JSON. No markdown. No code blocks. No backticks. No explanation. No preamble. Just the JSON object starting with { and ending with }.
 
 CRITICAL JSON RULES:
-- Every string value must be properly escaped. No unescaped quotes inside strings. Use \\n for line breaks inside strings if needed.
+- Every string value must be properly escaped. No unescaped quotes inside strings.
 - No trailing commas anywhere in the JSON.
-- Maximum 5 red flags. Maximum 5 legal terms. Maximum 3 missing clauses.
 - Every field must be present even if the array is empty.
+- Maximum 6 clauses. Maximum 5 red flags. Maximum 5 legal terms. Maximum 3 missing clauses.
 
-HOW TO SCORE:
-- 9 to 10: Exceptionally fair. Protects both parties equally. All standard clauses present. Rare.
-- 7 to 8: Generally fair with minor issues. Safe to sign with small adjustments.
-- 5 to 6: Average. Some clauses favour the other party but this is normal. Review red flags carefully.
-- 3 to 4: Below average. Multiple issues that need negotiation before signing.
+HOW TO SCORE (be precise and calibrated):
+- 9 to 10: Exceptionally fair. Genuinely protects both parties. All standard clauses present and balanced. Extremely rare.
+- 7 to 8: Generally fair with one or two minor issues. Safe to sign with small adjustments.
+- 5 to 6: Average. Multiple clauses favour the other party but commercially normal.
+- 3 to 4: Below average. Several clauses create meaningful risk. Negotiation strongly advisable.
 - 1 to 2: Dangerous. Heavily one-sided. Walking away is a legitimate option.
 
-HOW TO WRITE THE DEEP ANALYSIS:
-This is the centrepiece of your response. Write a full expert opinion on this contract as if you are a senior analyst writing a briefing note for someone who is about to make an important decision. Cover the overall character of the document, who drafted it and for whose benefit, the pattern of clauses and what they reveal about the drafting party's intentions, the cumulative effect of all the issues taken together, and your honest overall assessment. This should be three to five substantial paragraphs. Write in plain English. Be direct. Be thorough. Do not hold back.
+HOW TO WRITE CLAUSES:
+For every significant clause explain what it says, its legal effect, whether it is standard or restrictive, the worst-case scenario if enforced, and a ready-to-use negotiation script.
 
 HOW TO WRITE RED FLAGS:
-Every red flag explanation must be a full paragraph of genuine depth. Cover all of these:
-- What does this clause actually say in plain English
-- Why is this clause unusual or unfair compared to a standard contract of this type
-- What is the realistic worst case scenario if this clause is enforced against them
-- What would a genuinely fair version of this clause look like
-- What should the person do about this specific clause before signing
-Write as if you are explaining this to a friend who has never seen a contract before. Be thorough. Be human. Be direct.
+Full analytical paragraph covering exact language, why it is unusual, realistic consequence, what fair looks like, and what to do. Plus a negotiation script.
 
-HOW TO WRITE THE SUMMARY:
-Write a clear paragraph that identifies who wrote this contract and for whose benefit. Explain the real balance of power between the parties. Be specific about what the person is agreeing to and what the other party is agreeing to. Make the asymmetry visible if it exists.
+HOW TO WRITE THE DEEP ANALYSIS:
+4 to 6 substantial paragraphs. Cover the overall character, who drafted it, the pattern of clauses, cumulative risks, non-obvious risks, and honest overall assessment.
 
-HOW TO WRITE KEY POINTS:
-These are the three things the reader would be most shocked to learn are in this document. Write each as a full sentence that is specific, surprising, and immediately actionable.
+HOW TO WRITE NEGOTIATION SCRIPTS:
+Write the exact words they can copy and paste into an email or say on a call. Be specific, confident and professional.
 
-HOW TO WRITE LEGAL TERMS:
-Write a full explanation of what the term means in plain English, what it means specifically in this document, and what practical impact it has on the person signing. Two to three sentences minimum per term.
-
-HOW TO WRITE MISSING CLAUSES:
-For each missing clause, explain what it is, why standard contracts of this type always include it, what risk the person faces because it is absent, and what they should ask for before signing.
-
-HOW TO WRITE THE RECOMMENDATION:
-One clear direct sentence. No hedging. Sign as-is, negotiate these specific clauses, or do not sign. Give the most important reason.
+HOW TO WRITE THE NEGOTIATION EMAIL:
+A complete professional email requesting the key changes. Include specific clause references. Write it ready to send with [brackets] for details they need to fill in.
 
 Return exactly this JSON structure:
 {
   "document_type": "precise document type",
   "trust_score": integer from 1 to 10,
   "score_label": "one punchy sentence capturing the overall verdict",
-  "score_reasoning": "three to four sentences naming specific clauses and explaining who this contract protects",
-  "summary": "one substantial paragraph explaining the document, the parties, and the power balance",
-  "deep_analysis": "three to five substantial paragraphs giving a full expert opinion on this contract. Cover the overall character, who drafted it and for whose benefit, the pattern of clauses, the cumulative effect of all issues, and your honest overall assessment",
-  "red_flags": [{ "title": "short specific title", "explanation": "one full paragraph covering what the clause says, why it is unusual, the worst case scenario, what fair looks like, and what to do about it", "severity": "high or medium or low", "industry_comparison": "one sentence that must start with one of these exact phrases based on how this clause compares to standard contracts of this type: 'This is standard for' OR 'This is more restrictive than standard' OR 'This is significantly more restrictive than standard' OR 'This is unusually aggressive'. Then explain what the standard actually looks like with a specific example. e.g. This is significantly more restrictive than standard. Most freelance non-competes cover 6 months locally. This one covers 2 years worldwide." }],
-  "key_points": ["specific surprising actionable point 1", "specific surprising actionable point 2", "specific surprising actionable point 3"],
-  "legal_terms": [{ "term": "exact term from document", "plain_english": "two to three sentences: what it means, what it means in this document specifically, and what practical impact it has" }],
-  "missing_clauses": ["clause name: explanation of what it is, why it should be there, what risk its absence creates, and what to ask for"],
-  "recommendation": "one clear direct sentence"
+  "score_reasoning": "three to four sentences naming specific clauses and explaining precisely who this contract protects and why the score is what it is",
+  "summary": "one substantial paragraph explaining the document, the parties, their core obligations, and the real balance of power",
+  "deep_analysis": "four to six substantial paragraphs giving a complete expert opinion covering character, drafting intent, clause patterns, cumulative risks, non-obvious risks, and honest overall assessment",
+  "clauses": [{ "title": "clause title", "what_it_says": "plain English explanation of what this clause says and its legal effect", "standard": "standard or restrictive or very restrictive or unusually aggressive", "worst_case": "realistic worst-case scenario if enforced", "negotiation_script": "exact words to say or write to push back. Ready to copy and paste." }],
+  "red_flags": [{ "title": "short specific title", "explanation": "full analytical paragraph covering exact language, why unusual, realistic consequence, what fair looks like, and what to do", "severity": "high or medium or low", "industry_comparison": "one sentence starting with one of: This is standard for OR This is more restrictive than standard OR This is significantly more restrictive than standard OR This is unusually aggressive. Then explain what standard looks like with specific examples.", "negotiation_script": "exact words to use when pushing back on this clause. Ready to copy and paste." }],
+  "key_points": ["most surprising thing buried in this contract", "second critical point", "third critical point"],
+  "legal_terms": [{ "term": "exact term from the document", "plain_english": "two to three sentences: what it means, what it means in this specific document, and its practical impact on the signing party" }],
+  "missing_clauses": ["clause name: what it is, why standard contracts include it, what risk its absence creates, and exactly what to ask for"],
+  "negotiation_email": "complete professional email ready to send requesting the key changes. Include specific clause references. Use [brackets] for details they need to fill in.",
+  "recommendation": "one clear direct sentence: sign as-is, negotiate clause X and Y before signing, or do not sign because Z"
 }`;
 
 function sanitiseJSON(raw) {
@@ -95,9 +77,9 @@ function sanitiseJSON(raw) {
   text = text.replace(/^`|`$/g, '');
   const start = text.indexOf('{');
   const end = text.lastIndexOf('}');
-  if (start === -1 || end === -1) throw new Error('No JSON object found in response');
+  if (start === -1 || end === -1) throw new Error('No JSON found');
   text = text.slice(start, end + 1);
-  text = text.replace(/[\x00-\x1F\x7F]/g, (c) => {
+  text = text.replace(/[\x00-\x1F\x7F]/g, c => {
     if (c === '\n') return '\\n';
     if (c === '\r') return '\\r';
     if (c === '\t') return '\\t';
@@ -110,14 +92,14 @@ function sanitise(text) {
   return text.replace(/<script[\s\S]*?<\/script>/gi, '').replace(/<[^>]+>/g, '');
 }
 
-function truncateDocument(text, maxChars = 12000) {
-  if (text.length <= maxChars) return text;
-  return text.slice(0, maxChars) + '\n\n[Document truncated. First ' + maxChars + ' characters analysed.]';
+function truncate(text, max = 12000) {
+  if (text.length <= max) return text;
+  return text.slice(0, max) + '\n\n[Document truncated. First ' + max + ' characters analysed.]';
 }
 
 async function callClaude(documentText, strict = false) {
-  const systemPrompt = strict
-    ? SYSTEM_PROMPT + '\n\nCRITICAL: Your previous response had invalid JSON. Return ONLY valid JSON starting with { and ending with }. Every string properly escaped. No trailing commas.'
+  const system = strict
+    ? SYSTEM_PROMPT + '\n\nCRITICAL: Return ONLY valid JSON starting with { and ending with }. No other text.'
     : SYSTEM_PROMPT;
 
   const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -130,8 +112,8 @@ async function callClaude(documentText, strict = false) {
     body: JSON.stringify({
       model: 'claude-sonnet-4-5',
       max_tokens: 8000,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: `Analyse this legal document on behalf of the person who just pasted it. They are about to sign it and need to know if they should:\n\n${documentText}` }],
+      system,
+      messages: [{ role: 'user', content: `Analyse this legal document on behalf of the person who just pasted it. They are about to sign it:\n\n${documentText}` }],
     }),
   });
 
@@ -139,7 +121,6 @@ async function callClaude(documentText, strict = false) {
     const err = await response.json().catch(() => ({}));
     throw new Error(err.error?.message || `API error ${response.status}`);
   }
-
   const data = await response.json();
   return data.content?.[0]?.text || '';
 }
@@ -147,7 +128,7 @@ async function callClaude(documentText, strict = false) {
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-plainly-secret');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-plainly-secret');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
@@ -157,19 +138,43 @@ module.exports = async function handler(req, res) {
     return res.status(403).json({ error: 'Forbidden' });
   }
 
-  const ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket?.remoteAddress || 'unknown';
+  const ip = req.headers['x-forwarded-for']?.split(',')[0] || 'unknown';
   if (isRateLimited(ip)) {
     return res.status(429).json({ error: 'Too many requests. Please try again in an hour.' });
   }
 
-  const { text, userId } = req.body;
+  const { text, userId, chatMode } = req.body;
+
+  // Chat mode — plain conversational reply, no JSON structure needed
+  if (chatMode) {
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': process.env.ANTHROPIC_API_KEY,
+          'anthropic-version': '2023-06-01',
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-5',
+          max_tokens: 1000,
+          messages: [{ role: 'user', content: text }],
+        }),
+      });
+      const data = await response.json();
+      const reply = data.content?.[0]?.text || 'I could not answer that. Please try rephrasing.';
+      return res.status(200).json({ chatReply: reply });
+    } catch (e) {
+      return res.status(500).json({ chatReply: 'Something went wrong. Please try again.' });
+    }
+  }
 
   if (!text || text.trim().length < 50) {
     return res.status(400).json({ error: 'Document is too short to analyse.' });
   }
 
   if (!process.env.ANTHROPIC_API_KEY) {
-    return res.status(500).json({ error: 'API not configured. Please contact support.' });
+    return res.status(500).json({ error: 'API not configured.' });
   }
 
   if (userId) {
@@ -179,26 +184,25 @@ module.exports = async function handler(req, res) {
         .select('is_pro, usage_count')
         .eq('id', userId)
         .single();
-
       if (profile && !profile.is_pro && (profile.usage_count || 0) >= FREE_LIMIT) {
-        return res.status(403).json({ error: 'Free limit reached. Please upgrade to Pro for unlimited analyses.', limitReached: true });
+        return res.status(403).json({ error: 'Free limit reached.', limitReached: true });
       }
     } catch (e) {}
   }
 
   try {
-    const clean = truncateDocument(sanitise(text.trim()));
+    const clean = truncate(sanitise(text.trim()));
     let raw = await callClaude(clean);
     let parsed;
 
     try {
       parsed = sanitiseJSON(raw);
-    } catch (firstErr) {
+    } catch {
       raw = await callClaude(clean, true);
       try {
         parsed = sanitiseJSON(raw);
-      } catch (secondErr) {
-        throw new Error('Analysis could not be completed. Please try a shorter section of the document.');
+      } catch {
+        throw new Error('Analysis could not be completed. Please try a shorter section.');
       }
     }
 
@@ -206,6 +210,7 @@ module.exports = async function handler(req, res) {
       throw new Error('Analysis returned incomplete results. Please try again.');
     }
 
+    // Save to history and update usage count
     if (userId) {
       try {
         const { data: profile } = await supabase
@@ -213,10 +218,21 @@ module.exports = async function handler(req, res) {
           .select('usage_count')
           .eq('id', userId)
           .single();
-        await supabase
-          .from('profiles')
-          .update({ usage_count: (profile?.usage_count || 0) + 1 })
-          .eq('id', userId);
+
+        await supabase.from('profiles').update({
+          usage_count: (profile?.usage_count || 0) + 1
+        }).eq('id', userId);
+
+        // Save to history
+        await supabase.from('analysis_history').insert({
+          user_id: userId,
+          document_type: parsed.document_type,
+          trust_score: parsed.trust_score,
+          score_label: parsed.score_label,
+          recommendation: parsed.recommendation,
+          result: parsed,
+          created_at: new Date().toISOString()
+        });
       } catch (e) {}
     }
 
@@ -225,3 +241,7 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: e.message || 'Analysis failed. Please try again.' });
   }
 };
+
+//   const response = await fetch('https://api.anthropic.com/v1/messages', { ... simple chat ... })
+//   return res.status(200).json({ chatReply: plainTextResponse });
+// }
