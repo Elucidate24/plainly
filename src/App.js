@@ -559,7 +559,6 @@ function Landing({ onSignUp, onLogin, onSample, onAbout, t, lang, onLangChange }
         <button onClick={onLogin} style={{ ...btnStyle("secondary", false), marginBottom: "10px" }}>{tx.signIn}</button>
         <div style={{ display: "flex", justifyContent: "center", gap: "24px", marginBottom: "20px" }}>
           <button onClick={onAbout} style={{ background: "none", border: "none", color: C.accent, fontSize: "14px", cursor: "pointer", fontWeight: "500" }}>{tx.about}</button>
-          <a href="mailto:plainlyteam@gmail.com" style={{ color: C.accent, fontSize: "14px", textDecoration: "none", fontWeight: "500" }}>{tx.contact}</a>
         </div>
 
         <div style={{ background: C.light, borderRadius: "12px", padding: "16px", marginBottom: "20px" }}>
@@ -1257,30 +1256,58 @@ function Upgrade({ userEmail, onClose, t }) {
   );
 }
 
-function About({ onBack }) {
+function About({ onBack, t }) {
+  const tx = t || T.en;
+  const isNL = tx.about === "Over ons";
+  const isES = tx.about === "Acerca de";
+
+  const content = {
+    back: isNL ? "← Terug" : isES ? "← Volver" : "← Back",
+    headline: isNL ? "Waarom Plainly bestaat." : isES ? "Por qué existe Plainly." : "Why Plainly exists.",
+    subheadline: isNL ? "Elke dag tekenen mensen contracten die ze niet begrijpen. We hebben een tool gebouwd om dat te veranderen." : isES ? "Cada día la gente firma contratos que no entiende. Creamos una herramienta para cambiar eso." : "Every day people sign contracts they do not understand. We built a tool to change that.",
+    quote: isNL ? "De meeste mensen lezen het contract niet volledig voor ze tekenen. Niet omdat ze het niet schelen. Maar omdat de taal opzettelijk moeilijk is." : isES ? "La mayoría de la gente nunca lee los términos completos de un contrato antes de firmar. No porque no les importe. Porque el lenguaje es deliberadamente difícil." : "Most people never read the full terms of a contract before signing. Not because they do not care. Because the language is deliberately difficult.",
+    problemTitle: isNL ? "Het probleem" : isES ? "El problema" : "The problem",
+    problemBody: isNL ? "Arbeidscontracten, huurovereenkomsten, freelancevoorwaarden. Deze documenten bepalen het leven van mensen. Toch tekenen de meeste mensen ze met slechts een vaag idee van wat ze bevatten. Het gevolg is dat mensen regelmatig akkoord gaan met dingen die oneerlijk zijn of niet wat ze dachten." : isES ? "Contratos de trabajo, contratos de alquiler, condiciones freelance. Estos documentos moldean la vida de las personas. Sin embargo, la mayoría los firma con solo una vaga idea de lo que contienen. El resultado es que la gente regularmente acepta cosas que son injustas o no lo que pensaba." : "Employment contracts, rental agreements, freelance terms. These documents shape people's lives. Yet most people sign them with only a vague sense of what they contain. The result is people routinely agree to things that are unfair or not what they thought.",
+    builtTitle: isNL ? "Wat we gebouwd hebben" : isES ? "Lo que construimos" : "What we built",
+    builtBody: isNL ? "Plainly leest elk document en legt het in seconden in gewone taal uit. Rode vlaggen gemarkeerd. Juridisch jargon uitgelegd. Een duidelijke vertrouwensscore. Een directe aanbeveling. Helder, eerlijk en oprecht aan jouw kant." : isES ? "Plainly lee cualquier documento y lo explica en lenguaje claro en segundos. Señales de alerta destacadas. Jerga legal explicada. Una puntuación de confianza clara. Una recomendación directa. Claro, honesto y genuinamente de tu lado." : "Plainly reads any document and explains it in plain English in seconds. Red flags highlighted. Legal jargon explained. A clear trust score. A direct recommendation. Clear, honest, and genuinely on your side.",
+    valuesTitle: isNL ? "Waar we in geloven" : isES ? "En lo que creemos" : "What we believe",
+    values: isNL ? [
+      { icon: "🔒", title: "Privacy is niet onderhandelbaar", desc: "We slaan je documenten nooit op. Elke analyse wordt verwerkt en onmiddellijk vergeten." },
+      { icon: "⚖️", title: "Eerlijkheid boven geruststelling", desc: "Als een contract slecht is, zeggen we dat het slecht is. We verzachten bevindingen nooit." },
+      { icon: "🌍", title: "Toegang voor iedereen", desc: "Documenthelderheid hoeft niet duur te zijn. Plainly geeft iedereen toegang tot duidelijke analyse." },
+      { icon: "💡", title: "Duidelijkheid boven complexiteit", desc: "Elke uitleg is zo geschreven dat iedereen het begrijpt. Geen jargon. Geen aannames." },
+    ] : isES ? [
+      { icon: "🔒", title: "La privacidad no es negociable", desc: "Nunca almacenamos tus documentos. Cada análisis se procesa y se olvida inmediatamente." },
+      { icon: "⚖️", title: "Honestidad sobre tranquilidad", desc: "Si un contrato es malo, lo decimos. Nunca suavizamos los hallazgos." },
+      { icon: "🌍", title: "Acceso para todos", desc: "La claridad documental no debería ser cara. Plainly da a todos acceso a un análisis claro." },
+      { icon: "💡", title: "Claridad sobre complejidad", desc: "Cada explicación está escrita para que cualquiera la entienda. Sin jerga. Sin suposiciones." },
+    ] : [
+      { icon: "🔒", title: "Privacy is non-negotiable", desc: "We never store your documents. Every analysis is processed and immediately forgotten." },
+      { icon: "⚖️", title: "Honesty over reassurance", desc: "If a contract is bad, we say it is bad. We never soften findings." },
+      { icon: "🌍", title: "Access for everyone", desc: "Document clarity should not be expensive. Plainly gives everyone access to clear analysis." },
+      { icon: "💡", title: "Clarity over complexity", desc: "Every explanation is written so anyone can understand it. No jargon. No assumptions." },
+    ],
+    contactTitle: isNL ? "Vragen of feedback?" : isES ? "¿Preguntas o comentarios?" : "Questions or feedback?",
+  };
+
   return (
     <div style={{ padding: "20px" }}>
-      <button onClick={onBack} style={{ background: "none", border: "none", color: C.accent, fontSize: "14px", cursor: "pointer", marginBottom: "20px", padding: 0 }}>← Back</button>
-      <h2 style={{ fontSize: "28px", fontWeight: "700", color: C.text, marginBottom: "8px", lineHeight: "1.2" }}>Why Plainly exists.</h2>
-      <p style={{ fontSize: "15px", color: C.sub, marginBottom: "32px", lineHeight: "1.6" }}>Every day people sign contracts they do not understand. We built a tool to change that.</p>
+      <button onClick={onBack} style={{ background: "none", border: "none", color: C.accent, fontSize: "14px", cursor: "pointer", marginBottom: "20px", padding: 0 }}>{content.back}</button>
+      <h2 style={{ fontSize: "28px", fontWeight: "700", color: C.text, marginBottom: "8px", lineHeight: "1.2" }}>{content.headline}</h2>
+      <p style={{ fontSize: "15px", color: C.sub, marginBottom: "32px", lineHeight: "1.6" }}>{content.subheadline}</p>
 
       <div style={{ background: "#F5EDD6", borderLeft: `4px solid ${C.accent}`, padding: "16px 20px", borderRadius: "0 8px 8px 0", marginBottom: "28px" }}>
-        <p style={{ fontSize: "16px", color: "#8A6828", fontStyle: "italic", margin: 0 }}>Most people never read the full terms of a contract before signing. Not because they do not care. Because the language is deliberately difficult.</p>
+        <p style={{ fontSize: "16px", color: "#8A6828", fontStyle: "italic", margin: 0 }}>{content.quote}</p>
       </div>
 
-      <h3 style={{ fontSize: "18px", fontWeight: "700", color: C.text, marginBottom: "10px" }}>The problem</h3>
-      <p style={{ fontSize: "15px", color: C.sub, lineHeight: "1.7", marginBottom: "24px" }}>Employment contracts, rental agreements, freelance terms. These documents shape people's lives. Yet most people sign them with only a vague sense of what they contain. The result is people routinely agree to things that are unfair or not what they thought.</p>
+      <h3 style={{ fontSize: "18px", fontWeight: "700", color: C.text, marginBottom: "10px" }}>{content.problemTitle}</h3>
+      <p style={{ fontSize: "15px", color: C.sub, lineHeight: "1.7", marginBottom: "24px" }}>{content.problemBody}</p>
 
-      <h3 style={{ fontSize: "18px", fontWeight: "700", color: C.text, marginBottom: "10px" }}>What we built</h3>
-      <p style={{ fontSize: "15px", color: C.sub, lineHeight: "1.7", marginBottom: "24px" }}>Plainly reads any document and explains it in plain English in seconds. Red flags highlighted. Legal jargon explained. A clear trust score. A direct recommendation. Clear, honest, and genuinely on your side.</p>
+      <h3 style={{ fontSize: "18px", fontWeight: "700", color: C.text, marginBottom: "10px" }}>{content.builtTitle}</h3>
+      <p style={{ fontSize: "15px", color: C.sub, lineHeight: "1.7", marginBottom: "24px" }}>{content.builtBody}</p>
 
-      <h3 style={{ fontSize: "18px", fontWeight: "700", color: C.text, marginBottom: "16px" }}>What we believe</h3>
-      {[
-        { icon: "🔒", title: "Privacy is non-negotiable", desc: "We never store your documents. Every analysis is processed and immediately forgotten." },
-        { icon: "⚖️", title: "Honesty over reassurance", desc: "If a contract is bad, we say it is bad. We never soften findings." },
-        { icon: "🌍", title: "Access for everyone", desc: "Document clarity should not be expensive. Plainly gives everyone access to clear analysis." },
-        { icon: "💡", title: "Clarity over complexity", desc: "Every explanation is written so anyone can understand it. No jargon. No assumptions." },
-      ].map((v, i) => (
+      <h3 style={{ fontSize: "18px", fontWeight: "700", color: C.text, marginBottom: "16px" }}>{content.valuesTitle}</h3>
+      {content.values.map((v, i) => (
         <div key={i} style={{ display: "flex", gap: "14px", marginBottom: "16px", background: C.light, borderRadius: "10px", padding: "16px" }}>
           <div style={{ fontSize: "22px", flexShrink: 0 }}>{v.icon}</div>
           <div>
@@ -1291,7 +1318,7 @@ function About({ onBack }) {
       ))}
 
       <div style={{ background: C.header, borderRadius: "12px", padding: "24px", textAlign: "center", marginTop: "8px" }}>
-        <p style={{ color: "#fff", fontSize: "15px", margin: "0 0 4px", fontWeight: "600" }}>Questions or feedback?</p>
+        <p style={{ color: "#fff", fontSize: "15px", margin: "0 0 4px", fontWeight: "600" }}>{content.contactTitle}</p>
         <a href="mailto:plainlyteam@gmail.com" style={{ color: C.accent, fontSize: "14px" }}>plainlyteam@gmail.com</a>
       </div>
     </div>
@@ -1420,7 +1447,7 @@ export default function App() {
       onSwitch={() => setAuthMode(m => m === "signup" ? "login" : "signup")}
       onBack={() => setScreen("landing")}
     />;
-    if (screen === "about") return <About onBack={() => setScreen("landing")} />;
+    if (screen === "about") return <About onBack={() => setScreen("landing")} t={t} />;
     if (screen === "sample") {
       const DEMOS = {
         en: {
